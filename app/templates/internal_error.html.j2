@@ -1,0 +1,9 @@
+{% extends 'base.html.j2' %}
+{% block head %}
+{{ super() }}
+<link rel='stylesheet' type='text/css' href='/static/error.css'>
+<meta http-equiv="refresh" content="30">
+{% endblock %}
+{% block content %}
+An error has occured. Please try again later, if this error continues please, contact the system administrator.
+{% endblock %}

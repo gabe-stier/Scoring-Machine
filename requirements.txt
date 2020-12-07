@@ -1,0 +1,6 @@
+dnspython
+flask
+celery
+redis
+gunicorn[eventlet]
+django

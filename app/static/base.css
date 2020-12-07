@@ -1,0 +1,56 @@
+html body {
+	margin-right: 0.5%;
+	margin-left: 0.5%;
+}
+
+#footer {
+	background-color: gray;
+	color: black;
+	text-align: center;
+	position: fixed;
+	bottom: 0;
+	width: 100%;
+	left: 0;
+	margin-top: 2.5%;
+}
+
+#footer a {
+	color: black;
+}
+
+#footer a:hover {
+	color: #555;
+}
+
+.pages ul {
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
+	overflow: hidden;
+	background-color: #c8102e;
+}
+
+.pages li {
+	float: left;
+}
+
+.pages li a {
+	display: block;
+	color: black;
+	text-align: center;
+	padding: 14px 16px;
+	text-decoration: none;
+}
+
+.pages li a:hover {
+	background-color: #8e0b21;
+}
+
+body {
+	margin: 0;
+}
+
+header {
+	margin-left: 10;
+	margin-right: 10;
+}

@@ -1,0 +1,29 @@
+{% extends 'base.html.j2' %}
+{% block head %}
+{{ super() }}
+<meta http-equiv="refresh" content="30">
+{% endblock %}
+{% block content %}
+
+<link rel='stylesheet' type='text/css' href='/static/scoring.css'>
+<div class='services'>
+	<nav class='services'>
+		<ul>
+			<li {% if service == "LDAP" %} id='current' {% endif %}><a href='ldap'>LDAP</a></li>
+			<li {% if service == "DNS - Linux" %} id='current' {% endif %}><a href='dns-linux'>DNS - Linux</a></li>
+			<li {% if service == "DNS - Windows" %} id='current' {% endif %}><a href='dns-windows'>DNS - Windows</a></li>
+			<li {% if service == "Ecommerce" %} id='current' {% endif %}><a href='ecomm'>Ecommerce</a></li>
+			<li {% if service == "POP3" %} id='current' {% endif %}><a href='pop3'>POP3</a></li>
+			<li {% if service == "SMTP" %} id='current' {% endif %}><a href='smtp'>SMTP</a></li>
+			<li {% if service == "Splunk" %} id='current' {% endif %}><a href='splunk'>Splunk</a></li>
+		</ul>
+	</nav>
+</div>
+<h1>{{ service }}</h1>
+<div class='stats'>
+	<div class='plot'>
+		<p>Container for plot graphs</p>
+	</div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,35 @@
+<html>
+
+<head>
+	{% block head %}
+	<title>Internal Service Scoring Machine of Southeast Missouri State</title>
+	{% endblock %}
+	<link rel='stylesheet' type='text/css' href="/static/base.css">
+	<link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+</head>
+<div id='header'>
+	<h1>Interal Service Scoring Machine of Southeast Missouri State</h1>
+	<nav class='pages'>
+		<ul>
+			<li><a href='/'>Home</a></li>
+			<li><a href='/config'>Config</a></li>
+			<li><a href='/request-score/'>Services</a></li>
+		</ul>
+	</nav>
+</div>
+
+<div class='body'>
+	{% block content %} {% endblock %}
+</div>
+<div id='footer'>
+	This scoring machine was created to help the CCDC team of SEMO prepare with their firewalls.
+	<br>If any issues arise, you can read the code and attempt to fix the issue yourself or contact Gabe Stier, this
+	machine's code will be hosted on a private repo.
+	<br>Created by Gabe Stier, <a
+		href='mailto:gabezter4@yahoo.com?subject=Internal Scoring Machine'>gabezter4@yahoo.com</a>, if you wish to get
+	in touch email me. <br>I will be more than willing to help fix any issues that could arise or create any new
+	features.
+	<br>
+</div>
+
+</html>

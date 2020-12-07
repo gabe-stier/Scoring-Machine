@@ -1,0 +1,27 @@
+
+td {
+    margin: auto;
+    width: 50%;
+}
+
+tr {
+    width: 50%;
+}
+div.form
+{
+    display: block;
+    text-align: center;
+}
+form
+{
+    display: inline-block;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: left;
+    border: solid black 1px;
+}
+
+table{
+    margin: auto;
+    width: 35%;
+}

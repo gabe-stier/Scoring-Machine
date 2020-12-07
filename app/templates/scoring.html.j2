@@ -1,0 +1,167 @@
+{% extends 'base.html.j2' %}
+{% block head %}
+{{ super() }}
+<link rel='stylesheet' type='text/css' href='/static/index.css'>
+<meta http-equiv="refresh" content="30">
+{% endblock %}
+{% block content %}
+<link rel='stylesheet' type='text/css' href='/static/scoring.css'>
+<div class='services'>
+	<nav class='services'>
+		<ul>
+			<li><a href='ldap'>LDAP</a></li>
+			<li><a href='dns-linux'>DNS - Linux</a></li>
+			<li><a href='dns-windows'>DNS - Windows</a></li>
+			<li><a href='ecomm'>Ecommerce</a></li>
+			<li><a href='pop3'>POP3</a></li>
+			<li><a href='smtp'>SMTP</a></li>
+			<li><a href='splunk'>Splunk</a></li>
+		</ul>
+	</nav>
+</div>
+<table class='scoring_table'>
+	<tr>
+		<th>Service</th>
+		<th>Up/Down</th>
+	</tr>
+	{% if ldap %}
+	<tr class='ldap' id='service_up'>
+		<td>LDAP</td>
+		<td>Up</td>
+	</tr>
+	{% else %}
+	<tr class='ldap' id='service_down'>
+		<td>LDAP</td>
+		<td>Down</td>
+	</tr>
+	{% endif %}
+	{% if dns_linux %}
+	<tr class='dnsl' id='service_up'>
+		<td>DNS - Linux</td>
+		<td>Up</td>
+	</tr>
+	{% else %}
+	<tr class='dnsl' id='service_down'>
+		<td>DNS - Linux</td>
+		<td>Down</td>
+	</tr>
+	{% endif %}
+	{% if dns_windows %}
+	<tr class='dnsw' id='service_up'>
+		<td>DNS - Windows</td>
+		<td>Up</td>
+	</tr>
+	{% else %}
+	<tr class='dnsw' id='service_down'>
+		<td>DNS - Windows</td>
+		<td>Down</td>
+	</tr>
+	{% endif %}
+	{% if splunk %}
+	<tr class='ecomm' id='service_up'>
+		<td>Ecommerce</td>
+		<td>Up</td>
+	</tr>
+	{% else %}
+	<tr class='ecomm' id='service_down'>
+		<td>Ecommerce</td>
+		<td>Down</td>
+	</tr>
+	{% endif %}
+	{% if pop3 %}
+	<tr class='pop3' id='service_up'>
+		<td>POP3</td>
+		<td>Up</td>
+	</tr>
+	{% else %}
+	<tr class='pop3' id='service_down'>
+		<td>POP3</td>
+		<td>Down</td>
+	</tr>
+	{% endif %}
+	{% if smtp %}
+	<tr class='smtp' id='service_up'>
+		<td>SMTP</td>
+		<td>Up</td>
+	</tr>
+	{% else %}
+	<tr class='smtp' id='service_down'>
+		<td>SMTP</td>
+		<td>Down</td>
+	</tr>
+	{% endif %}
+	{% if splunk %}
+	<tr class='splunk' id='service_up'>
+		<td>Splunk</td>
+		<td>Up</td>
+	</tr>
+	{% else %}
+	<tr class='splunk' id='service_down'>
+		<td>Splunk</td>
+		<td>Down</td>
+	</tr>
+	{% endif %}
+</table>
+<table>
+	<tr>
+		<th>Service</th>
+		<td id='odd_col'><a href='/request-score/ldap'>LDAP</a></td>
+		<td><a href='/request-score/dns-linux'>DNS - Linux</a></td>
+		<td id='odd_col'><a href='/request-score/dns-windows'>DNS - Windows</a></td>
+		<td><a href='/request-score/ecomm'>Ecommerce</a></td>
+		<td id='odd_col'><a href='/request-score/pop3'>POP3</a></td>
+		<td><a href='/request-score/smtp'>SMTP</a></td>
+		<td id='odd_col'><a href='/request-score/splunk'>Splunk</a></td>
+	</tr>
+	<tr>
+		<th></th>
+		<td id='odd_col'><button>Score</button></td>
+		<td><button>Score</button></td>
+		<td id='odd_col'><button>Score</button></td>
+		<td><button>Score</button></td>
+		<td id='odd_col'><button>Score</button></td>
+		<td><button>Score</button></td>
+		<td id='odd_col'><button>Score</button></td>
+	</tr>
+</table>
+<style>
+	table {
+		margin: 0 auto;
+		margin-top: 30px;
+		align-self: center;
+		align-content: center;
+		display: flex;
+		flex-direction: column;
+		width: 75%;
+		position: relative;
+		border: solid black 2px;
+		border-collapse: collapse;
+		padding: 5px;
+		text-align: center;
+	}
+
+	td,
+	th {
+
+		border: solid black 2px;
+		width: 1000px;
+	}
+
+	tr {
+		width: 100%;
+	}
+
+	#service_down {
+		background-color: #ff0000;
+	}
+
+	#service_up {
+		background-color: #00ff00;
+	}
+
+	#odd_col {
+		background-color: lightgray;
+	}
+
+</style>
+{% endblock %}
