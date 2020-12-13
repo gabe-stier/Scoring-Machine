@@ -1,0 +1,22 @@
+{% block configuration %}
+<form action='/config/dns-linux' method='post'>
+	<table>
+		<tr>
+			<td><label for='dnsl_ip'>IP Address</label></td>
+			<td><input type='text' id='dnsl_ip' name='dnsl_ip' required></td>
+		</tr>
+		<tr>
+			<td><label for='dnsl_domains'>Testing of Domains</label></td>
+			<td><input type='text' id='dnsl_domains' name='dnsl_domains' required></td>
+		</tr>
+		<tr>
+			<td colspan="2"><label for='dnsl_domains'>Split domains using a semi-colon (;)
+				</label></td>
+		</tr>
+		<tr>
+			<td></td>
+			<td><input type='submit' , value='Submit'></td>
+		</tr>
+	</table>
+</form>
+{% endblock %}

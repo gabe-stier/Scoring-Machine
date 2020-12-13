@@ -1,0 +1,33 @@
+{% block configuration %}
+<script type='text/javascript'>
+    user_count = 0;
+
+    function addUser() {
+        user_count += 1;
+        var users = document.getElementById('users');
+        var new_user = "<table class='user' id='user" + user_count + "'>\
+        <tr><th><label>User " + user_count + ":</label></th></tr>\
+        <tr><td><label>Username: </label></td><td><input id='user" + user_count + "name' name='username_" + user_count + "' type='text'></td></tr>\
+        <tr><td><label>Password: </label></td><td><input id='user" + user_count + "pwd' name='userpwd_" + user_count + "' type='text'><td></tr></table><hr>"
+        users.innerHTML += new_user;
+    }
+
+</script>
+<form action='/config/ldap' method='post'>
+    <table>
+        <tr>
+            <td><label for='ldap_ip'>IP Address</label></td>
+            <td><input type='text' id='ldap_ip' name='ldap_ip' required> </td>
+        </tr>
+        <tr>
+            <td><label for='ldap_users'>Users</label></td>
+            <td><a onclick="addUser()">Add User</a></td>
+        </tr>
+    </table>
+    <div id='users'><hr>
+    </div>
+    <div><input type='submit' , value='Submit'></div>
+
+</form>
+
+{% endblock %}

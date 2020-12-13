@@ -1,0 +1,76 @@
+.services nav ul {
+    list-style-type: none;
+    margin-left: 10;
+    margin-right: 10;
+    padding: 0;
+    overflow: hidden;
+    background-color: white;
+    display: block;
+}
+
+.services nav {
+    margin: auto;
+    width: 35.58%;
+    padding: 0px;
+    border: solid black 1px;
+    text-align: center;
+    margin-top: 1.5%;
+}
+
+.services nav li {
+    float: left;
+}
+
+.services nav li a {
+    display: block;
+    color: black;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+}
+
+.services nav li a:hover {
+    background-color: dimgray;
+}
+
+#current {
+    background: gray;
+}
+
+.configuration {
+    margin: auto;
+    width: 50%;
+    padding: 0px;
+    border: solid black 1px;
+    text-align: center;
+    margin-top: 1.5%;
+}
+
+form a {
+    color: red;
+    text-decoration: underline;
+}
+
+form a:hover {
+    color: darkred;
+}
+
+td {
+    margin: auto;
+    width: 50%;
+}
+
+tr {
+    width: 50%;
+}
+
+form {
+    align-self: center;
+    margin: auto;
+    width: 100%;
+}
+
+table{
+    margin: auto;
+    width: 35%;
+}
