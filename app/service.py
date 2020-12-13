@@ -6,6 +6,7 @@ import os
 import http
 import smtplib
 
+import app.scoring_functions as score
 from app.sqlite_connection import connect
 from app.utilities import Loggers as log
 from socket import timeout
@@ -115,6 +116,7 @@ class DNS(Scoring):
 class SMTP(Scoring):
 
     info_table = None
+    email_from = ''
 
     def __init__(self, *args, **kargs):
         Scoring.__init__(self, *args, **kargs)
@@ -125,10 +127,17 @@ class SMTP(Scoring):
     def get_info(self):
         return self.info_table
 
+    def set_from(self, email):
+        self.email_from = email
+
+    def get_from(self):
+        return self.email_from
+
     def score(self):
         Scoring.score(self)
-        sender = 'captain@team.com'
-        receivers = ['co.captain@team.com']
+        sender = score.SMTP.get_from()
+        conn = connect()
+        receivers = conn.execute('SELECT to_user FROM smtp_info')
         message = f'''
         From: <{sender}>
         To: <{receivers[0]}>
@@ -139,12 +148,14 @@ class SMTP(Scoring):
         try:
             smtpobj = smtplib.SMTP(self.ip, self.port)
             smtpobj.sendmail(sender, receivers, message)
-            self.add_status(self.table_name, 1)
+            status = 1
         except SMTPException:
-            self.add_status(self.table_name, 0)
+            status = 0
         except Exception as e:
             log.Error.error(e)
-            self.add_status(self.table_name, 2)
+            status = 2
+        finally:
+            self.add_status(self.table_name, status)
 
 
 class POP3(Scoring):
@@ -167,10 +178,9 @@ class POP3(Scoring):
             pop = poplib.POP3(self.ip, self.port)
             pop.user('')
             pop.pass_('')
-            email_number = random.randint(0,pop.stat())
+            email_number = random.randint(0, pop.stat())
             (msg, body, octets) = pop.retr(email_number)
-            if f'From: user1@team.com' in body:
-                
+            if f'From: {score.SMTP.get_from()}' in body:
                 status = 1
             else:
                 status = 0
@@ -179,7 +189,6 @@ class POP3(Scoring):
             status = 2
         finally:
             self.add_status(self.table_name, status)
-        
 
 
 class LDAP(Scoring):

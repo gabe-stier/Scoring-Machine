@@ -1,6 +1,7 @@
 dnspython
 flask
-celery
+rq
 redis
 gunicorn[eventlet]
 django
+Flask-RQ2

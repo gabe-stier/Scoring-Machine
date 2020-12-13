@@ -14,3 +14,4 @@ class Loggers:
     Scoring = logging.getLogger("scoring")
     Web = logging.getLogger("web")
     Error = logging.getLogger('error')
+

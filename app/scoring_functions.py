@@ -26,7 +26,7 @@ Auth = Authentication()
 def set_service_config():
     config = ConfigParser()
     try:
-        config.read('app/service.conf')
+        config.read('app/config/service.conf')
         
         ldap_config = config['LDAP']
         splunk_config = config['SPLUNK']
@@ -74,7 +74,7 @@ def set_service_config():
 
         Auth.set_pwd(auth_config['adminpassword'])
         Auth.set_require(auth_config['requirepassword'])
-        # save_service_config()
+        save_service_config()
     except Exception as e:
         print(e, "ERROR", flush=True)
         log.Error.error(e)
@@ -137,5 +137,5 @@ def save_service_config():
         'RequirePassword': Auth.get_require()
     }
 
-    with open('service.conf') as file:
+    with open('app/service.conf', 'w') as file:
         config.write(file)
