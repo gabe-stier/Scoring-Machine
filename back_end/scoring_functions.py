@@ -4,11 +4,11 @@ Created on Nov 26, 2020
 @author: gabez
 '''
 
-from app.service import LDAP as ldap
-from app.service import Authentication, Web, DNS
-from app.service import SMTP as SMTP_class
-from app.service import POP3 as POP3_class
-from app.utilities import Loggers as log
+from back_end.service import LDAP as ldap
+from back_end.service import Authentication, Web, DNS
+from back_end.service import SMTP as SMTP_class
+from back_end.service import POP3 as POP3_class
+from back_end.utilities import Loggers as log
 
 from configparser import ConfigParser
 import os
@@ -26,7 +26,7 @@ Auth = Authentication()
 def set_service_config():
     config = ConfigParser()
     try:
-        config.read('app/config/service.conf')
+        config.read('back_end/config/service.conf')
         
         ldap_config = config['LDAP']
         splunk_config = config['SPLUNK']
@@ -137,5 +137,5 @@ def save_service_config():
         'RequirePassword': Auth.get_require()
     }
 
-    with open('app/service.conf', 'w') as file:
+    with open('back_end/service.conf', 'w') as file:
         config.write(file)
