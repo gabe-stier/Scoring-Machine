@@ -1,7 +1,6 @@
 dnspython
 flask
-rq
-redis
 gunicorn[eventlet]
 django
 Flask-RQ2
+requests

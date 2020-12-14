@@ -1,0 +1,50 @@
+{% extends 'base.html.j2' %}
+{% block head %}
+{{ super() }}
+<link rel='stylesheet' type='text/css' href='/static/scoring.css'>
+<meta http-equiv="refresh" content="30">
+{% endblock %}
+{% block content %}
+<table>
+    <tr>
+        <th>Code</th>
+        <th>Explaination</th>
+        <th>Possible Fix</th>
+    </tr>
+    <tr>
+        <td>20</td>
+        <td>Good Request</td>
+        <td>-</td>
+    </tr>
+    <tr>
+        <td>21</td>
+        <td>Config Accepted</td>
+        <td>-</td>
+    </tr>
+    <tr>
+        <td>22</td>
+        <td>Attempting to Score</td>
+        <td>-</td>
+    </tr>
+    <tr>
+        <td>40</td>
+        <td>Did not send data in correct format.</td>
+        <td>Something internal went wrong on the front end of the application. Check the code...</td>
+    </tr>
+    <tr>
+        <td>41</td>
+        <td>Invalid Token</td>
+        <td>Restart the front end and back end of the application.</td>
+    </tr>
+    <tr>
+        <td>42</td>
+        <td>Wrong Method</td>
+        <td>Something internal went wrong. Should have been a POST request not a GET request.</td>
+    </tr>
+    <tr>
+        <td>43</td>
+        <td>Invalid Action</td>
+        <td>Something internal went wrong. The action within the request should be either 'config' or 'score'.</td>
+    </tr>
+</table>
+{% endblock %}

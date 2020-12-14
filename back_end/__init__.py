@@ -1,10 +1,10 @@
-from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
-import SocketServer
+from http.server import BaseHTTPRequestHandler, HTTPServer
+import socketserver
 import json
 import cgi
 
-import back_end.actions as action
-from back_end.util import generate_token
+import actions as action
+from util import generate_token
 
 token = generate_token()
 
@@ -42,22 +42,30 @@ class Server(BaseHTTPRequestHandler):
                 action.score_service(message['data'])
                 response = {
                     'response': "Accepted",
-                    'return': message
+                    "internal status code": 22,
+                    'data sent': message
                 }
             elif message['action'] == 'config':
                 action.update_config(message['data'])
                 response = {
                     'response': "Accepted",
-                    'return': message
+                    "internal status code": 21,
+                    'data sent': message
                 }
             else:
+                self._set_headers(code=400)
                 response = {
-                    "error": 'Invalid Action'
+                    "error": 'Invalid Action',
+                    "internal status code": 43,
+                    'data sent': message
                 }
+                return
         else:
             self._set_headers(code=401)
             response = {
-                "error": "Invalid Token"
+                "error": "Invalid Token",
+                "internal status code": 41,
+                'data sent': message
             }
             self.wfile.write(json.dumps(response))
             return
@@ -68,16 +76,13 @@ class Server(BaseHTTPRequestHandler):
 
 def run(server_class=HTTPServer, handler_class=Server, port=18651):
     server_address = ('', port)
+    print(server_address)
     httpd = server_class(server_address, handler_class)
-
-    print(f'Starting httpd on port {port}...')
+    
+    print(f'Starting httpd on port {server_address}...', flush=True)
     httpd.serve_forever()
 
+print("Hello", flush=True)
 
 if __name__ == "__main__":
-    from sys import argv
-
-    if len(argv) == 2:
-        run(port=int(argv[1]))
-    else:
-        run()
+    run()
