@@ -3,15 +3,26 @@ Scoring machine that is used with in the cyberrange to be able to know if firewa
 '''
 from flask import Flask, render_template, request, url_for
 from flask import make_response as respond
+from app.utilities import Loggers as log
+import app.background_tasks as bg
 from logging.config import dictConfig
-from front_end.utilities import Loggers as log
+from app.blueprints import sr as score_request
+from app.blueprints import config_bp as configuration_bp
+from app.sqlite_connection import init_db, connect
+import app.scoring_functions as score
 import os
 import sys
+from redis import Redis
+from celery_task import background_tasks as bgt
 
 def app():
     app = Flask(__name__)
     app.config.from_pyfile('app/config/application.conf')
+    # app.redis = Redis.from_url('redis://localhost:6379')
+    # app.task_queue = rq.Queue('scoring-tasks', connection=app.redis)
+    bg.rq.init_app(app)
     app.secret_key = b'tr&6aH+tripRa!rUm9Ju'
+    celery = bgt(app)
 
     ''' HTML Pages '''
     @app.route('/')
@@ -36,8 +47,13 @@ def app():
     app.register_error_handler(404, not_found)
     app.register_error_handler(500, internal_error)
 
+    app.register_blueprint(score_request)
+    app.register_blueprint(configuration_bp)
 
     setup_logging(app)
+    init_db()
+    score.set_service_config()
+    start_scoring()
 
     return app
 
@@ -157,4 +173,16 @@ def score_page():
 
     return render_template('index.html.j2', ldap=ldap_srv, dnsl=dnsl_srv, dnsw=dnsw_srv, ecomm=ecomm_srv,
                            pop3=pop3_srv, smtp=smtp_srv, splunk=splunk_srv)
+
+
+def start_scoring():
+    test = bg.score_ecomm.queue()
+    print(test, flush=True)
+    bg.score_ecomm.cron('2 * * * *', 'score-ecomm', timeout=60)
+    bg.score_ldap.cron('2 * * * *', 'score-ldap', timeout=60)
+    bg.score_linux_dns.cron('2 * * * *', 'score-ldns', timeout=60)
+    bg.score_pop3.cron('2 * * * *', 'score-pop3', timeout=60)
+    bg.score_smtp.cron('2 * * * *', 'score-smtp', timeout=60)
+    bg.score_splunk.cron('2 * * * *', 'score-splunk', timeout=60)
+    bg.score_windows_dns.cron('2 * * * *', 'score-wdns', timeout=60)
 
