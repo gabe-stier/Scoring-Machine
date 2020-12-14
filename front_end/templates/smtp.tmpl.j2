@@ -1,0 +1,27 @@
+{% block configuration %}
+<form action='/config/smtp' method='post'>
+	<table>
+		<tr>
+			<td><label for='smtp_ip'>IP Address</label></td>
+			<td><input type='text' id='smtp_ip' name='smtp_ip' required></td>
+		</tr>
+		<tr>
+			<td><label for='smtp_usr1'>Username 1:</label></td>
+			<td><input type='text' id='smtp_usr1' name='smtp_usr1' required></td>
+		</tr>
+		<tr>
+			<td><label for='smtp_usr2'>Username 2:</label></td>
+			<td><input type='text' id='smtp_usr2' name='smtp_usr2' required></td>
+		</tr>
+		<tr>
+			<td><label for='smtp_domain'>Email Domain</label></td>
+			<td><input type='text' id='smtp_domain' name='smtp_domain' required></td>
+		</tr>
+		<tr>
+			<td></td>
+			<td><input type='submit' , value='Submit'></td>
+		</tr>
+	</table>
+</form>
+
+{% endblock %}
