@@ -5,12 +5,13 @@ from flask import Flask, render_template, request, url_for
 from flask import make_response as respond
 from logging.config import dictConfig
 from front_end.utilities import Loggers as log
+import front_end.blueprints as bp
 import os
 import sys
 
 def app():
     app = Flask(__name__)
-    app.config.from_pyfile('app/config/application.conf')
+    app.config.from_pyfile('config/application.conf')
     app.secret_key = b'tr&6aH+tripRa!rUm9Ju'
 
     ''' HTML Pages '''
@@ -35,6 +36,8 @@ def app():
 
     app.register_error_handler(404, not_found)
     app.register_error_handler(500, internal_error)
+    app.register_blueprint(bp.sr)
+    app.register_blueprint(bp.config_bp)
 
 
     setup_logging(app)
@@ -128,24 +131,24 @@ def score_page():
 
     def get_success(table):
         status = None
-        try:
-            conn = connect()
-            cur = conn.execute(
-                f'SELECT * FROM {table} ORDER BY success DESC LIMIT 1;')
+        # try:
+        #     conn = connect()
+        #     cur = conn.execute(
+        #         f'SELECT * FROM {table} ORDER BY success DESC LIMIT 1;')
 
-            for row in cur:
-                if row[2] == 1:
-                    status = True
-                elif row[2] == 0:
-                    status = False
-                else:
-                    status = None
-        except Exception as e:
-            print(e)
-            status = None
-        finally:
-            conn.close()
-            return status
+        #     for row in cur:
+        #         if row[2] == 1:
+        #             status = True
+        #         elif row[2] == 0:
+        #             status = False
+        #         else:
+        #             status = None
+        # except Exception as e:
+        #     print(e)
+        #     status = None
+        # finally:
+        #     conn.close()
+        return status
 
     ldap_srv = get_success('ldap')
     dnsl_srv = get_success('dns_linux')

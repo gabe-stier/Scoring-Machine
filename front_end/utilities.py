@@ -29,7 +29,7 @@ class Token:
                 self.token = f.read()
         else:
             with open('/tmp/scoring_token', 'w') as f:
-                m = blake2b(salt='semo')
+                m = blake2b(salt=b'semo')
                 m.update(datetime.now().encode())
                 token = m.hexdigest()
                 f.write(token)

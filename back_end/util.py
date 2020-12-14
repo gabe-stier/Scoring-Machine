@@ -8,8 +8,8 @@ def generate_token():
             return f.read()
     else:
         with open('/tmp/scoring_token', 'w') as f:
-            m = blake2b(salt='semo')
-            m.update(datetime.now().encode())
+            m = blake2b(salt=b'semo')
+            m.update(str(datetime.now()).encode())
             token = m.hexdigest()
             f.write(token)
             return token

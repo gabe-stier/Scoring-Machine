@@ -3,13 +3,14 @@ Created on Nov 26, 2020
 
 @author: gabez
 '''
-from flask import Blueprint, url_for, render_template, make_response, request, redirect, session
+from flask import Blueprint, url_for, render_template, make_response, request, redirect, session, current_app
 from flask.views import MethodView
-from app.utilities import Loggers as log
-import app.scoring_functions as score
-from app.sqlite_connection import connect
+from front_end.utilities import Loggers as log
+from front_end.utilities import Token
 import requests
+import json
 
+token = Token()
 
 sr = Blueprint('score', __name__, url_prefix='/request-score')
 
@@ -47,7 +48,6 @@ class Score_Ecomm(MethodView):
         return render_template('score-page.html.j2', service='Ecommerce')
 
     def post(self):
-        score.Ecommerce.score()
         return redirect(request.referrer)
 
 
@@ -58,7 +58,6 @@ class Score_DNS_Windows(MethodView):
         return render_template('score-page.html.j2', service='DNS - Windows')
 
     def post(self):
-        score.Windows_DNS.score()
         return redirect(request.referrer)
 
 
@@ -69,7 +68,6 @@ class Score_DNS_Linux(MethodView):
         return render_template('score-page.html.j2', service='DNS - Linux')
 
     def post(self):
-        score.Linux_DNS.score()
         return redirect(request.referrer)
 
 
@@ -100,7 +98,6 @@ class Score_Splunk(MethodView):
         return render_template('score-page.html.j2', service='Splunk')
 
     def post(self):
-        score.Splunk.score()
         return redirect(request.referrer)
 
 
@@ -121,14 +118,14 @@ def config_index():
     return render_template('config.html.j2', service='None')
 
 
-@config_bp.before_request
-def login_check():
-    require_password = score.Auth.get_require()
-    if request.method == 'GET' or request.path == '/config/login' or not require_password or 'data' in session:
-        pass
-    else:
-        session['data'] = request.form
-        return redirect(url_for('config.config_login', redirect_loc=request.endpoint))
+# @config_bp.before_request
+# def login_check():
+#     require_password = score.Auth.get_require()
+#     if request.method == 'GET' or request.path == '/config/login' or not require_password or 'data' in session:
+#         pass
+#     else:
+#         session['data'] = request.form
+#         return redirect(url_for('config.config_login', redirect_loc=request.endpoint))
 
 
 class Config_Login(MethodView):
@@ -152,10 +149,10 @@ class Config_Login(MethodView):
             redirect_loc = request.args.get('redirect_loc')
         if redirect_loc == False:
             return render_template('internal_error.html.j2')
-        if pwd == score.Auth.get_pwd():
-            log.Main.info(
-                f"Updating of Config. Password has been entered.{redirect_loc}")
-            return redirect(url_for(redirect_loc))
+        # if pwd == score.Auth.get_pwd():
+            # log.Main.info(
+            #     f"Updating of Config. Password has been entered.{redirect_loc}")
+            # return redirect(url_for(redirect_loc))
         else:
             return redirect(url_for('config.config_login', error=True, redirect_loc=redirect_loc))
 
@@ -165,43 +162,58 @@ class Config_LDAP(MethodView):
         url_for('static', filename='base.css')
         url_for('static', filename='config.css')
         if 'data' in session:
-            try:
-                log.Main.info(
-                    "Updating of LDAP Config. Password has been entered.")
-                score.LDAP.set_ip(session['data']['ldap_ip'])
-                count = 1
-                conn = connect()
-                while f'username_{count}' in request.form:
-                    conn.execute('INSERT INTO ldap_info (username, password) VALUES (?,?)', (str(
-                        session['data'][f'username_{count}']), str(session['data'][f'userpwd_{count}'])))
-                    conn.commit()
-                    count += 1
-                conn.close()
-                score.save_service_config()
-            except Exception as e:
-                log.Error.error(e)
-                return render_template('internal_error.html.j2')
-
+            log.Main.info(
+                "Updating of LDAP Config. Password has been entered.")
+            count = 1
+            users = {}
+            while f'username_{count}' in session['data']:
+                users[f'user_{count}'] = {
+                    'username': session['data'][f'username_{count}'],
+                    'password': session['data'][f'userpwd_{count}']
+                }
+                count += 1
+            forward = {
+                'action': 'config',
+                'token': token.token,
+                'data': {
+                    'service': 'ldap',
+                    'ip': session['data']['ldap'],
+                    'users': users
+                }
+            }
+            status = send_post(forward)
+            if status == 500:
+                return render_template('internal_error.html.j2'), 500
+            elif not (status == 20 or status == 21):
+                return render_template('config.html.j2', service='LDAP', status=status)
             session.pop('data')
         else:
             return render_template('config.html.j2', service='LDAP')
 
     def post(self):
-        try:
-            log.Main.info("Updating of LDAP Config. Password is not required.")
-            score.LDAP.set_ip(request.form['ldap_ip'])
-            count = 1
-            conn = connect()
-            while f'username_{count}' in request.form:
-                conn.execute('INSERT INTO ldap_info (username, password) VALUES (?,?)', (str(
-                    request.form[f'username_{count}']), str(request.form[f'userpwd_{count}'])))
-                conn.commit()
-                count += 1
-            conn.close()
-            score.save_service_config()
-        except Exception as e:
-            log.Error.error(e)
-            return render_template('internal_error.html.j2')
+        log.Main.info("Updating of LDAP Config. Password is not required.")
+        count = 1
+        users = {}
+        while f'username_{count}' in request.form:
+            users[f'user_{count}'] = {
+                'username': request.form[f'username_{count}'],
+                'password': request.form[f'userpwd_{count}']
+            }
+            count += 1
+        forward = {
+            'action': 'config',
+            'token': token.token,
+            'data': {
+                'service': 'ldap',
+                'ip': request.form['ldap'],
+                'users': users
+            }
+        }
+        status = send_post(forward)
+        if status == 500:
+            return render_template('internal_error.html.j2'), 500
+        elif not (status == 20 or status == 21):
+            return render_template('config.html.j2', service='LDAP', status=status)
         return redirect(request.referrer)
 
 
@@ -210,32 +222,41 @@ class Config_Ecomm(MethodView):
         url_for('static', filename='base.css')
         url_for('static', filename='config.css')
         if 'data' in session:
-            try:
-                log.Main.info(
-                    "Updating of Ecomm Config. Password has been entered.")
-                score.Ecommerce.set_ip(session['data']['ecomm_ip'])
-                score.Ecommerce.set_hash(session['data']['ecomm_ip'])
-                score.Ecommerce.set_port(session['data']['ecomm_port'])
-                score.save_service_config()
-            except Exception as e:
-                log.Error.error(e)
-                return render_template('internal_error.html.j2')
-
+            log.Main.info(
+                "Updating of Ecomm Config. Password has been entered.")
+            forward = {
+                'action': 'config',
+                'token': token.token,
+                'data': {
+                    'service': 'ecomm',
+                    'ip': session['data']['ecomm_ip'],
+                    'port': session['data']['ecomm_port']
+                }
+            }
+            status = send_post(forward)
+            if status == 500:
+                return render_template('internal_error.html.j2'), 500
+            elif not (status == 20 or status == 21):
+                return render_template('config.html.j2', service='Ecommerce', status=status)
             session.pop('data')
-        else:
-            return render_template('config.html.j2', service='Ecommerce')
+        return render_template('config.html.j2', service='Ecommerce')
 
     def post(self):
-        try:
-            log.Main.info(
-                "Updating of Ecomm Config. Password is not required.")
-            score.Ecommerce.set_ip(request.form['ecomm_ip'])
-            score.Ecommerce.set_hash(request.form['ecomm_ip'])
-            score.Ecommerce.set_port(request.form['ecomm_port'])
-            score.save_service_config()
-        except Exception as e:
-            log.Error.error(e)
-            return render_template('internal_error.html.j2')
+        log.Main.info("Updating of Ecomm Config. Password is not required.")
+        forward = {
+            'action': 'config',
+            'token': token.token,
+            'data': {
+                'service': 'ecomm',
+                'ip': request.form['ecomm_ip'],
+                'port': request.form['ecomm_port']
+            }
+        }
+        status = send_post(forward)
+        if status == 500:
+            return render_template('internal_error.html.j2'), 500
+        elif not (status == 20 or status == 21):
+            return render_template('config.html.j2', service='Ecommerce', status=status)
         return redirect(request.referrer)
 
 
@@ -243,9 +264,45 @@ class Config_DNS_Windows(MethodView):
     def get(self):
         url_for('static', filename='base.css')
         url_for('static', filename='config.css')
+        if 'data' in session:
+            log.Main.info(
+                "Updating of Windows DNS Config. Password has been entered.")
+            domains = session['data']['dnsw_domains'].split(';')
+            forward = {
+                'action': 'config',
+                'token': token.token,
+                'data': {
+                    'service': 'dnsw',
+                    'ip': session['data']['dnsw_ip'],
+                    'domains': domains
+                }
+            }
+            status = send_post(forward)
+            if status == 500:
+                return render_template('internal_error.html.j2'), 500
+            elif not (status == 20 or status == 21):
+                return render_template('config.html.j2', service='DNS - Windows', status=status)
+            session.pop('data')
         return render_template('config.html.j2', service='DNS - Windows')
 
     def post(self):
+        log.Main.info(
+            "Updating of Windows DNS Config. Password is not required.")
+        domains = request.form['dnsw_domains'].split(';')
+        forward = {
+            'action': 'config',
+            'token': token.token,
+            'data': {
+                'service': 'dnsw',
+                'ip': request.form['dnsw_ip'],
+                'domains': domains
+            }
+        }
+        status = send_post(forward)
+        if status == 500:
+            return render_template('internal_error.html.j2'), 500
+        elif not (status == 20 or status == 21):
+            return render_template('config.html.j2', service='DNS - Windows', status=status)
         return redirect(request.referrer)
 
 
@@ -253,9 +310,45 @@ class Config_DNS_Linux(MethodView):
     def get(self):
         url_for('static', filename='base.css')
         url_for('static', filename='config.css')
+        if 'data' in session:
+            log.Main.info(
+                "Updating of Linux DNS Config. Password has been entered.")
+            domains = session['data']['dnsl_domains'].split(';')
+            forward = {
+                'action': 'config',
+                'token': token.token,
+                'data': {
+                    'service': 'dnsl',
+                    'ip': session['data']['dnsl_ip'],
+                    'domains': domains
+                }
+            }
+            status = send_post(forward)
+            if status == 500:
+                return render_template('internal_error.html.j2'), 500
+            elif not (status == 20 or status == 21):
+                return render_template('config.html.j2', service='DNS - Linux', status=status)
+            session.pop('data')
         return render_template('config.html.j2', service='DNS - Linux')
 
     def post(self):
+        log.Main.info(
+            "Updating of Linux DNS Config. Password is not required.")
+        domains = request.form['dnsl_domains'].split(';')
+        forward = {
+            'action': 'config',
+            'token': token.token,
+            'data': {
+                'service': 'dnsl',
+                'ip': request.form['dnsl_ip'],
+                'domains': domains
+            }
+        }
+        status = send_post(forward)
+        if status == 500:
+            return render_template('internal_error.html.j2'), 500
+        elif not (status == 20 or status == 21):
+            return render_template('config.html.j2', service='DNS - Linux', status=status)
         return redirect(request.referrer)
 
 
@@ -263,9 +356,45 @@ class Config_POP3(MethodView):
     def get(self):
         url_for('static', filename='base.css')
         url_for('static', filename='config.css')
+        if 'data' in session:
+            log.Main.info(
+                "Updating of POP3 Config. Password has been entered.")
+            forward = {
+                'action': 'config',
+                'token': token.token,
+                'data': {
+                    'service': 'pop3',
+                    'ip': session['data']['pop_ip'],
+                    'user': request.form['pop_user'],
+                    'password': request.form['pop_pwd']
+                }
+            }
+            status = send_post(forward)
+            if status == 500:
+                return render_template('internal_error.html.j2'), 500
+            elif not (status == 20 or status == 21):
+                return render_template('config.html.j2', service='POP3', status=status)
+            session.pop('data')
         return render_template('config.html.j2', service='POP3')
 
     def post(self):
+        log.Main.info(
+            "Updating of POP3 Config. Password is not required.")
+        forward = {
+            'action': 'config',
+            'token': token.token,
+            'data': {
+                'service': 'pop3',
+                'ip': request.form['pop_ip'],
+                'user': request.form['pop_user'],
+                'password': request.form['pop_pwd']
+            }
+        }
+        status = send_post(forward)
+        if status == 500:
+            return render_template('internal_error.html.j2'), 500
+        elif not (status == 20 or status == 21):
+            return render_template('config.html.j2', service='POP3', status=status)
         return redirect(request.referrer)
 
 
@@ -273,9 +402,47 @@ class Config_SMTP(MethodView):
     def get(self):
         url_for('static', filename='base.css')
         url_for('static', filename='config.css')
+        if 'data' in session:
+            log.Main.info(
+                "Updating of Windows DNS Config. Password has been entered.")
+            forward = {
+                'action': 'config',
+                'token': token.token,
+                'data': {
+                    'service': 'smtp',
+                    'ip': session['data']['smtp_ip'],
+                    'user 1': session['data']['smtp_usr1'],
+                    'user 2': session['data']['smtp_usr2'],
+                    'domain': session['data']['smtp_domain']
+                }
+            }
+            status = send_post(forward)
+            if status == 500:
+                return render_template('internal_error.html.j2'), 500
+            elif not (status == 20 or status == 21):
+                return render_template('config.html.j2', service='SMTP', status=status)
+            session.pop('data')
         return render_template('config.html.j2', service='SMTP')
 
     def post(self):
+        log.Main.info(
+            "Updating of Windows DNS Config. Password is not required.")
+        forward = {
+            'action': 'config',
+            'token': token.token,
+            'data': {
+                'service': 'smtp',
+                'ip': request.form['smtp_ip'],
+                'user 1': request.form['smtp_usr1'],
+                'user 2': request.form['smtp_usr2'],
+                'domain': request.form['smtp_domain']
+            }
+        }
+        status = send_post(forward)
+        if status == 500:
+            return render_template('internal_error.html.j2'), 500
+        elif not (status == 20 or status == 21):
+            return render_template('config.html.j2', service='SMTP', status=status)
         return redirect(request.referrer)
 
 
@@ -284,31 +451,41 @@ class Config_Splunk(MethodView):
         url_for('static', filename='base.css')
         url_for('static', filename='config.css')
         if 'data' in session:
-            try:
-                log.Main.info(
-                    "Updating of Splunk Config. Password has been entered.")
-                score.Ecommerce.set_ip(session['data']['ecomm_ip'])
-                score.Ecommerce.set_hash(session['data']['ecomm_ip'])
-                score.Ecommerce.set_port(session['data']['ecomm_port'])
-                score.save_service_config()
-            except Exception as e:
-                log.Error.error(e)
-                return render_template('internal_error.html.j2')
-
+            log.Main.info(
+                "Updating of Splunk Config. Password has been entered.")
+            forward = {
+                'action': 'config',
+                'token': token.token,
+                'data': {
+                    'service': 'splunk',
+                    'ip': session['data']['splunk_ip'],
+                    'port': session['data']['splunk_port']
+                }
+            }
+            status = send_post(forward)
+            if status == 500:
+                return render_template('internal_error.html.j2'), 500
+            elif not (status == 20 or status == 21):
+                return render_template('config.html.j2', service='Splunk', status=status)
             session.pop('data')
         return render_template('config.html.j2', service='Splunk')
 
     def post(self):
-        try:
-            log.Main.info(
-                "Updating of Splunk Config. Password is not required.")
-            score.Splunk.set_ip(request.form['splunk_ip'])
-            score.Splunk.set_hash(request.form['splunk_ip'])
-            score.Splunk.set_port(request.form['splunk_port'])
-            score.save_service_config()
-        except Exception as e:
-            log.Error.error(e)
-            return render_template('internal_error.html.j2')
+        log.Main.info("Updating of Splunk Config. Password is not required.")
+        forward = {
+            'action': 'config',
+            'token': token.token,
+            'data': {
+                'service': 'splunk',
+                'ip': request.form['splunk_ip'],
+                'port': request.form['splunk_port']
+            }
+        }
+        status = send_post(forward)
+        if status == 500:
+            return render_template('internal_error.html.j2'), 500
+        elif not (status == 20 or status == 21):
+            return render_template('config.html.j2', service='Splunk', status=status)
         return redirect(request.referrer)
 
 
@@ -323,3 +500,28 @@ config_bp.add_url_rule('/smtp', view_func=Config_SMTP.as_view('smtp'))
 config_bp.add_url_rule('/splunk', view_func=Config_Splunk.as_view('splunk'))
 config_bp.add_url_rule(
     '/login', view_func=Config_Login.as_view('config_login'))
+
+
+def send_post(data):
+    '''
+        Forwards on post data from the form request to the backend server. 
+
+        Status Response Codes:
+            20 - Good Request
+            21 - Config Accepted
+            22 - Attempting to Score
+            40 - Did not send data in correct format
+            41 - Invalid Token
+            42 - Wrong Method
+            43 - Invalid Action
+    '''
+    try:
+        url = current_app.config["BACK_END_LOCATION"]
+        rsp = requests.post(
+            url=f'http://{url}', json=json.dumps(data))
+        data = json.loads(rsp.content)
+        status_code = data['internal status code']
+    except Exception as e:
+        log.Error.error(e)
+        status_code = 500
+    return status_code
