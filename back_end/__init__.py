@@ -4,7 +4,7 @@ import json
 import cgi
 
 import actions as action
-from util import generate_token
+from local_util import generate_token
 
 token = generate_token()
 

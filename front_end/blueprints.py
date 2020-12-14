@@ -118,14 +118,14 @@ def config_index():
     return render_template('config.html.j2', service='None')
 
 
-# @config_bp.before_request
-# def login_check():
-#     require_password = score.Auth.get_require()
-#     if request.method == 'GET' or request.path == '/config/login' or not require_password or 'data' in session:
-#         pass
-#     else:
-#         session['data'] = request.form
-#         return redirect(url_for('config.config_login', redirect_loc=request.endpoint))
+@config_bp.before_request
+def login_check():
+    require_password = current_app.config['REQUIRE_CONFIG_PASSWORD']
+    if request.method == 'GET' or request.path == '/config/login' or (str(require_password).lower() == 'false') or 'data' in session:
+        pass
+    else:
+        session['data'] = request.form
+        return redirect(url_for('config.config_login', redirect_loc=request.endpoint))
 
 
 class Config_Login(MethodView):
@@ -149,10 +149,10 @@ class Config_Login(MethodView):
             redirect_loc = request.args.get('redirect_loc')
         if redirect_loc == False:
             return render_template('internal_error.html.j2')
-        # if pwd == score.Auth.get_pwd():
-            # log.Main.info(
-            #     f"Updating of Config. Password has been entered.{redirect_loc}")
-            # return redirect(url_for(redirect_loc))
+        if pwd == current_app.config['CONFIG_PASSWORD']:
+            log.Main.info(
+                f"Updating of Config. Password has been entered.{redirect_loc}")
+            return redirect(url_for(redirect_loc))
 
         else:
             return redirect(url_for('config.config_login', error=True, redirect_loc=redirect_loc))
@@ -498,15 +498,12 @@ class Config_Splunk(MethodView):
 
 config_bp.add_url_rule('/ldap', view_func=Config_LDAP.as_view('ldap'))
 config_bp.add_url_rule('/ecomm', view_func=Config_Ecomm.as_view('ecomm'))
-config_bp.add_url_rule(
-    '/dns-windows', view_func=Config_DNS_Windows.as_view('dns_windows'))
-config_bp.add_url_rule(
-    '/dns-linux', view_func=Config_DNS_Linux.as_view('dns_linux'))
+config_bp.add_url_rule('/dns-windows', view_func=Config_DNS_Windows.as_view('dns_windows'))
+config_bp.add_url_rule('/dns-linux', view_func=Config_DNS_Linux.as_view('dns_linux'))
 config_bp.add_url_rule('/pop3', view_func=Config_POP3.as_view('pop3'))
 config_bp.add_url_rule('/smtp', view_func=Config_SMTP.as_view('smtp'))
 config_bp.add_url_rule('/splunk', view_func=Config_Splunk.as_view('splunk'))
-config_bp.add_url_rule(
-    '/login', view_func=Config_Login.as_view('config_login'))
+config_bp.add_url_rule('/login', view_func=Config_Login.as_view('config_login'))
 
 
 def send_post(data):
