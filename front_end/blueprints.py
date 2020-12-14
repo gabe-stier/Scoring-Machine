@@ -98,13 +98,24 @@ class Score_Splunk(MethodView):
         return render_template('score-page.html.j2', service='Splunk')
 
     def post(self):
+        forward = {
+            'action': 'score',
+            'token': token.token,
+            "data": {
+                "service": "splunk"
+            }
+        }
+        status = send_post(forward)
+        if status[0] == 500:
+            return render_template('internal_error.html.j2'), 500
+        elif not (status[0] == 20 or status[0] == 22):
+            return redirect(url_for('score.splunk', status=status[0], info=status[1])) #render_template('config.html.j2', service='LDAP', status=status[0], info=status[1])
         return redirect(request.referrer)
 
 
 sr.add_url_rule('/ldap', view_func=Score_LDAP.as_view('ldap'))
 sr.add_url_rule('/ecomm', view_func=Score_Ecomm.as_view('ecomm'))
-sr.add_url_rule(
-    '/dns-windows', view_func=Score_DNS_Windows.as_view('dns_windows'))
+sr.add_url_rule('/dns-windows', view_func=Score_DNS_Windows.as_view('dns_windows'))
 sr.add_url_rule('/dns-linux', view_func=Score_DNS_Linux.as_view('dns_linux'))
 sr.add_url_rule('/pop3', view_func=Score_POP3.as_view('pop3'))
 sr.add_url_rule('/smtp', view_func=Score_SMTP.as_view('smtp'))
