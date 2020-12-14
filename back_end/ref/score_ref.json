@@ -1,8 +1,0 @@
-{
-    "action": "score",
-	"token": "NULL",
-    "data": {
-        "service": "dns",
-        "machine": "linux"
-    }
-}
