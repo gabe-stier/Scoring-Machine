@@ -153,6 +153,7 @@ class Config_Login(MethodView):
             # log.Main.info(
             #     f"Updating of Config. Password has been entered.{redirect_loc}")
             # return redirect(url_for(redirect_loc))
+
         else:
             return redirect(url_for('config.config_login', error=True, redirect_loc=redirect_loc))
 
@@ -214,6 +215,7 @@ class Config_LDAP(MethodView):
             return render_template('internal_error.html.j2'), 500
         elif not (status == 20 or status == 21):
             return render_template('config.html.j2', service='LDAP', status=status)
+
         return redirect(request.referrer)
 
 
@@ -303,6 +305,7 @@ class Config_DNS_Windows(MethodView):
             return render_template('internal_error.html.j2'), 500
         elif not (status == 20 or status == 21):
             return render_template('config.html.j2', service='DNS - Windows', status=status)
+
         return redirect(request.referrer)
 
 
@@ -349,6 +352,7 @@ class Config_DNS_Linux(MethodView):
             return render_template('internal_error.html.j2'), 500
         elif not (status == 20 or status == 21):
             return render_template('config.html.j2', service='DNS - Linux', status=status)
+
         return redirect(request.referrer)
 
 
@@ -395,6 +399,7 @@ class Config_POP3(MethodView):
             return render_template('internal_error.html.j2'), 500
         elif not (status == 20 or status == 21):
             return render_template('config.html.j2', service='POP3', status=status)
+
         return redirect(request.referrer)
 
 
@@ -443,6 +448,7 @@ class Config_SMTP(MethodView):
             return render_template('internal_error.html.j2'), 500
         elif not (status == 20 or status == 21):
             return render_template('config.html.j2', service='SMTP', status=status)
+
         return redirect(request.referrer)
 
 
@@ -467,6 +473,7 @@ class Config_Splunk(MethodView):
                 return render_template('internal_error.html.j2'), 500
             elif not (status == 20 or status == 21):
                 return render_template('config.html.j2', service='Splunk', status=status)
+
             session.pop('data')
         return render_template('config.html.j2', service='Splunk')
 

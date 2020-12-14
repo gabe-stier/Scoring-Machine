@@ -74,7 +74,7 @@ class Server(BaseHTTPRequestHandler):
         self.wfile.write(json.dumps(response))
 
 
-def run(server_class=HTTPServer, handler_class=Server, port=5001):
+def run(server_class=HTTPServer, handler_class=Server, port=18651):
     server_address = ('', port)
     print(server_address)
     httpd = server_class(server_address, handler_class)
@@ -86,4 +86,3 @@ print("Hello", flush=True)
 
 if __name__ == "__main__":
     run()
-
