@@ -49,4 +49,12 @@
     <h2>No configuration Selected. Select one from above!</h2>
     {% endif %}
 </div>
+{% if status != None %}
+<script type='text/javascript'>
+    window.addEventListener('load', (event)=>{
+        alert( "Status Code: {{status}}\nInformation: {{info}}" )
+    })
+
+</script>
+{% endif %}
 {% endblock content%}

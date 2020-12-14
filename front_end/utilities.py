@@ -35,3 +35,4 @@ class Token:
                 token = m.hexdigest()
                 f.write(token)
                 self.token = token
+        self.token = 'c6d78d77ec9528a860c817ba726bc1336c6498c801c24d5416019d548378c8843230c8cb01a0831d0b09e93890341fba254a69c47530bfab4fd4cbe2d7c471c3'

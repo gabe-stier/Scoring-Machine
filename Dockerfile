@@ -6,7 +6,10 @@ COPY requirements.txt ./
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 COPY . .
+
 EXPOSE 5000/tcp
+EXPOSE 5001/tcp
+
 ENV FLASK_APP='front_end/__init__.py:app()'
 ENV FLASK_ENV='development'
 

@@ -26,7 +26,8 @@ class Server(BaseHTTPRequestHandler):
 
     # POST echoes the message adding a JSON field
     def do_POST(self):
-        ctype, pdict = cgi.parse_header(self.headers.getheader('content-type'))
+
+        ctype, pdict = cgi.parse_header(self.headers['content-type'])
 
         # refuse to receive non-json content
         if ctype != 'application/json':
@@ -35,9 +36,11 @@ class Server(BaseHTTPRequestHandler):
             return
 
         # read the message and convert it into a python dictionary
-        length = int(self.headers.getheader('content-length'))
+        length = int(self.headers['content-length'])
         message = json.loads(self.rfile.read(length))
+        print(message, flush=True)
         if message['token'] == token:
+            message.pop('token')
             if message['action'] == 'score':
                 action.score_service(message['data'])
                 response = {
@@ -67,20 +70,21 @@ class Server(BaseHTTPRequestHandler):
                 "internal status code": 41,
                 'data sent': message
             }
-            self.wfile.write(json.dumps(response))
+            self.wfile.write(json.dumps(response).encode())
             return
 
         self._set_headers()
-        self.wfile.write(json.dumps(response))
+        self.wfile.write(json.dumps(response).encode())
 
 
-def run(server_class=HTTPServer, handler_class=Server, port=18651):
+def run(server_class=HTTPServer, handler_class=Server, port=5001):
     server_address = ('', port)
     print(server_address)
     httpd = server_class(server_address, handler_class)
-    
+
     print(f'Starting httpd on port {server_address}...', flush=True)
     httpd.serve_forever()
+
 
 print("Hello", flush=True)
 

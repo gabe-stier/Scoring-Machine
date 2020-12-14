@@ -183,10 +183,10 @@ class Config_LDAP(MethodView):
                 }
             }
             status = send_post(forward)
-            if status == 500:
+            if status[0] == 500:
                 return render_template('internal_error.html.j2'), 500
-            elif not (status == 20 or status == 21):
-                return render_template('config.html.j2', service='LDAP', status=status)
+            elif not (status[0] == 20 or status[0] == 21):
+                return render_template('config.html.j2', service='LDAP', status=status[0], info=status[1])
             session.pop('data')
         else:
             return render_template('config.html.j2', service='LDAP')
@@ -211,10 +211,10 @@ class Config_LDAP(MethodView):
             }
         }
         status = send_post(forward)
-        if status == 500:
+        if status[0] == 500:
             return render_template('internal_error.html.j2'), 500
-        elif not (status == 20 or status == 21):
-            return render_template('config.html.j2', service='LDAP', status=status)
+        elif not (status[0] == 20 or status[0] == 21):
+            return render_template('config.html.j2', service='LDAP', status=status[0], info=status[1])
 
         return redirect(request.referrer)
 
@@ -236,10 +236,10 @@ class Config_Ecomm(MethodView):
                 }
             }
             status = send_post(forward)
-            if status == 500:
+            if status[0] == 500:
                 return render_template('internal_error.html.j2'), 500
-            elif not (status == 20 or status == 21):
-                return render_template('config.html.j2', service='Ecommerce', status=status)
+            elif not (status[0] == 20 or status[0] == 21):
+                return render_template('config.html.j2', service='Ecommerce', status=status[0], info=status[1])
             session.pop('data')
         return render_template('config.html.j2', service='Ecommerce')
 
@@ -255,10 +255,10 @@ class Config_Ecomm(MethodView):
             }
         }
         status = send_post(forward)
-        if status == 500:
+        if status[0] == 500:
             return render_template('internal_error.html.j2'), 500
-        elif not (status == 20 or status == 21):
-            return render_template('config.html.j2', service='Ecommerce', status=status)
+        elif not (status[0] == 20 or status[0] == 21):
+            return render_template('config.html.j2', service='Ecommerce', status=status[0], info=status[1])
         return redirect(request.referrer)
 
 
@@ -280,10 +280,10 @@ class Config_DNS_Windows(MethodView):
                 }
             }
             status = send_post(forward)
-            if status == 500:
+            if status[0] == 500:
                 return render_template('internal_error.html.j2'), 500
-            elif not (status == 20 or status == 21):
-                return render_template('config.html.j2', service='DNS - Windows', status=status)
+            elif not (status[0] == 20 or status[0] == 21):
+                return render_template('config.html.j2', service='DNS - Windows', status=status[0], info=status[1])
             session.pop('data')
         return render_template('config.html.j2', service='DNS - Windows')
 
@@ -301,10 +301,10 @@ class Config_DNS_Windows(MethodView):
             }
         }
         status = send_post(forward)
-        if status == 500:
+        if status[0] == 500:
             return render_template('internal_error.html.j2'), 500
-        elif not (status == 20 or status == 21):
-            return render_template('config.html.j2', service='DNS - Windows', status=status)
+        elif not (status[0] == 20 or status[0] == 21):
+            return render_template('config.html.j2', service='DNS - Windows', status=status[0], info=status[1])
 
         return redirect(request.referrer)
 
@@ -327,10 +327,10 @@ class Config_DNS_Linux(MethodView):
                 }
             }
             status = send_post(forward)
-            if status == 500:
+            if status[0] == 500:
                 return render_template('internal_error.html.j2'), 500
-            elif not (status == 20 or status == 21):
-                return render_template('config.html.j2', service='DNS - Linux', status=status)
+            elif not (status[0] == 20 or status[0] == 21):
+                return render_template('config.html.j2', service='DNS - Linux', status=status[0], info=status[1])
             session.pop('data')
         return render_template('config.html.j2', service='DNS - Linux')
 
@@ -348,10 +348,10 @@ class Config_DNS_Linux(MethodView):
             }
         }
         status = send_post(forward)
-        if status == 500:
+        if status[0] == 500:
             return render_template('internal_error.html.j2'), 500
-        elif not (status == 20 or status == 21):
-            return render_template('config.html.j2', service='DNS - Linux', status=status)
+        elif not (status[0] == 20 or status[0] == 21):
+            return render_template('config.html.j2', service='DNS - Linux', status=status[0], info=status[1])
 
         return redirect(request.referrer)
 
@@ -374,10 +374,10 @@ class Config_POP3(MethodView):
                 }
             }
             status = send_post(forward)
-            if status == 500:
+            if status[0] == 500:
                 return render_template('internal_error.html.j2'), 500
-            elif not (status == 20 or status == 21):
-                return render_template('config.html.j2', service='POP3', status=status)
+            elif not (status[0] == 20 or status[0] == 21):
+                return render_template('config.html.j2', service='POP3', status=status[0], info=status[1])
             session.pop('data')
         return render_template('config.html.j2', service='POP3')
 
@@ -395,10 +395,10 @@ class Config_POP3(MethodView):
             }
         }
         status = send_post(forward)
-        if status == 500:
+        if status[0] == 500:
             return render_template('internal_error.html.j2'), 500
-        elif not (status == 20 or status == 21):
-            return render_template('config.html.j2', service='POP3', status=status)
+        elif not (status[0] == 20 or status[0] == 21):
+            return render_template('config.html.j2', service='POP3', status=status[0], info=status[1])
 
         return redirect(request.referrer)
 
@@ -422,10 +422,10 @@ class Config_SMTP(MethodView):
                 }
             }
             status = send_post(forward)
-            if status == 500:
+            if status[0] == 500:
                 return render_template('internal_error.html.j2'), 500
-            elif not (status == 20 or status == 21):
-                return render_template('config.html.j2', service='SMTP', status=status)
+            elif not (status[0] == 20 or status[0] == 21):
+                return render_template('config.html.j2', service='SMTP', status=status[0], info=status[1])
             session.pop('data')
         return render_template('config.html.j2', service='SMTP')
 
@@ -444,10 +444,10 @@ class Config_SMTP(MethodView):
             }
         }
         status = send_post(forward)
-        if status == 500:
+        if status[0] == 500:
             return render_template('internal_error.html.j2'), 500
-        elif not (status == 20 or status == 21):
-            return render_template('config.html.j2', service='SMTP', status=status)
+        elif not (status[0] == 20 or status[0] == 21):
+            return render_template('config.html.j2', service='SMTP', status=status[0], info=status[1])
 
         return redirect(request.referrer)
 
@@ -469,10 +469,10 @@ class Config_Splunk(MethodView):
                 }
             }
             status = send_post(forward)
-            if status == 500:
+            if status[0] == 500:
                 return render_template('internal_error.html.j2'), 500
-            elif not (status == 20 or status == 21):
-                return render_template('config.html.j2', service='Splunk', status=status)
+            elif not (status[0] == 20 or status[0] == 21):
+                return render_template('config.html.j2', service='Splunk', status=status[0], info=status[1])
 
             session.pop('data')
         return render_template('config.html.j2', service='Splunk')
@@ -489,10 +489,10 @@ class Config_Splunk(MethodView):
             }
         }
         status = send_post(forward)
-        if status == 500:
+        if status[0] == 500:
             return render_template('internal_error.html.j2'), 500
-        elif not (status == 20 or status == 21):
-            return render_template('config.html.j2', service='Splunk', status=status)
+        elif not (status[0] == 20 or status[0] == 21):
+            return render_template('config.html.j2', service='Splunk', status=status[0], info=status[1])
         return redirect(request.referrer)
 
 
@@ -525,10 +525,20 @@ def send_post(data):
     try:
         url = current_app.config["BACK_END_LOCATION"]
         rsp = requests.post(
-            url=f'http://{url}', json=json.dumps(data))
+            url=f'http://{url}', json=data)
         data = json.loads(rsp.content)
         status_code = data['internal status code']
+        print(status_code)
     except Exception as e:
         log.Error.error(e)
         status_code = 500
-    return status_code
+    if status_code == 40:
+        info = 'Did not send data in correct format.'
+    elif status_code == 41:
+        info = 'Invalid Token'
+    elif status_code == 42:
+        info = 'Wrong Method'
+    elif status_code == 43:
+        info = 'Invalid Action'
+
+    return (status_code, info)
