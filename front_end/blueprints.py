@@ -548,5 +548,7 @@ def send_post(data):
         info = 'Wrong Method'
     elif status_code == 43:
         info = 'Invalid Action'
+    else:
+        info = ''
 
     return (status_code, info)
