@@ -38,6 +38,18 @@ class Score_LDAP(MethodView):
         return render_template('score-page.html.j2', service='LDAP')
 
     def post(self):
+        forward = {
+            'action': 'score',
+            'token': token.token,
+            "data": {
+                "service": "ldap"
+            }
+        }
+        status = send_post(forward)
+        if status[0] == 500:
+            return render_template('internal_error.html.j2'), 500
+        elif not (status[0] == 20 or status[0] == 22):
+            return redirect(url_for('score.ldap', status=status[0], info=status[1]))
         return redirect(request.referrer)
 
 
@@ -48,6 +60,18 @@ class Score_Ecomm(MethodView):
         return render_template('score-page.html.j2', service='Ecommerce')
 
     def post(self):
+        forward = {
+            'action': 'score',
+            'token': token.token,
+            "data": {
+                "service": "ecomm"
+            }
+        }
+        status = send_post(forward)
+        if status[0] == 500:
+            return render_template('internal_error.html.j2'), 500
+        elif not (status[0] == 20 or status[0] == 22):
+            return redirect(url_for('score.ecomm', status=status[0], info=status[1]))
         return redirect(request.referrer)
 
 
@@ -58,6 +82,19 @@ class Score_DNS_Windows(MethodView):
         return render_template('score-page.html.j2', service='DNS - Windows')
 
     def post(self):
+        forward = {
+            'action': 'score',
+            'token': token.token,
+            "data": {
+                "service": "dns",
+                'machine': 'windows'
+            }
+        }
+        status = send_post(forward)
+        if status[0] == 500:
+            return render_template('internal_error.html.j2'), 500
+        elif not (status[0] == 20 or status[0] == 22):
+            return redirect(url_for('score.dns_windows', status=status[0], info=status[1]))
         return redirect(request.referrer)
 
 
@@ -68,6 +105,19 @@ class Score_DNS_Linux(MethodView):
         return render_template('score-page.html.j2', service='DNS - Linux')
 
     def post(self):
+        forward = {
+            'action': 'score',
+            'token': token.token,
+            "data": {
+                "service": "dns",
+                "machine": "linux"
+            }
+        }
+        status = send_post(forward)
+        if status[0] == 500:
+            return render_template('internal_error.html.j2'), 500
+        elif not (status[0] == 20 or status[0] == 22):
+            return redirect(url_for('score.dns_linux', status=status[0], info=status[1]))
         return redirect(request.referrer)
 
 
@@ -78,6 +128,18 @@ class Score_POP3(MethodView):
         return render_template('score-page.html.j2', service='POP3')
 
     def post(self):
+        forward = {
+            'action': 'score',
+            'token': token.token,
+            "data": {
+                "service": "pop3"
+            }
+        }
+        status = send_post(forward)
+        if status[0] == 500:
+            return render_template('internal_error.html.j2'), 500
+        elif not (status[0] == 20 or status[0] == 22):
+            return redirect(url_for('score.pop3', status=status[0], info=status[1]))
         return redirect(request.referrer)
 
 
@@ -88,6 +150,18 @@ class Score_SMTP(MethodView):
         return render_template('score-page.html.j2', service='SMTP')
 
     def post(self):
+        forward = {
+            'action': 'score',
+            'token': token.token,
+            "data": {
+                "service": "smtp"
+            }
+        }
+        status = send_post(forward)
+        if status[0] == 500:
+            return render_template('internal_error.html.j2'), 500
+        elif not (status[0] == 20 or status[0] == 22):
+            return redirect(url_for('score.smtp', status=status[0], info=status[1]))
         return redirect(request.referrer)
 
 
@@ -109,7 +183,7 @@ class Score_Splunk(MethodView):
         if status[0] == 500:
             return render_template('internal_error.html.j2'), 500
         elif not (status[0] == 20 or status[0] == 22):
-            return redirect(url_for('score.splunk', status=status[0], info=status[1])) #render_template('config.html.j2', service='LDAP', status=status[0], info=status[1])
+            return redirect(url_for('score.splunk', status=status[0], info=status[1]))
         return redirect(request.referrer)
 
 
