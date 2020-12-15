@@ -5,9 +5,11 @@ from flask import Flask, render_template, request, url_for
 from flask import make_response as respond
 from logging.config import dictConfig
 from front_end.utilities import Loggers as log
+from front_end.utilities import db, Scores
 import front_end.blueprints as bp
 import os
 import sys
+
 
 def app():
     app = Flask(__name__)
@@ -38,7 +40,6 @@ def app():
     app.register_error_handler(500, internal_error)
     app.register_blueprint(bp.sr)
     app.register_blueprint(bp.config_bp)
-
 
     setup_logging(app)
 
@@ -129,35 +130,29 @@ def score_page():
     url_for('static', filename='base.css')
     url_for('static', filename='index.css')
 
-    def get_success(table):
+    def get_success(service: Scores):
         status = None
-        # try:
-        #     conn = connect()
-        #     cur = conn.execute(
-        #         f'SELECT * FROM {table} ORDER BY success DESC LIMIT 1;')
-
-        #     for row in cur:
-        #         if row[2] == 1:
-        #             status = True
-        #         elif row[2] == 0:
-        #             status = False
-        #         else:
-        #             status = None
-        # except Exception as e:
-        #     print(e)
-        #     status = None
-        # finally:
-        #     conn.close()
+        try:
+            cur = db.get_last_score(service)
+            for row in cur:
+                if row[2] == 1:
+                    status = True
+                elif row[2] == 0:
+                    status = False
+                else:
+                    status = None
+        except Exception as e:
+            print(e)
+            status = None
         return status
 
-    ldap_srv = get_success('ldap')
-    dnsl_srv = get_success('dns_linux')
-    dnsw_srv = get_success('dns_windows')
-    ecomm_srv = get_success('ecomm')
-    pop3_srv = get_success('pop3')
-    smtp_srv = get_success('smtp')
-    splunk_srv = get_success('splunk')
+    ldap_srv = get_success(Scores.LDAP)
+    dnsl_srv = get_success(Scores.DNS_LINUX)
+    dnsw_srv = get_success(Scores.DNS_WINDOWS)
+    ecomm_srv = get_success(Scores.ECOMM)
+    pop3_srv = get_success(Scores.POP3)
+    smtp_srv = get_success(Scores.SMTP)
+    splunk_srv = get_success(Scores.SPLUNK)
 
     return render_template('index.html.j2', ldap=ldap_srv, dnsl=dnsl_srv, dnsw=dnsw_srv, ecomm=ecomm_srv,
                            pop3=pop3_srv, smtp=smtp_srv, splunk=splunk_srv)
-
