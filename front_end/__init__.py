@@ -47,9 +47,7 @@ def app():
 
 def setup_logging(app):
     try:
-        os.mkdir(app.config['LOG_LOCATION'], mode=0o666)
-        os.mkdir(os.path.join(
-            app.config['LOG_LOCATION'], 'logs'), mode=0o666)
+        os.mkdir('/var/log/scoring-machine/web-page', mode=0o666)
 
     except FileExistsError as e:
         pass
@@ -73,31 +71,31 @@ def setup_logging(app):
             'default': {
                 'class': 'logging.handlers.TimedRotatingFileHandler',
                 'formatter': 'default',
-                'filename': os.path.join(app.config['LOG_LOCATION'], 'full.log'),
+                'filename': os.path.join('/var/log/scoring-machine/web-page', 'full.log'),
                 'when': 'midnight'
             },
             'main': {
                 'class': 'logging.handlers.TimedRotatingFileHandler',
                 'formatter': 'default',
-                'filename': os.path.join(app.config['LOG_LOCATION'], 'main.log'),
+                'filename': os.path.join('/var/log/scoring-machine/web-page', 'main.log'),
                 'when': 'midnight'
             },
             'scoring': {
                 'class': 'logging.handlers.TimedRotatingFileHandler',
                 'formatter': 'default',
-                'filename': os.path.join(app.config['LOG_LOCATION'], 'scoring.log'),
+                'filename': os.path.join('/var/log/scoring-machine/web-page', 'scoring.log'),
                 'when': 'midnight'
             },
             'web': {
                 'class': 'logging.handlers.TimedRotatingFileHandler',
                 'formatter': 'default',
-                'filename': os.path.join(app.config['LOG_LOCATION'], 'web.log'),
+                'filename': os.path.join('/var/log/scoring-machine/web-page', 'web.log'),
                 'when': 'midnight'
             },
             'error': {
                 'class': 'logging.handlers.TimedRotatingFileHandler',
                 'formatter': 'request',
-                'filename': os.path.join(app.config['LOG_LOCATION'], 'error.log'),
+                'filename': os.path.join('/var/log/scoring-machine/web-page', 'error.log'),
                 'when': 'midnight'
             }
         },
