@@ -20,6 +20,12 @@ def app():
     def index():
         return score_page()
 
+    @app.route('/status-codes')
+    def codes():
+        url_for('static', filename='base.css')
+        url_for('static', filename='index.css')
+        return render_template('info.tmpl.j2')
+
     @app.before_request
     def log_request():
         log.Web.info(
