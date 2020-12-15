@@ -9,8 +9,8 @@ from hashlib import blake2b
 import os
 from datetime import datetime
 import mysql.connector as conn
-from flask import current_app
 from enum import Enum, auto
+from configparser import ConfigParser
 
 
 class Loggers:
@@ -39,6 +39,7 @@ class Token:
                 f.write(token)
                 self.token = token
 
+
 class Scores(Enum):
     SPLUNK = auto(),
     ECOMM = auto(),
@@ -59,11 +60,24 @@ class Database:
         self.host = host
         self.username = username
         self.password = password
-        self.db = conn.connect(
-            host=self.host,
-            user=self.username,
-            password=self.password
-        )
+        try:
+            self.db = conn.connect(
+                host=self.host,
+                user=self.username,
+                password=self.password
+            )
+            self.generate_database()
+            self.db.close()
+            self.db = conn.connect(
+                host=self.host,
+                user=self.username,
+                password=self.password,
+                database='scoring_engine'
+            )
+            self.generate_tables()
+        except Exception as e:
+            print(e, flush=True)
+            # pass
 
     def get_db(self):
         return self.db
@@ -88,7 +102,7 @@ class Database:
         result = cursor.fetchall()
         return result
 
-    def get_top_scores(self, service: Scores, count = 5):
+    def get_top_scores(self, service: Scores, count=5):
         cursor = self.db.cursor()
         if service == Scores.ECOMM:
             table = 'ecomm'
@@ -104,11 +118,24 @@ class Database:
             table = 'dns_windows'
         elif service == Scores.SPLUNK:
             table = 'splunk'
-        cursor.execute(f'SELECT * FROM {table} ORDER BY test_id DESC LIMIT {count};')
+        cursor.execute(
+            f'SELECT * FROM {table} ORDER BY test_id DESC LIMIT {count};')
         result = cursor.fetchall()
         return result
 
+    def generate_database(self):
+        cur = self.db.cursor()
+        cur.execute('CREATE DATABASE IF NOT EXISTS scoring_engine')
 
-db = Database(host=current_app.config['MYSQL_LOCATION'],
-              username=current_app.config['MYSQL_USER'],
-              password=current_app.config['MYSQL_PWD'])
+    def generate_tables(self):
+        cur = self.db.cursor()
+        with open('front_end/etc/basic_db.sql') as f:
+            schema = f.read()
+            cur.execute(schema)
+
+
+config = ConfigParser()
+config.read('front_end/config/mysql.conf')
+db = Database(host=config['DEFAULT']['MYSQL_LOCATION'],
+                username=config['DEFAULT']['MYSQL_USER'],
+                password=config['DEFAULT']['MYSQL_PWD'])
