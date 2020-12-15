@@ -38,6 +38,18 @@ class Score_LDAP(MethodView):
         return render_template('score-page.html.j2', service='LDAP')
 
     def post(self):
+        forward = {
+            'action': 'score',
+            'token': token.token,
+            "data": {
+                "service": "ldap"
+            }
+        }
+        status = send_post(forward)
+        if status[0] == 500:
+            return render_template('internal_error.html.j2'), 500
+        elif not (status[0] == 20 or status[0] == 22):
+            return redirect(url_for('score.ldap', status=status[0], info=status[1]))
         return redirect(request.referrer)
 
 
@@ -48,6 +60,18 @@ class Score_Ecomm(MethodView):
         return render_template('score-page.html.j2', service='Ecommerce')
 
     def post(self):
+        forward = {
+            'action': 'score',
+            'token': token.token,
+            "data": {
+                "service": "ecomm"
+            }
+        }
+        status = send_post(forward)
+        if status[0] == 500:
+            return render_template('internal_error.html.j2'), 500
+        elif not (status[0] == 20 or status[0] == 22):
+            return redirect(url_for('score.ecomm', status=status[0], info=status[1]))
         return redirect(request.referrer)
 
 
@@ -58,6 +82,19 @@ class Score_DNS_Windows(MethodView):
         return render_template('score-page.html.j2', service='DNS - Windows')
 
     def post(self):
+        forward = {
+            'action': 'score',
+            'token': token.token,
+            "data": {
+                "service": "dns",
+                'machine': 'windows'
+            }
+        }
+        status = send_post(forward)
+        if status[0] == 500:
+            return render_template('internal_error.html.j2'), 500
+        elif not (status[0] == 20 or status[0] == 22):
+            return redirect(url_for('score.dns_windows', status=status[0], info=status[1]))
         return redirect(request.referrer)
 
 
@@ -68,6 +105,19 @@ class Score_DNS_Linux(MethodView):
         return render_template('score-page.html.j2', service='DNS - Linux')
 
     def post(self):
+        forward = {
+            'action': 'score',
+            'token': token.token,
+            "data": {
+                "service": "dns",
+                "machine": "linux"
+            }
+        }
+        status = send_post(forward)
+        if status[0] == 500:
+            return render_template('internal_error.html.j2'), 500
+        elif not (status[0] == 20 or status[0] == 22):
+            return redirect(url_for('score.dns_linux', status=status[0], info=status[1]))
         return redirect(request.referrer)
 
 
@@ -78,6 +128,18 @@ class Score_POP3(MethodView):
         return render_template('score-page.html.j2', service='POP3')
 
     def post(self):
+        forward = {
+            'action': 'score',
+            'token': token.token,
+            "data": {
+                "service": "pop3"
+            }
+        }
+        status = send_post(forward)
+        if status[0] == 500:
+            return render_template('internal_error.html.j2'), 500
+        elif not (status[0] == 20 or status[0] == 22):
+            return redirect(url_for('score.pop3', status=status[0], info=status[1]))
         return redirect(request.referrer)
 
 
@@ -88,6 +150,18 @@ class Score_SMTP(MethodView):
         return render_template('score-page.html.j2', service='SMTP')
 
     def post(self):
+        forward = {
+            'action': 'score',
+            'token': token.token,
+            "data": {
+                "service": "smtp"
+            }
+        }
+        status = send_post(forward)
+        if status[0] == 500:
+            return render_template('internal_error.html.j2'), 500
+        elif not (status[0] == 20 or status[0] == 22):
+            return redirect(url_for('score.smtp', status=status[0], info=status[1]))
         return redirect(request.referrer)
 
 
@@ -98,13 +172,24 @@ class Score_Splunk(MethodView):
         return render_template('score-page.html.j2', service='Splunk')
 
     def post(self):
+        forward = {
+            'action': 'score',
+            'token': token.token,
+            "data": {
+                "service": "splunk"
+            }
+        }
+        status = send_post(forward)
+        if status[0] == 500:
+            return render_template('internal_error.html.j2'), 500
+        elif not (status[0] == 20 or status[0] == 22):
+            return redirect(url_for('score.splunk', status=status[0], info=status[1]))
         return redirect(request.referrer)
 
 
 sr.add_url_rule('/ldap', view_func=Score_LDAP.as_view('ldap'))
 sr.add_url_rule('/ecomm', view_func=Score_Ecomm.as_view('ecomm'))
-sr.add_url_rule(
-    '/dns-windows', view_func=Score_DNS_Windows.as_view('dns_windows'))
+sr.add_url_rule('/dns-windows', view_func=Score_DNS_Windows.as_view('dns_windows'))
 sr.add_url_rule('/dns-linux', view_func=Score_DNS_Linux.as_view('dns_linux'))
 sr.add_url_rule('/pop3', view_func=Score_POP3.as_view('pop3'))
 sr.add_url_rule('/smtp', view_func=Score_SMTP.as_view('smtp'))
@@ -118,14 +203,14 @@ def config_index():
     return render_template('config.html.j2', service='None')
 
 
-# @config_bp.before_request
-# def login_check():
-#     require_password = score.Auth.get_require()
-#     if request.method == 'GET' or request.path == '/config/login' or not require_password or 'data' in session:
-#         pass
-#     else:
-#         session['data'] = request.form
-#         return redirect(url_for('config.config_login', redirect_loc=request.endpoint))
+@config_bp.before_request
+def login_check():
+    require_password = current_app.config['REQUIRE_CONFIG_PASSWORD']
+    if request.method == 'GET' or request.path == '/config/login' or (str(require_password).lower() == 'false') or 'data' in session:
+        pass
+    else:
+        session['data'] = request.form
+        return redirect(url_for('config.config_login', redirect_loc=request.endpoint))
 
 
 class Config_Login(MethodView):
@@ -149,10 +234,10 @@ class Config_Login(MethodView):
             redirect_loc = request.args.get('redirect_loc')
         if redirect_loc == False:
             return render_template('internal_error.html.j2')
-        # if pwd == score.Auth.get_pwd():
-            # log.Main.info(
-            #     f"Updating of Config. Password has been entered.{redirect_loc}")
-            # return redirect(url_for(redirect_loc))
+        if pwd == current_app.config['CONFIG_PASSWORD']:
+            log.Main.info(
+                f"Updating of Config. Password has been entered.{redirect_loc}")
+            return redirect(url_for(redirect_loc))
 
         else:
             return redirect(url_for('config.config_login', error=True, redirect_loc=redirect_loc))
@@ -498,15 +583,12 @@ class Config_Splunk(MethodView):
 
 config_bp.add_url_rule('/ldap', view_func=Config_LDAP.as_view('ldap'))
 config_bp.add_url_rule('/ecomm', view_func=Config_Ecomm.as_view('ecomm'))
-config_bp.add_url_rule(
-    '/dns-windows', view_func=Config_DNS_Windows.as_view('dns_windows'))
-config_bp.add_url_rule(
-    '/dns-linux', view_func=Config_DNS_Linux.as_view('dns_linux'))
+config_bp.add_url_rule('/dns-windows', view_func=Config_DNS_Windows.as_view('dns_windows'))
+config_bp.add_url_rule('/dns-linux', view_func=Config_DNS_Linux.as_view('dns_linux'))
 config_bp.add_url_rule('/pop3', view_func=Config_POP3.as_view('pop3'))
 config_bp.add_url_rule('/smtp', view_func=Config_SMTP.as_view('smtp'))
 config_bp.add_url_rule('/splunk', view_func=Config_Splunk.as_view('splunk'))
-config_bp.add_url_rule(
-    '/login', view_func=Config_Login.as_view('config_login'))
+config_bp.add_url_rule('/login', view_func=Config_Login.as_view('config_login'))
 
 
 def send_post(data):
@@ -540,5 +622,7 @@ def send_post(data):
         info = 'Wrong Method'
     elif status_code == 43:
         info = 'Invalid Action'
+    else:
+        info = ''
 
     return (status_code, info)
