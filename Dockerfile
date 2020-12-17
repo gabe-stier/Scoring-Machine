@@ -13,5 +13,5 @@ EXPOSE 5001/tcp
 ENV FLASK_APP='front_end/__init__.py:app()'
 ENV FLASK_ENV='development'
 
-CMD ["sh", "./test.sh"]
-# CMD [ "sh", "./start.sh" ]
+# CMD ["sh", "./test.sh"]
+CMD [ "sh", "./start.sh" ]
