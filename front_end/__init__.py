@@ -5,7 +5,7 @@ from flask import Flask, render_template, request, url_for
 from flask import make_response as respond
 from logging.config import dictConfig
 from front_end.utilities import Loggers as log
-from front_end.utilities import db, Scores
+from front_end.utilities import db, Scores, cwd
 import front_end.blueprints as bp
 import os
 import sys
@@ -13,8 +13,11 @@ import sys
 
 def app():
     app = Flask(__name__)
-    app.config.from_pyfile('config/application.conf')
+    app.config.from_pyfile(os.path.join(
+        cwd, 'config/application.conf'))
     app.secret_key = b'tr&6aH+tripRa!rUm9Ju'
+
+    db.init_app(app)
 
     ''' HTML Pages '''
     @app.route('/')
@@ -53,6 +56,12 @@ def app():
 
 
 def setup_logging(app):
+    try:
+        os.mkdir('/var/log/scoring-machine', mode=0o666)
+    except FileExistsError as e:
+        pass
+    except Exception as e:
+        print(e)
     try:
         os.mkdir('/var/log/scoring-machine/web-page', mode=0o666)
 
@@ -134,29 +143,23 @@ def score_page():
     url_for('static', filename='base.css')
     url_for('static', filename='index.css')
 
-    def get_success(service: Scores):
-        status = None
-        try:
-            cur = db.get_last_score(service)
-            for row in cur:
-                if row[2] == 1:
-                    status = True
-                elif row[2] == 0:
-                    status = False
-                else:
-                    status = None
-        except Exception as e:
-            print(e)
-            status = None
-        return status
+    def return_bool(item):
+        if str(item).lower() == 'false':
+            return False
+        elif str(item).lower() == 'true':
+            return True
+        else:
+            return None
 
-    ldap_srv = get_success(Scores.LDAP)
-    dnsl_srv = get_success(Scores.DNS_LINUX)
-    dnsw_srv = get_success(Scores.DNS_WINDOWS)
-    ecomm_srv = get_success(Scores.ECOMM)
-    pop3_srv = get_success(Scores.POP3)
-    smtp_srv = get_success(Scores.SMTP)
-    splunk_srv = get_success(Scores.SPLUNK)
+    status = db.get_last_score()
+    status = status[0]
+    dnsl_srv = return_bool(status[0])
+    dnsw_srv = return_bool(status[1])
+    ecomm_srv = return_bool(status[2])
+    ldap_srv = return_bool(status[3])
+    splunk_srv = return_bool(status[4])
+    pop3_srv = return_bool(status[5])
+    smtp_srv = return_bool(status[6])
 
     return render_template('index.html.j2', ldap=ldap_srv, dnsl=dnsl_srv, dnsw=dnsw_srv, ecomm=ecomm_srv,
                            pop3=pop3_srv, smtp=smtp_srv, splunk=splunk_srv)

@@ -2,6 +2,5 @@ dnspython
 flask
 gunicorn[eventlet]
 django
-Flask-RQ2
 requests
 mysql-connector-python

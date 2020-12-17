@@ -1,6 +1,6 @@
-docker stop $(docker ps -a -q); 
+# docker stop $(docker ps -a -q); 
 count=$(docker ps -a -q | wc -l)
-if (($count > 5)); then
+if (($count >= 5)); then
     echo "Before starting. Cleaning up workbench"
     docker system prune -f 
 fi

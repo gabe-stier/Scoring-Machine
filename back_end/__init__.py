@@ -9,6 +9,7 @@ from logging.config import dictConfig
 import actions as action
 from utilities import generate_token
 from utilities import Loggers as log
+from utilities import config 
 
 token = generate_token()
 
@@ -95,10 +96,9 @@ class Server(BaseHTTPRequestHandler):
             f'Request from {self.client_address[0]} with a status code of {status_code} and response code of {response_code}')
 
 
-def run(server_class=HTTPServer, handler_class=Server, port=5001):
+def start(server_class=HTTPServer, handler_class=Server, port=5001):
     setup_logging()
     server_address = ('', port)
-    print(server_address)
     httpd = server_class(server_address, handler_class)
 
     print(f'Starting httpd on port {server_address}...', flush=True)
@@ -107,8 +107,12 @@ def run(server_class=HTTPServer, handler_class=Server, port=5001):
 
 def setup_logging():
     try:
-        print("Creating logging Directories")
         os.mkdir('/var/log/scoring-machine', mode=0o666)
+    except FileExistsError as e:
+        pass
+    except Exception as e:
+        print(e)
+    try:
         os.mkdir('/var/log/scoring-machine/scorer', mode=0o666)
     except FileExistsError as e:
         pass
@@ -184,7 +188,7 @@ def setup_logging():
     })
 
 
-print("Hello", flush=True)
+print("Starting Scoring Server", flush=True)
 
 if __name__ == "__main__":
-    run()
+    start()
