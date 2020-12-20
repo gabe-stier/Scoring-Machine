@@ -1,6 +1,5 @@
 {
     "action": "config",
-	"token": "NULL",
     "data":{
         "service": "dns",
 		"ip": "1.1.1.1",

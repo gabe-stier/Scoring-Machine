@@ -1,14 +1,16 @@
 from datetime import datetime
 from hashlib import sha3_512
-import dns.resolver as resolver
+from nslookup import Nslookup
 import random
 import os
 import http
 import smtplib
+import ldap
+from ldap import AUTH_UNKNOWN
 
-import app.scoring_functions as score
-from app.sqlite_connection import connect
-from app.utilities import Loggers as log
+import scoring_functions as score
+from utilities import db
+from utilities import Loggers as log
 from socket import timeout
 from smtplib import SMTPException
 import poplib
@@ -53,13 +55,18 @@ class Scoring:
         self.last_scored = datetime.now()
 
     def add_status(self, table, status):
+        bool_status = 'Error'
+        if status == 1:
+            bool_status = 'True'
+        elif status == 0:
+            bool_status = 'False'
+        else:
+            bool_status = 'Error'
+
         log.Scoring.info(
-            f"Just scored {table} with a result of {bool(status)}")
-        conn = connect()
-        conn.execute(f'INSERT INTO {table} (test_date, success) VALUES (?,?)',
-                     (str(self.last_scored), int(status)))
-        conn.commit()
-        conn.close()
+            f"Just scored {table} with a result of {bool_status}")
+        db.insert_score(
+            f'INSERT INTO {table} (test_date, success) VALUES ("{str(self.last_scored)}","{bool_status}")')
 
 
 class DNS(Scoring):
@@ -70,41 +77,34 @@ class DNS(Scoring):
 
     def score(self):
         Scoring.score(self)
-        resolve = resolver.Resolver()
-        resolve.nameservers = [self.ip]
+        dns_query = Nslookup(dns_servers=[self.ip])
         log.Main.info('Show Domains')
         log.Main.info(self.domains)
         log.Main.info('End Domains')
         try:
             domain = random.choice(self.domains)
-            answer = resolve.query(domain)
+            answer = dns_query.dns_lookup(domain)
         except Exception as e:
             log.Error.error(e)
-            print(e, flush=True)
-        file_name = f'app/etc/scoring/{domain}.dns'
+        file_name = f'back_end/etc/scoring/{domain}.dns'
         self.set_base()
         with open(file_name, 'r') as f:
             good_ans = f.read()
-            str_ans = ''
-            for ans in answer:
-                str_ans += f'{ans}\n'
+            str_ans = f'{answer.answer}\n'
             if good_ans == str_ans:
                 self.add_status(self.table_name, 1)
             else:
                 self.add_status(self.table_name, 0)
 
     def set_base(self):
-        resolve = resolver.Resolver()
-        resolve.nameservers = [self.ip]
+        dns_query = Nslookup(dns_servers=[self.ip])
         log.Main.info('Setting the base!')
         for domain in self.domains:
-            file_name = f'app/etc/scoring/{domain}.dns'
+            file_name = f'back_end/etc/scoring/{domain}.dns'
             if not (os.path.exists(file_name) and os.stat(file_name).st_size != 0):
-                answer = resolve.query(domain)
-                f = open(file_name, 'w+')
-                for item in answer:
-                    f.write(f'{item.to_text()}\n')
-                f.close()
+                answer = dns_query.dns_lookup(domain)
+                with open(file_name, 'w+') as f:
+                    f.write(f'{answer.answer}\n')
 
     def set_domains(self, domains):
         self.domains = domains.split('/')
@@ -134,18 +134,19 @@ class SMTP(Scoring):
         return self.email_from
 
     def score(self):
-        Scoring.score(self)
-        sender = score.SMTP.get_from()
-        conn = connect()
-        receivers = conn.execute('SELECT to_user FROM smtp_info')
-        message = f'''
-        From: <{sender}>
-        To: <{receivers[0]}>
-        Subject: Scoring Message
-        
-        This message is used to score.
-        '''
         try:
+            Scoring.score(self)
+            sender = score.SMTP.get_from()
+            receivers = db.get_smtp_info()
+            if receivers is None:
+                raise Exception("Configuration has not been set yet for SMTP to be scored correctly")
+            message = f'''
+            From: <{sender}>
+            To: <{receivers[0]}>
+            Subject: Scoring Message
+            
+            This message is used to score.
+            '''
             smtpobj = smtplib.SMTP(self.ip, self.port)
             smtpobj.sendmail(sender, receivers, message)
             status = 1
@@ -176,8 +177,11 @@ class POP3(Scoring):
         status = 0
         try:
             pop = poplib.POP3(self.ip, self.port)
-            pop.user('')
-            pop.pass_('')
+            user = db.get_pop3_info()
+            if user is None:
+                raise Exception("Configuration has not been set yet for POP3 to be scored correctly")
+            pop.user(user[0])
+            pop.pass_(user[1])
             email_number = random.randint(0, pop.stat())
             (msg, body, octets) = pop.retr(email_number)
             if f'From: {score.SMTP.get_from()}' in body:
@@ -187,6 +191,7 @@ class POP3(Scoring):
             pop.quit()
         except Exception:
             status = 2
+            log.Error.error(e)
         finally:
             self.add_status(self.table_name, status)
 
@@ -204,6 +209,27 @@ class LDAP(Scoring):
 
     def get_info(self):
         return self.information_table
+
+    def score(self):
+        Scoring.score(self)
+        status = 0
+        try:
+            connection = ldap.initialize(f'ldap://{self.ip}')
+            connection.set_option(ldap.OPT_REFERRALS, 0)
+            user = db.get_ldap_info()
+            if user is None:
+                raise Exception("Configuration has not been set yet for LDAP to be scored correctly")
+            connection.simple_bind_s(user[0], user[1])
+            status = 1
+        except AUTH_UNKNOWN:
+            status = 0
+        except Exception as e:
+            log.Error.error(e)
+            status = 2
+            print(e)
+        finally:
+            self.add_status('ldap', status)
+        pass
 
 
 class Web(Scoring):
@@ -230,7 +256,7 @@ class Web(Scoring):
             site_hash = sha3_512()
             site_hash.update(site_string.encode())
             self.set_base()
-            with open(f'app/{self.hash_file}', 'r') as f:
+            with open(f'back_end/{self.hash_file}', 'r') as f:
                 good_hash = f.read()
                 if good_hash == site_hash.hexdigest():
                     self.add_status(self.table_name, 1)
@@ -248,37 +274,12 @@ class Web(Scoring):
             site_response = site.getresponse()
             site.close()
             site_string = f'{site_response.getheaders()[0]}\n\nStatus: {site_response.status}\n\n{site_response.read()}'
-            print(site_string, flush=True)
             site_hash = sha3_512()
             site_hash.update(site_string.encode())
-            f = open(f'app/{self.hash_file}', 'w+')
+            f = open(f'back_end/{self.hash_file}', 'w+')
             f.write(site_hash.hexdigest())
             f.close()
         except timeout as te:
             self.add_status(self.table_name, 0)
         except Exception as e:
             log.Error.error(e)
-
-
-class Authentication:
-    pwd = None
-    require = False
-
-    def __init__(self):
-        self.pwd = "Hello"
-        self.require = True
-
-    def set_pwd(self, pwd):
-        self.pwd = pwd
-
-    def set_require(self, require):
-        if require.lower() == 'no':
-            self.require = False
-        else:
-            self.require = True
-
-    def get_pwd(self):
-        return self.pwd
-
-    def get_require(self):
-        return self.require

@@ -39,6 +39,7 @@ class Token:
                 m.update(str(datetime.now()).encode())
                 token = m.hexdigest()
                 f.write(token)
+                print(token, flush=True)
                 self.token = token
 
 
@@ -92,7 +93,6 @@ class Database:
         cursor = self.db.cursor()
         cursor.execute('SELECT * FROM scores;')
         result = cursor.fetchall()
-        print(result, flush=True)
         return result
 
     def get_top_scores(self, service: Scores, count=5):

@@ -20,7 +20,7 @@ def score_page():
     url_for('static', filename='base.css')
     url_for('static', filename='index.css')
     url_for('static', filename='scoring.css')
-    
+
     def return_bool(item):
         if str(item).lower() == 'false':
             return False
@@ -51,7 +51,6 @@ class Score_LDAP(MethodView):
     def post(self):
         forward = {
             'action': 'score',
-            'token': token.token,
             "data": {
                 "service": "ldap"
             }
@@ -73,7 +72,6 @@ class Score_Ecomm(MethodView):
     def post(self):
         forward = {
             'action': 'score',
-            'token': token.token,
             "data": {
                 "service": "ecomm"
             }
@@ -95,7 +93,6 @@ class Score_DNS_Windows(MethodView):
     def post(self):
         forward = {
             'action': 'score',
-            'token': token.token,
             "data": {
                 "service": "dns",
                 'machine': 'windows'
@@ -118,7 +115,6 @@ class Score_DNS_Linux(MethodView):
     def post(self):
         forward = {
             'action': 'score',
-            'token': token.token,
             "data": {
                 "service": "dns",
                 "machine": "linux"
@@ -141,7 +137,6 @@ class Score_POP3(MethodView):
     def post(self):
         forward = {
             'action': 'score',
-            'token': token.token,
             "data": {
                 "service": "pop3"
             }
@@ -163,7 +158,6 @@ class Score_SMTP(MethodView):
     def post(self):
         forward = {
             'action': 'score',
-            'token': token.token,
             "data": {
                 "service": "smtp"
             }
@@ -185,7 +179,6 @@ class Score_Splunk(MethodView):
     def post(self):
         forward = {
             'action': 'score',
-            'token': token.token,
             "data": {
                 "service": "splunk"
             }
@@ -200,7 +193,8 @@ class Score_Splunk(MethodView):
 
 sr.add_url_rule('/ldap', view_func=Score_LDAP.as_view('ldap'))
 sr.add_url_rule('/ecomm', view_func=Score_Ecomm.as_view('ecomm'))
-sr.add_url_rule('/dns-windows', view_func=Score_DNS_Windows.as_view('dns_windows'))
+sr.add_url_rule(
+    '/dns-windows', view_func=Score_DNS_Windows.as_view('dns_windows'))
 sr.add_url_rule('/dns-linux', view_func=Score_DNS_Linux.as_view('dns_linux'))
 sr.add_url_rule('/pop3', view_func=Score_POP3.as_view('pop3'))
 sr.add_url_rule('/smtp', view_func=Score_SMTP.as_view('smtp'))
@@ -299,7 +293,6 @@ class Config_LDAP(MethodView):
             count += 1
         forward = {
             'action': 'config',
-            'token': token.token,
             'data': {
                 'service': 'ldap',
                 'ip': request.form['ldap'],
@@ -343,7 +336,6 @@ class Config_Ecomm(MethodView):
         log.Main.info("Updating of Ecomm Config. Password is not required.")
         forward = {
             'action': 'config',
-            'token': token.token,
             'data': {
                 'service': 'ecomm',
                 'ip': request.form['ecomm_ip'],
@@ -389,7 +381,6 @@ class Config_DNS_Windows(MethodView):
         domains = request.form['dnsw_domains'].split(';')
         forward = {
             'action': 'config',
-            'token': token.token,
             'data': {
                 'service': 'dnsw',
                 'ip': request.form['dnsw_ip'],
@@ -436,7 +427,6 @@ class Config_DNS_Linux(MethodView):
         domains = request.form['dnsl_domains'].split(';')
         forward = {
             'action': 'config',
-            'token': token.token,
             'data': {
                 'service': 'dnsl',
                 'ip': request.form['dnsl_ip'],
@@ -482,7 +472,6 @@ class Config_POP3(MethodView):
             "Updating of POP3 Config. Password is not required.")
         forward = {
             'action': 'config',
-            'token': token.token,
             'data': {
                 'service': 'pop3',
                 'ip': request.form['pop_ip'],
@@ -530,7 +519,6 @@ class Config_SMTP(MethodView):
             "Updating of Windows DNS Config. Password is not required.")
         forward = {
             'action': 'config',
-            'token': token.token,
             'data': {
                 'service': 'smtp',
                 'ip': request.form['smtp_ip'],
@@ -577,7 +565,6 @@ class Config_Splunk(MethodView):
         log.Main.info("Updating of Splunk Config. Password is not required.")
         forward = {
             'action': 'config',
-            'token': token.token,
             'data': {
                 'service': 'splunk',
                 'ip': request.form['splunk_ip'],
@@ -594,12 +581,15 @@ class Config_Splunk(MethodView):
 
 config_bp.add_url_rule('/ldap', view_func=Config_LDAP.as_view('ldap'))
 config_bp.add_url_rule('/ecomm', view_func=Config_Ecomm.as_view('ecomm'))
-config_bp.add_url_rule('/dns-windows', view_func=Config_DNS_Windows.as_view('dns_windows'))
-config_bp.add_url_rule('/dns-linux', view_func=Config_DNS_Linux.as_view('dns_linux'))
+config_bp.add_url_rule(
+    '/dns-windows', view_func=Config_DNS_Windows.as_view('dns_windows'))
+config_bp.add_url_rule(
+    '/dns-linux', view_func=Config_DNS_Linux.as_view('dns_linux'))
 config_bp.add_url_rule('/pop3', view_func=Config_POP3.as_view('pop3'))
 config_bp.add_url_rule('/smtp', view_func=Config_SMTP.as_view('smtp'))
 config_bp.add_url_rule('/splunk', view_func=Config_Splunk.as_view('splunk'))
-config_bp.add_url_rule('/login', view_func=Config_Login.as_view('config_login'))
+config_bp.add_url_rule(
+    '/login', view_func=Config_Login.as_view('config_login'))
 
 
 def send_post(data):
@@ -614,14 +604,16 @@ def send_post(data):
             41 - Invalid Token
             42 - Wrong Method
             43 - Invalid Action
+            44 - Invalid Service
+            45 - Invalid Configuration
     '''
     try:
         url = current_app.config["BACK_END_LOCATION"]
+        headers = {'token': token.token}
         rsp = requests.post(
-            url=f'http://{url}', json=data)
+            url=f'http://{url}', json=data, headers=headers)
         data = json.loads(rsp.content)
-        status_code = data['internal status code']
-        print(status_code)
+        status_code = data['code']
     except Exception as e:
         log.Error.error(e)
         status_code = 500
@@ -633,6 +625,10 @@ def send_post(data):
         info = 'Wrong Method'
     elif status_code == 43:
         info = 'Invalid Action'
+    elif status_code == 44:
+        info = 'Invalid Service'
+    elif status_code == 45:
+        info = 'Invalid Configuration'
     else:
         info = ''
 

@@ -5,6 +5,7 @@ import logging
 import mysql.connector as conn
 from enum import Enum, auto
 from configparser import ConfigParser
+import random
 
 
 def read_config():
@@ -32,6 +33,7 @@ def generate_token():
             m.update(str(datetime.now()).encode())
             token = m.hexdigest()
             f.write(token)
+            print(token, flush=True)
             return token
 
 
@@ -65,7 +67,6 @@ class Database:
         self.host = host
         self.username = username
         self.password = password
-        print('backend',self.host, self.username, self.password, flush=True)
         try:
             self.db = conn.connect(
                 host=self.host,
@@ -97,6 +98,40 @@ class Database:
         with open('sql/basic_db.sql') as f:
             schema = f.read()
             cur.execute(schema)
+
+    def insert_score(self, query):
+        cur = self.db.cursor(buffered=True)
+        results = cur.execute(query, multi=True)
+        for result in results:
+            result
+        self.db.commit()
+
+    def get_ldap_info(self):
+        cur = self.db.cursor()
+        result = cur.execute('SELECT username, password FROM ldap_info')
+        if result is not None:
+            user = random.choice(result.fetchall())
+        else:
+            user = None
+        return user
+
+    def get_pop3_info(self):
+        cur = self.db.cursor()
+        result = cur.execute('SELECT username, password FROM pop3_info')
+        if result is not None:
+            user = random.choice(result.fetchall())
+        else:
+            user = None
+        return user
+
+    def get_smtp_info(self):
+        cur = self.db.cursor()
+        result = cur.execute('SELECT to_user FROM smtp_info')
+        if result is not None:
+            to_user = result.fetchall()
+        else:
+            to_user = None
+        return to_user
 
 
 try:

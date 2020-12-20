@@ -4,11 +4,11 @@ Created on Nov 26, 2020
 @author: gabez
 '''
 
-from back_end.service import LDAP as ldap
-from back_end.service import Authentication, Web, DNS
-from back_end.service import SMTP as SMTP_class
-from back_end.service import POP3 as POP3_class
-from back_end.utilities import Loggers as log
+from service import LDAP as ldap
+from service import Web, DNS
+from service import SMTP as SMTP_class
+from service import POP3 as POP3_class
+from utilities import Loggers as log
 
 from configparser import ConfigParser
 import os
@@ -20,11 +20,11 @@ Splunk = Web()
 POP3 = POP3_class()
 SMTP = SMTP_class()
 LDAP = ldap()
-Auth = Authentication()
 
 
 def set_service_config():
     config = ConfigParser()
+    print('Hello')
     try:
         config.read('back_end/config/service.conf')
         
@@ -35,7 +35,6 @@ def set_service_config():
         smtp_config = config['SMTP']
         wdns_config = config['WINDOWS_DNS']
         ldns_config = config['LINUX_DNS']
-        auth_config = config['CONFIGURATION']
 
         LDAP.set_ip(ldap_config['ip'])
         LDAP.set_port(ldap_config['port'])
@@ -72,11 +71,8 @@ def set_service_config():
         Linux_DNS.set_table(ldns_config['sqltable'])
         Linux_DNS.set_domains(ldns_config['domains'])
 
-        Auth.set_pwd(auth_config['adminpassword'])
-        Auth.set_require(auth_config['requirepassword'])
         save_service_config()
     except Exception as e:
-        print(e, "ERROR", flush=True)
         log.Error.error(e)
 
 
@@ -130,11 +126,6 @@ def save_service_config():
         'PORT': Linux_DNS.get_port(),
         'SQLTable': Linux_DNS.get_table(),
         'DOMAINS': Linux_DNS.get_domains().join('/')
-    }
-
-    config['CONFIGURATION'] = {
-        'AdminPassword': Auth.get_pwd(),
-        'RequirePassword': Auth.get_require()
     }
 
     with open('back_end/service.conf', 'w') as file:

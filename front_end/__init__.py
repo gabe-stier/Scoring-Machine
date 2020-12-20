@@ -28,7 +28,7 @@ def app():
     @app.route('/status-codes')
     def codes():
         url_for('static', filename='base.css')
-        url_for('static', filename='index.css')
+        url_for('static', filename='info.css')
         return render_template('info.tmpl.j2')
 
     @app.before_request
