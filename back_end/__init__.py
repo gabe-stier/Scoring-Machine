@@ -7,10 +7,10 @@ import logging
 from logging.config import dictConfig
 
 import actions as action
-from utilities import generate_token
+from utilities import generate_token,config
 from utilities import Loggers as log
-from utilities import config
 from scoring_functions import set_service_config
+from background import start_scoring
 
 token = generate_token()
 
@@ -133,16 +133,12 @@ def start(server_class=HTTPServer, handler_class=Server, port=5001):
         DEBUG = False
     setup_logging()
     set_service_config()
+    start_scoring()
     server_address = ('', port)
     httpd = server_class(server_address, handler_class)
 
     print(f'Starting httpd on port {server_address}...', flush=True)
     httpd.serve_forever()
-
-
-def start_scoring(delay=120):
-
-    pass
 
 
 def setup_logging():
