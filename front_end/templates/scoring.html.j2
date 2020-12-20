@@ -20,87 +20,122 @@
     </nav>
 </div>
 <table class='scoring_table'>
-    <tr>
-        <th>Service</th>
-        <th>Up/Down</th>
-    </tr>
-    {% if ldap %}
-    <tr class='ldap' id='service_up'>
-        <td>LDAP</td>
-        <td>Up</td>
-    </tr>
-    {% else %}
-    <tr class='ldap' id='service_down'>
-        <td>LDAP</td>
-        <td>Down</td>
-    </tr>
-    {% endif %}
-    {% if dns_linux %}
-    <tr class='dnsl' id='service_up'>
-        <td>DNS - Linux</td>
-        <td>Up</td>
-    </tr>
-    {% else %}
-    <tr class='dnsl' id='service_down'>
-        <td>DNS - Linux</td>
-        <td>Down</td>
-    </tr>
-    {% endif %}
-    {% if dns_windows %}
-    <tr class='dnsw' id='service_up'>
-        <td>DNS - Windows</td>
-        <td>Up</td>
-    </tr>
-    {% else %}
-    <tr class='dnsw' id='service_down'>
-        <td>DNS - Windows</td>
-        <td>Down</td>
-    </tr>
-    {% endif %}
-    {% if splunk %}
-    <tr class='ecomm' id='service_up'>
-        <td>Ecommerce</td>
-        <td>Up</td>
-    </tr>
-    {% else %}
-    <tr class='ecomm' id='service_down'>
-        <td>Ecommerce</td>
-        <td>Down</td>
-    </tr>
-    {% endif %}
-    {% if pop3 %}
-    <tr class='pop3' id='service_up'>
-        <td>POP3</td>
-        <td>Up</td>
-    </tr>
-    {% else %}
-    <tr class='pop3' id='service_down'>
-        <td>POP3</td>
-        <td>Down</td>
-    </tr>
-    {% endif %}
-    {% if smtp %}
-    <tr class='smtp' id='service_up'>
-        <td>SMTP</td>
-        <td>Up</td>
-    </tr>
-    {% else %}
-    <tr class='smtp' id='service_down'>
-        <td>SMTP</td>
-        <td>Down</td>
-    </tr>
-    {% endif %}
-    {% if splunk %}
-    <tr class='splunk' id='service_up'>
-        <td>Splunk</td>
-        <td>Up</td>
-    </tr>
-    {% else %}
-    <tr class='splunk' id='service_down'>
-        <td>Splunk</td>
-        <td>Down</td>
-    </tr>
-    {% endif %}
+	<tr>
+		<th>Service</th>
+		<th>Up/Down</th>
+	</tr>
+	{% if ldap %}
+	<tr class='ldap' id='service_up'>
+		<td>LDAP</td>
+		<td>Up</td>
+	</tr>
+	{% elif ldap is none %}
+	<tr class='ldap' id='service_err'>
+		<td>LDAP</td>
+		<td>error</td>
+	</tr>
+	{% else %}
+	<tr class='ldap' id='service_down'>
+		<td>LDAP</td>
+		<td>Down</td>
+	</tr>
+	{% endif %}
+	{% if dnsl %}
+	<tr class='dnsl' id='service_up'>
+		<td>DNS - Linux</td>
+		<td>Up</td>
+	</tr>
+	{% elif dnsl is none %}
+	<tr class='dnsl' id='service_err'>
+		<td>DNS - Linux</td>
+		<td>error</td>
+	</tr>
+	{% else %}
+	<tr class='dnsl' id='service_down'>
+		<td>DNS - Linux</td>
+		<td>Down</td>
+	</tr>
+	{% endif %}
+	{% if dnsw %}
+	<tr class='dnsw' id='service_up'>
+		<td>DNS - Windows</td>
+		<td>Up</td>
+	</tr>
+	{% elif dnsw is none %}
+	<tr class='dnsw' id='service_err'>
+		<td>DNS - Windows</td>
+		<td>error</td>
+	</tr>
+	{% else %}
+	<tr class='dnsw' id='service_down'>
+		<td>DNS - Windows</td>
+		<td>Down</td>
+	</tr>
+	{% endif %}
+	{% if ecomm %}
+	<tr class='ecomm' id='service_up'>
+		<td>Ecommerce</td>
+		<td>Up</td>
+	</tr>
+	{% elif ecomm is none %}
+	<tr class='ecomm' id='service_err'>
+		<td>Ecommerce</td>
+		<td>error</td>
+	</tr>
+	{% else %}
+	<tr class='ecomm' id='service_down'>
+		<td>Ecommerce</td>
+		<td>Down</td>
+	</tr>
+	{% endif %}
+	{% if pop3 %}
+	<tr class='pop3' id='service_up'>
+		<td>POP3</td>
+		<td>Up</td>
+	</tr>
+	{% elif pop3 is none %}
+	<tr class='pop3' id='service_err'>
+		<td>POP3</td>
+		<td>error</td>
+	</tr>
+	{% else %}
+	<tr class='pop3' id='service_down'>
+		<td>POP3</td>
+		<td>Down</td>
+	</tr>
+	{% endif %}
+	{% if smtp %}
+	<tr class='smtp' id='service_up'>
+		<td>SMTP</td>
+		<td>Up</td>
+	</tr>
+	{% elif smtp is none %}
+	<tr class='smtp' id='service_err'>
+		<td>SMTP</td>
+		<td>error</td>
+	</tr>
+	{% else %}
+	<tr class='smtp' id='service_down'>
+		<td>SMTP</td>
+		<td>Down</td>
+	</tr>
+	{% endif %}
+	{% if splunk %}
+	<tr class='splunk' id='service_up'>
+		<td>Splunk</td>
+		<td>Up</td>
+	</tr>
+	{% elif splunk is none %}
+	<tr class='splunk' id='service_err'>
+		<td>Splunk</td>
+		<td>error</td>
+	</tr>
+	{% else %}
+	<tr class='splunk' id='service_down'>
+		<td>Splunk</td>
+		<td>Down</td>
+	</tr>
+	{% endif %}
 </table>
 <table>
     <tr>
