@@ -13,8 +13,8 @@ from ldap import AUTH_UNKNOWN
 import mysql.connector as conn
 from nslookup import Nslookup
 
-from back_end.utilities import Loggers as log
-from back_end.utilities import Services
+from utilities import Loggers as log
+from utilities import Services
 
 
 def run_task(service: Services):

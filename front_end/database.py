@@ -1,5 +1,3 @@
-from configparser import ConfigParser
-
 import mysql.connector as conn
 
 from front_end.utilities import Loggers as log

@@ -1,5 +1,5 @@
-import back_end.scoring_tasks as st
-import back_end.config_tasks as ct
+import scoring_tasks as st
+import config_tasks as ct
 
 
 def update_config(data):

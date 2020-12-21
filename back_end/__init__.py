@@ -4,10 +4,10 @@ import os
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from logging.config import dictConfig
 
-import back_end.actions as action
-from back_end.background import start_scoring
-from back_end.utilities import Loggers as log
-from back_end.utilities import generate_token
+import actions as action
+from background import start_scoring
+from utilities import Loggers as log
+from utilities import generate_token
 
 token = generate_token()
 
