@@ -72,7 +72,7 @@ class Server(BaseHTTPRequestHandler):
                         'data sent': message
                     }
                     self.response_code = 21
-                elif act == False:
+                elif not act:
                     response = {
                         'response': "Invalid service",
                         "code": 44,

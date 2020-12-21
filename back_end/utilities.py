@@ -1,12 +1,8 @@
 import logging
 import os
-import random
-from configparser import ConfigParser
 from datetime import datetime
 from enum import Enum, auto
 from hashlib import blake2b
-
-import mysql.connector as conn
 
 
 def read_config():
