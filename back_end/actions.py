@@ -14,7 +14,6 @@ def score_service(data):
             st.score_dns_linux()
         elif machine.lower() == 'windows':
             st.score_dns_windows()
-            pass
         else:
             return False
     elif service.lower() == 'splunk':

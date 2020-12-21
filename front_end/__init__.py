@@ -1,37 +1,37 @@
 '''
 Scoring machine that is used with in the cyberrange to be able to know if firewalls are effectively working 
 '''
-from flask import Flask, render_template, request, url_for
-from flask import make_response as respond
-from logging.config import dictConfig
-from front_end.utilities import Loggers as log
-from front_end.utilities import Scores, cwd
-import front_end.blueprints as bp
 import os
-import sys
+from logging.config import dictConfig
+
+from flask import Flask
+from flask import render_template, request, url_for
+
+import front_end.blueprints as bp
 from front_end.database import get_last_score
+from front_end.utilities import Loggers as log
+from front_end.utilities import cwd
+
 
 def app():
-    app = Flask(__name__)
-    app.config.from_pyfile(os.path.join(
+    flask_app = Flask(__name__)
+    flask_app.config.from_pyfile(os.path.join(
         cwd, 'config/application.conf'))
-    app.secret_key = b'tr&6aH+tripRa!rUm9Ju'
-
-    db.init_app(app)
+    flask_app.secret_key = b'tr&6aH+tripRa!rUm9Ju'
 
     ''' HTML Pages '''
-    @app.route('/')
-    @app.route('/scoring')
+    @flask_app.route('/')
+    @flask_app.route('/scoring')
     def index():
         return score_page()
 
-    @app.route('/status-codes')
+    @flask_app.route('/status-codes')
     def codes():
         url_for('static', filename='base.css')
         url_for('static', filename='info.css')
         return render_template('info.tmpl.j2')
 
-    @app.before_request
+    @flask_app.before_request
     def log_request():
         log.Web.info(
             f'{request.remote_addr} [{request.method}] requested {request.path}')
@@ -45,17 +45,17 @@ def app():
         log.Error.error(e.get_response())
         return render_template('internal_error.html.j2'), 500
 
-    app.register_error_handler(404, not_found)
-    app.register_error_handler(500, internal_error)
-    app.register_blueprint(bp.sr)
-    app.register_blueprint(bp.config_bp)
+    flask_app.register_error_handler(404, not_found)
+    flask_app.register_error_handler(500, internal_error)
+    flask_app.register_blueprint(bp.sr)
+    flask_app.register_blueprint(bp.config_bp)
 
-    setup_logging(app)
+    setup_logging()
 
-    return app
+    return flask_app
 
 
-def setup_logging(app):
+def setup_logging():
     try:
         os.mkdir('/var/log/scoring-machine', mode=0o666)
     except FileExistsError as e:

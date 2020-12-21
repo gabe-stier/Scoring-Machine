@@ -125,12 +125,11 @@ class Server(BaseHTTPRequestHandler):
 def start(server_class=HTTPServer, handler_class=Server, port=5001):
     print("Starting Scoring Server", flush=True)
     global DEBUG
-    if (os.environ['DEBUG'] == 'True'):
+    if os.environ['DEBUG'] == 'True':
         DEBUG = True
     else:
         DEBUG = False
     setup_logging()
-    set_service_config()
     start_scoring()
     server_address = ('', port)
     httpd = server_class(server_address, handler_class)

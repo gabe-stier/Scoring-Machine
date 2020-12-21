@@ -12,7 +12,7 @@ from flask.views import MethodView
 
 from front_end.database import get_last_score
 from front_end.utilities import Loggers as log
-from front_end.utilities import Scores, Token
+from front_end.utilities import Token
 
 token = Token()
 
@@ -191,9 +191,7 @@ def config_index():
 @config_bp.before_request
 def login_check():
     require_password = current_app.config['REQUIRE_CONFIG_PASSWORD']
-    if request.method == 'GET' or request.path == '/config/login' or (str(require_password).lower() == 'false') or 'data' in session:
-        pass
-    else:
+    if not (request.method == 'GET' or request.path == '/config/login' or (str(require_password).lower() == 'false') or 'data' in session):
         session['data'] = request.form
         return redirect(url_for('config.config_login', redirect_loc=request.endpoint))
 
