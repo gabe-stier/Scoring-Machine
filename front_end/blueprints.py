@@ -21,6 +21,8 @@ sr = Blueprint('score', __name__, url_prefix='/request-score')
 
 @sr.route('/')
 def score_page():
+    '''Shows a score page. General was going to be used to how charts of the past 5 scores but decided against that.\n
+    If someone wants to take over that. You can. Just start creating!'''
     url_for('static', filename='base.css')
     url_for('static', filename='index.css')
     url_for('static', filename='scoring.css')
@@ -51,6 +53,7 @@ def score_page():
 
 
 class Score_LDAP(MethodView):
+    '''Controls the score request for LDAP'''
 
     def post(self):
         forward = {
@@ -68,6 +71,7 @@ class Score_LDAP(MethodView):
 
 
 class Score_Ecomm(MethodView):
+    '''Controls the score request for Ecomm'''
 
     def post(self):
         forward = {
@@ -85,6 +89,7 @@ class Score_Ecomm(MethodView):
 
 
 class Score_DNS_Windows(MethodView):
+    '''Controls the score request for Windows DNS'''
 
     def post(self):
         forward = {
@@ -103,6 +108,7 @@ class Score_DNS_Windows(MethodView):
 
 
 class Score_DNS_Linux(MethodView):
+    '''Controls the score request for Linux DNS'''
 
     def post(self):
         forward = {
@@ -121,6 +127,7 @@ class Score_DNS_Linux(MethodView):
 
 
 class Score_POP3(MethodView):
+    '''Controls the score request for POP3'''
 
     def post(self):
         forward = {
@@ -138,6 +145,7 @@ class Score_POP3(MethodView):
 
 
 class Score_SMTP(MethodView):
+    '''Controls the score request for SMTP'''
 
     def post(self):
         forward = {
@@ -155,6 +163,7 @@ class Score_SMTP(MethodView):
 
 
 class Score_Splunk(MethodView):
+    '''Controls the score request for Splunk'''
     def post(self):
         forward = {
             'action': 'score',
@@ -184,11 +193,13 @@ config_bp = Blueprint('config', __name__, url_prefix='/config')
 
 @config_bp.route('/')
 def config_index():
+    '''General HTML page'''
     return render_template('config.html.j2', service='None')
 
 
 @config_bp.before_request
 def login_check():
+    '''Checks to see if a login for configuration is needed'''
     require_password = current_app.config['REQUIRE_CONFIG_PASSWORD']
     if not (request.method == 'GET' or request.path == '/config/login' or (str(require_password).lower() == 'false') or 'data' in session):
         session['data'] = request.form
@@ -196,6 +207,7 @@ def login_check():
 
 
 class Config_Login(MethodView):
+    '''Controls the config request for Login page'''
     def get(self):
         url_for('static', filename='base.css')
         url_for('static', filename='login.css')
@@ -226,6 +238,7 @@ class Config_Login(MethodView):
 
 
 class Config_LDAP(MethodView):
+    '''Controls the config request for LDAP'''
     def get(self):
         url_for('static', filename='base.css')
         url_for('static', filename='config.css')
@@ -289,6 +302,7 @@ class Config_LDAP(MethodView):
 
 
 class Config_Ecomm(MethodView):
+    '''Controls the config request for Ecomm'''
     def get(self):
         url_for('static', filename='base.css')
         url_for('static', filename='config.css')
@@ -333,6 +347,7 @@ class Config_Ecomm(MethodView):
 
 
 class Config_DNS_Windows(MethodView):
+    '''Controls the config request for Windows DNS'''
     def get(self):
         url_for('static', filename='base.css')
         url_for('static', filename='config.css')
@@ -384,6 +399,7 @@ class Config_DNS_Windows(MethodView):
 
 
 class Config_DNS_Linux(MethodView):
+    '''Controls the config request for Linux DNS'''
     def get(self):
         url_for('static', filename='base.css')
         url_for('static', filename='config.css')
@@ -434,6 +450,7 @@ class Config_DNS_Linux(MethodView):
 
 
 class Config_POP3(MethodView):
+    '''Controls the config request for POP3'''
     def get(self):
         url_for('static', filename='base.css')
         url_for('static', filename='config.css')
@@ -482,6 +499,7 @@ class Config_POP3(MethodView):
 
 
 class Config_SMTP(MethodView):
+    '''Controls the config request for SMTP'''
     def get(self):
         url_for('static', filename='base.css')
         url_for('static', filename='config.css')
@@ -532,6 +550,7 @@ class Config_SMTP(MethodView):
 
 
 class Config_Splunk(MethodView):
+    '''Controls the config request for Splunk'''
     def get(self):
         url_for('static', filename='base.css')
         url_for('static', filename='config.css')

@@ -14,9 +14,7 @@ cwd = os.getcwd()
 
 
 class Loggers:
-    '''
-        Log handlers used for this scoring machine
-    '''
+    '''Log handlers used for this scoring machine'''
     Main = logging.getLogger("main")
     Scoring = logging.getLogger("scoring")
     Web = logging.getLogger("web")
@@ -24,6 +22,7 @@ class Loggers:
 
 
 class Token:
+    '''Generates a token that is used between Flask and the Request Server'''
     token = 'NULL'
 
     def __init__(self):
@@ -42,6 +41,7 @@ class Token:
 
 
 class Scores(Enum):
+    '''List of the Services used.'''
     SPLUNK = auto(),
     ECOMM = auto(),
     DNS_LINUX = auto(),
