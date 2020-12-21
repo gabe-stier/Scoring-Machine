@@ -200,6 +200,7 @@ def score_smtp():
         '''
         smtpobj = smtplib.SMTP(ip, port)
         smtpobj.sendmail(sender, receivers, message)
+        smtpobj.quit()
         status = 1
     except SMTPException:
         status = 0

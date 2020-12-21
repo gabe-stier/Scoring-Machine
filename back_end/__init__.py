@@ -82,7 +82,7 @@ class Server(BaseHTTPRequestHandler):
                         'data sent': message
                     }
                     self.response_code = 44
-                elif act == None:
+                elif act is None:
                     response = {
                         'response': 'Invalid Configuration',
                         "code": 45,
