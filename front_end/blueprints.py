@@ -3,12 +3,16 @@ Created on Nov 26, 2020
 
 @author: gabez
 '''
-from flask import Blueprint, url_for, render_template, make_response, request, redirect, session, current_app
-from flask.views import MethodView
-from front_end.utilities import Loggers as log
-from front_end.utilities import Token, db, Scores
-import requests
 import json
+
+import requests
+from flask import (Blueprint, current_app, make_response, redirect,
+                   render_template, request, session, url_for)
+from flask.views import MethodView
+
+from front_end.database import get_last_score
+from front_end.utilities import Loggers as log
+from front_end.utilities import Scores, Token
 
 token = Token()
 
@@ -29,8 +33,13 @@ def score_page():
         else:
             return None
 
-    status = db.get_last_score()
+    try:
+        status = get_last_score()
+    except Exception as e:
+        log.Error.error(e)
+        print(e, flush=True)
     status = status[0]
+    print(status)
     dnsl_srv = return_bool(status[0])
     dnsw_srv = return_bool(status[1])
     ecomm_srv = return_bool(status[2])

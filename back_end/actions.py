@@ -1,31 +1,32 @@
-from scoring_functions import Windows_DNS, Linux_DNS, Ecommerce, Splunk, POP3, SMTP, LDAP
+import scoring_tasks as st
+
 
 def update_config(data):
     service = data['service']
     return True
+
 
 def score_service(data):
     service = data['service']
     if service.lower() == 'dns':
         machine = data['machine']
         if machine.lower() == 'linux':
-            Linux_DNS.score()
-            pass
+            st.score_dns_linux()
         elif machine.lower() == 'windows':
-            Windows_DNS.score()
+            st.score_dns_windows()
             pass
         else:
             return False
     elif service.lower() == 'splunk':
-        Splunk.score()
+        st.score_splunk()
     elif service.lower() == 'ecomm':
-        Ecommerce.score()
+        st.score_ecomm()
     elif service.lower() == 'smtp':
-        SMTP.score()
+        st.score_smtp()
     elif service.lower() == 'ldap':
-        LDAP.score()
+        st.score_ldap()
     elif service.lower() == 'pop3':
-        POP3.score()
+        st.score_pop3()
     else:
         return False
     return True

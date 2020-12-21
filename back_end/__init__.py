@@ -9,7 +9,6 @@ from logging.config import dictConfig
 import actions as action
 from utilities import generate_token,config
 from utilities import Loggers as log
-from scoring_functions import set_service_config
 from background import start_scoring
 
 token = generate_token()
@@ -93,7 +92,6 @@ class Server(BaseHTTPRequestHandler):
 
             else:
                 self._set_headers(code=400)
-                # self.log_request(status_code=400, response_code=43)
                 self.response_code = 43
                 response = {
                     "error": 'Invalid Action',
@@ -104,7 +102,6 @@ class Server(BaseHTTPRequestHandler):
                 return
         else:
             self._set_headers(code=401)
-            # self.log_request(status_code=401, response_code=41)
             self.response_code = 41
             response = {
                 "error": "Invalid Token",
@@ -126,6 +123,7 @@ class Server(BaseHTTPRequestHandler):
 
 
 def start(server_class=HTTPServer, handler_class=Server, port=5001):
+    print("Starting Scoring Server", flush=True)
     global DEBUG
     if (os.environ['DEBUG'] == 'True'):
         DEBUG = True
@@ -224,7 +222,6 @@ def setup_logging():
     })
 
 
-print("Starting Scoring Server", flush=True)
 
 if __name__ == "__main__":
     start()

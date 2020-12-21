@@ -5,11 +5,11 @@ from flask import Flask, render_template, request, url_for
 from flask import make_response as respond
 from logging.config import dictConfig
 from front_end.utilities import Loggers as log
-from front_end.utilities import db, Scores, cwd
+from front_end.utilities import Scores, cwd
 import front_end.blueprints as bp
 import os
 import sys
-
+from front_end.database import get_last_score
 
 def app():
     app = Flask(__name__)
@@ -150,8 +150,11 @@ def score_page():
             return True
         else:
             return None
-
-    status = db.get_last_score()
+    try:
+        status = get_last_score()
+    except Exception as e:
+        log.Error.error(e)
+        print(e, flush=True)
     status = status[0]
     dnsl_srv = return_bool(status[0])
     dnsw_srv = return_bool(status[1])
