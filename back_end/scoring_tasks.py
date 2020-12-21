@@ -202,7 +202,7 @@ def score_dns_linux():
 
     ip = config['LINUX_DNS']['ip']
     table = config['LINUX_DNS']['sqltable']
-    domains = config['LINUX_DNS']['domains'].split('/')
+    domains = config['LINUX_DNS']['domains'].split(',')
 
     db = open_database()
 
@@ -228,7 +228,7 @@ def score_dns_windows():
 
     ip = config['WINDOWS_DNS']['ip']
     table = config['WINDOWS_DNS']['sqltable']
-    domains = config['WINDOWS_DNS']['domains'].split('/')
+    domains = config['WINDOWS_DNS']['domains'].split(',')
 
     db = open_database()
 

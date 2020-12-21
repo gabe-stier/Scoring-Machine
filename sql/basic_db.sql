@@ -44,14 +44,3 @@ CREATE TABLE IF NOT EXISTS ldap_info (
     username TEXT NOT NULL,
     password TEXT NOT NULL
 );
-
-CREATE TABLE IF NOT EXISTS pop3_info (
-    user_id INTEGER PRIMARY KEY AUTO_INCREMENT,
-    username TEXT NOT NULL,
-    password TEXT NOT NULL
-);
-
-CREATE TABLE IF NOT EXISTS smtp_info (
-    email_id INTEGER PRIMARY KEY AUTO_INCREMENT,
-    to_user TEXT NOT NULL
-);

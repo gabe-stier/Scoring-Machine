@@ -10,8 +10,8 @@ import mysql.connector as conn
 from nslookup import Nslookup
 
 from scoring_tasks import (score_dns_linux, score_dns_windows,
-                                    score_ecomm, score_ldap, score_pop3,
-                                    score_smtp, score_splunk)
+                           score_ecomm, score_ldap, score_pop3,
+                           score_smtp, score_splunk)
 from utilities import Loggers as log
 
 
@@ -114,16 +114,14 @@ def init_db():
     cur.execute('CREATE DATABASE IF NOT EXISTS scoring_engine')
     with open(f'{os.getcwd()}/sql/basic_db.sql') as f:
         schema = f.read()
-        # results =
-        cur.execute(schema, multi=True)
-        # for result in results:
-        #     result
+        results = cur.execute(schema, multi=True)
+        for result in results:
+            result
     with open(f'{os.getcwd()}/sql/views.sql') as f:
         schema = f.read()
-        # results =
-        cur.execute(schema, multi=True)
-        # for result in results:
-        #     result
+        results = cur.execute(schema, multi=True)
+        for result in results:
+            result
     db.commit()
     db.close()
 
@@ -134,7 +132,23 @@ def build_defaults():
     config.read('back_end/config/service.conf')
 
     dns_ip = config['WINDOWS_DNS']['ip']
-    domains = config['WINDOWS_DNS']['domains'].split('/')
+    domains = config['WINDOWS_DNS']['domains'].split(',')
+    print('Creating Default of DNS')
+    try:
+        dns_query = Nslookup(dns_servers=[dns_ip])
+        log.Main.info('Setting the base!')
+        for domain in domains:
+            file_name = f'back_end/etc/scoring/{domain}.dns'
+            if not (os.path.exists(file_name) and os.stat(file_name).st_size != 0):
+                answer = dns_query.dns_lookup(domain)
+                with open(file_name, 'w+') as f:
+                    f.write(f'{answer.answer}\n')
+    except Exception as e:
+        log.Error.error(e)
+        print(e)
+
+    dns_ip = config['LINUX_DNS']['ip']
+    domains = config['LINUX_DNS']['domains'].split(',')
     print('Creating Default of DNS')
     try:
         dns_query = Nslookup(dns_servers=[dns_ip])

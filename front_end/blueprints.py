@@ -39,7 +39,6 @@ def score_page():
         log.Error.error(e)
         print(e, flush=True)
     status = status[0]
-    print(status)
     dnsl_srv = return_bool(status[0])
     dnsw_srv = return_bool(status[1])
     ecomm_srv = return_bool(status[2])
@@ -234,50 +233,53 @@ class Config_LDAP(MethodView):
             log.Main.info(
                 "Updating of LDAP Config. Password has been entered.")
             count = 1
-            users = {}
+            users = []
             while f'username_{count}' in session['data']:
-                users[f'user_{count}'] = {
+                user = {
                     'username': session['data'][f'username_{count}'],
                     'password': session['data'][f'userpwd_{count}']
                 }
+                users.append(user)
                 count += 1
             forward = {
                 'action': 'config',
                 'token': token.token,
                 'data': {
                     'service': 'ldap',
-                    'ip': session['data']['ldap'],
+                    'ip': session['data']['ldap_ip'],
                     'users': users
                 }
             }
             status = send_post(forward)
+            session.pop('data')
             if status[0] == 500:
                 return render_template('internal_error.html.j2'), 500
             elif not (status[0] == 20 or status[0] == 21):
                 return render_template('config.html.j2', service='LDAP', status=status[0], info=status[1])
-            session.pop('data')
-        else:
-            return render_template('config.html.j2', service='LDAP')
+
+        return render_template('config.html.j2', service='LDAP')
 
     def post(self):
         log.Main.info("Updating of LDAP Config. Password is not required.")
         count = 1
-        users = {}
+        users = []
         while f'username_{count}' in request.form:
-            users[f'user_{count}'] = {
+            user = {
                 'username': request.form[f'username_{count}'],
                 'password': request.form[f'userpwd_{count}']
             }
+            users.append(user)
             count += 1
         forward = {
             'action': 'config',
             'data': {
                 'service': 'ldap',
-                'ip': request.form['ldap'],
+                'ip': request.form['ldap_ip'],
                 'users': users
             }
         }
         status = send_post(forward)
+        session.pop('data')
         if status[0] == 500:
             return render_template('internal_error.html.j2'), 500
         elif not (status[0] == 20 or status[0] == 21):
@@ -303,11 +305,12 @@ class Config_Ecomm(MethodView):
                 }
             }
             status = send_post(forward)
+            session.pop('data')
             if status[0] == 500:
                 return render_template('internal_error.html.j2'), 500
             elif not (status[0] == 20 or status[0] == 21):
                 return render_template('config.html.j2', service='Ecommerce', status=status[0], info=status[1])
-            session.pop('data')
+
         return render_template('config.html.j2', service='Ecommerce')
 
     def post(self):
@@ -321,6 +324,7 @@ class Config_Ecomm(MethodView):
             }
         }
         status = send_post(forward)
+        session.pop('data')
         if status[0] == 500:
             return render_template('internal_error.html.j2'), 500
         elif not (status[0] == 20 or status[0] == 21):
@@ -340,17 +344,19 @@ class Config_DNS_Windows(MethodView):
                 'action': 'config',
                 'token': token.token,
                 'data': {
-                    'service': 'dnsw',
+                    'service': 'dns',
+                    'machine': 'windows',
                     'ip': session['data']['dnsw_ip'],
                     'domains': domains
                 }
             }
             status = send_post(forward)
+            session.pop('data')
             if status[0] == 500:
                 return render_template('internal_error.html.j2'), 500
             elif not (status[0] == 20 or status[0] == 21):
                 return render_template('config.html.j2', service='DNS - Windows', status=status[0], info=status[1])
-            session.pop('data')
+
         return render_template('config.html.j2', service='DNS - Windows')
 
     def post(self):
@@ -359,13 +365,16 @@ class Config_DNS_Windows(MethodView):
         domains = request.form['dnsw_domains'].split(';')
         forward = {
             'action': 'config',
+            'token': token.token,
             'data': {
-                'service': 'dnsw',
-                'ip': request.form['dnsw_ip'],
+                'service': 'dns',
+                'machine': 'windows',
+                'ip': session['data']['dnsw_ip'],
                 'domains': domains
             }
         }
         status = send_post(forward)
+        session.pop('data')
         if status[0] == 500:
             return render_template('internal_error.html.j2'), 500
         elif not (status[0] == 20 or status[0] == 21):
@@ -386,17 +395,19 @@ class Config_DNS_Linux(MethodView):
                 'action': 'config',
                 'token': token.token,
                 'data': {
-                    'service': 'dnsl',
+                    'service': 'dns',
+                    'machine': 'linux',
                     'ip': session['data']['dnsl_ip'],
                     'domains': domains
                 }
             }
             status = send_post(forward)
+            session.pop('data')
+
             if status[0] == 500:
                 return render_template('internal_error.html.j2'), 500
             elif not (status[0] == 20 or status[0] == 21):
                 return render_template('config.html.j2', service='DNS - Linux', status=status[0], info=status[1])
-            session.pop('data')
         return render_template('config.html.j2', service='DNS - Linux')
 
     def post(self):
@@ -406,12 +417,14 @@ class Config_DNS_Linux(MethodView):
         forward = {
             'action': 'config',
             'data': {
-                'service': 'dnsl',
+                'service': 'dns',
+                'machine': 'linux',
                 'ip': request.form['dnsl_ip'],
                 'domains': domains
             }
         }
         status = send_post(forward)
+        session.pop('data')
         if status[0] == 500:
             return render_template('internal_error.html.j2'), 500
         elif not (status[0] == 20 or status[0] == 21):
@@ -433,16 +446,17 @@ class Config_POP3(MethodView):
                 'data': {
                     'service': 'pop3',
                     'ip': session['data']['pop_ip'],
-                    'user': request.form['pop_user'],
-                    'password': request.form['pop_pwd']
+                    'username': session['data']['pop_user'],
+                    'password': session['data']['pop_pwd']
                 }
             }
             status = send_post(forward)
+            session.pop('data')
             if status[0] == 500:
                 return render_template('internal_error.html.j2'), 500
             elif not (status[0] == 20 or status[0] == 21):
                 return render_template('config.html.j2', service='POP3', status=status[0], info=status[1])
-            session.pop('data')
+
         return render_template('config.html.j2', service='POP3')
 
     def post(self):
@@ -453,11 +467,12 @@ class Config_POP3(MethodView):
             'data': {
                 'service': 'pop3',
                 'ip': request.form['pop_ip'],
-                'user': request.form['pop_user'],
+                'username': request.form['pop_user'],
                 'password': request.form['pop_pwd']
             }
         }
         status = send_post(forward)
+        session.pop('data')
         if status[0] == 500:
             return render_template('internal_error.html.j2'), 500
         elif not (status[0] == 20 or status[0] == 21):
@@ -485,11 +500,12 @@ class Config_SMTP(MethodView):
                 }
             }
             status = send_post(forward)
+            session.pop('data')
             if status[0] == 500:
                 return render_template('internal_error.html.j2'), 500
             elif not (status[0] == 20 or status[0] == 21):
                 return render_template('config.html.j2', service='SMTP', status=status[0], info=status[1])
-            session.pop('data')
+
         return render_template('config.html.j2', service='SMTP')
 
     def post(self):
@@ -506,6 +522,7 @@ class Config_SMTP(MethodView):
             }
         }
         status = send_post(forward)
+        session.pop('data')
         if status[0] == 500:
             return render_template('internal_error.html.j2'), 500
         elif not (status[0] == 20 or status[0] == 21):
@@ -531,12 +548,12 @@ class Config_Splunk(MethodView):
                 }
             }
             status = send_post(forward)
+            session.pop('data')
             if status[0] == 500:
                 return render_template('internal_error.html.j2'), 500
             elif not (status[0] == 20 or status[0] == 21):
                 return render_template('config.html.j2', service='Splunk', status=status[0], info=status[1])
 
-            session.pop('data')
         return render_template('config.html.j2', service='Splunk')
 
     def post(self):
@@ -550,6 +567,7 @@ class Config_Splunk(MethodView):
             }
         }
         status = send_post(forward)
+        session.pop('data')
         if status[0] == 500:
             return render_template('internal_error.html.j2'), 500
         elif not (status[0] == 20 or status[0] == 21):
@@ -588,6 +606,7 @@ def send_post(data):
     try:
         url = current_app.config["BACK_END_LOCATION"]
         headers = {'token': token.token}
+        print(data, flush=True)
         rsp = requests.post(
             url=f'http://{url}', json=data, headers=headers)
         data = json.loads(rsp.content)

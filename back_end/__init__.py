@@ -47,6 +47,7 @@ class Server(BaseHTTPRequestHandler):
 
         length = int(self.headers['content-length'])
         message = json.loads(self.rfile.read(length))
+        print(message)
         if (self.headers['token'] == token) or DEBUG:
             if message['action'] == 'score':
                 if action.score_service(message['data']):

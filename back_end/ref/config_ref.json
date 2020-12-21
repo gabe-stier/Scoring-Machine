@@ -21,7 +21,12 @@
     "data": {
         "service": "ldap",
         "ip": "1.1.1.1",
-        "users": []
+        "users": [
+            {
+                "username": "",
+                "password": ""
+            }
+        ]
     }
 }
 {
