@@ -13,24 +13,24 @@ from ldap import AUTH_UNKNOWN
 import mysql.connector as conn
 from nslookup import Nslookup
 
-from utilities import Loggers as log
-from utilities import Scores as Service
+from back_end.utilities import Loggers as log
+from back_end.utilities import Services
 
 
-def run_task(service: Service):
-    if service == Service.DNS_WINDOWS:
+def run_task(service: Services):
+    if service == Services.DNS_WINDOWS:
         score_dns_windows()
-    if service == Service.DNS_LINUX:
+    if service == Services.DNS_LINUX:
         score_dns_linux()
-    if service == Service.SPLUNK:
+    if service == Services.SPLUNK:
         score_splunk()
-    if service == Service.ECOMM:
+    if service == Services.ECOMM:
         score_ecomm()
-    if service == Service.LDAP:
+    if service == Services.LDAP:
         score_ldap()
-    if service == Service.POP3:
+    if service == Services.POP3:
         score_pop3()
-    if service == Service.SMTP:
+    if service == Services.SMTP:
         score_smtp()
 
 
@@ -63,14 +63,16 @@ def score_splunk():
         set_score(db, table_name, 2)
         log.Error.error(e)
 
+
 def get_ldap_info(db):
-        cur = db.cursor(buffered=True)
-        result = cur.execute('SELECT username, password FROM ldap_info')
-        if result is not None:
-            user = random.choice(result.fetchall())
-        else:
-            user = None
-        return user
+    cur = db.cursor(buffered=True)
+    result = cur.execute('SELECT username, password FROM ldap_info')
+    if result is not None:
+        user = random.choice(result.fetchall())
+    else:
+        user = None
+    return user
+
 
 def score_ldap():
     status = 0
@@ -162,16 +164,6 @@ def score_pop3():
         set_score(db, table_name, status)
 
 
-def get_receivers(db):
-    cur = db.cursor(buffered=True)
-    result = cur.execute('SELECT to_user FROM smtp_info')
-    if result is not None:
-        to_user = result.fetchall()
-    else:
-        to_user = None
-    return to_user
-
-
 def score_smtp():
     try:
         db = open_database()
@@ -179,23 +171,20 @@ def score_smtp():
         config.read('back_end/config/service.conf')
 
         sender = f"{config['SMTP']['from_user']}@{config['SMTP']['domain']}"
-        receivers = get_receivers(db)
         ip = config['SMTP']['ip']
         port = config['SMTP']['port']
         table = config['SMTP']['SQLTable']
+        receiver = f"{config['SMTP']['to_user']}@{config['SMTP']['domain']}"
 
-        if receivers is None:
-            raise Exception(
-                "Configuration has not been set yet for SMTP to be scored correctly")
         message = f'''
         From: <{sender}>
-        To: <{receivers[0]}>
+        To: <{receiver}>
         Subject: Scoring Message
         
         This message is used to score.
         '''
         smtpobj = smtplib.SMTP(ip, port)
-        smtpobj.sendmail(sender, receivers, message)
+        smtpobj.sendmail(sender, receiver, message)
         smtpobj.quit()
         status = 1
     except SMTPException:
@@ -271,7 +260,7 @@ def set_score(db, table, status):
 
     log.Scoring.info(f"Just scored {table} with a result of {bool_status}")
     cursor.execute(
-        f"INSERT INTO {table} (test_date, success) VALUES (\"{str(datetime.now())}\",\"{str(bool_status)}\")")#, (str(datetime.now()), bool_status))
+        f"INSERT INTO {table} (test_date, success) VALUES (\"{str(datetime.now())}\",\"{str(bool_status)}\")")  # , (str(datetime.now()), bool_status))
     db.commit()
     db.close()
 

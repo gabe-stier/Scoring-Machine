@@ -1,13 +1,13 @@
-from http.server import BaseHTTPRequestHandler, HTTPServer
-import json
 import cgi
+import json
 import os
+from http.server import BaseHTTPRequestHandler, HTTPServer
 from logging.config import dictConfig
 
-import actions as action
-from utilities import generate_token
-from utilities import Loggers as log
-from background import start_scoring
+import back_end.actions as action
+from back_end.background import start_scoring
+from back_end.utilities import Loggers as log
+from back_end.utilities import generate_token
 
 token = generate_token()
 
@@ -217,7 +217,6 @@ def setup_logging():
                 'handlers': ['main', 'web']}
         }
     })
-
 
 
 if __name__ == "__main__":

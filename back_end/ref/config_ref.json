@@ -1,8 +1,61 @@
 {
     "action": "config",
-    "data":{
+    "data": {
         "service": "dns",
-		"ip": "1.1.1.1",
-		"port": 53
+        "machine": "windows",
+        "ip": "1.1.1.1",
+        "domains": []
+    }
+}
+{
+    "action": "config",
+    "data": {
+        "service": "dns",
+        "machine": "linux",
+        "ip": "1.1.1.1",
+        "domains": []
+    }
+}
+{
+    "action": "config",
+    "data": {
+        "service": "ldap",
+        "ip": "1.1.1.1",
+        "users": []
+    }
+}
+{
+    "action": "config",
+    "data": {
+        "service": "ecomm",
+        "ip": "1.1.1.1",
+        "port": 80
+    }
+}
+{
+    "action": "config",
+    "data": {
+        "service": "splunk",
+        "ip": "1.1.1.1",
+        "port": 8000
+    }
+}
+{
+    "action": "config",
+    "data": {
+        "service": "pop3",
+        "ip": "1.1.1.1",
+        "username": "",
+        "password": ""
+    }
+}
+{
+    "action": "config",
+    "data": {
+        "service": "smtp",
+        "ip": "1.1.1.1",
+        "user 1": "",
+        "user 2": "",
+        "domain": ""
     }
 }

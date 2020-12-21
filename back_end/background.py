@@ -9,9 +9,10 @@ from threading import Thread
 import mysql.connector as conn
 from nslookup import Nslookup
 
-from scoring_tasks import (score_dns_linux, score_dns_windows, score_ecomm,
-                           score_ldap, score_pop3, score_smtp, score_splunk)
-from utilities import Loggers as log
+from back_end.scoring_tasks import (score_dns_linux, score_dns_windows,
+                                    score_ecomm, score_ldap, score_pop3,
+                                    score_smtp, score_splunk)
+from back_end.utilities import Loggers as log
 
 
 def splunk_loop():

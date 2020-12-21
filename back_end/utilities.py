@@ -48,7 +48,7 @@ class Loggers:
     Error = logging.getLogger('error')
 
 
-class Scores(Enum):
+class Services(Enum):
     SPLUNK = auto(),
     ECOMM = auto(),
     DNS_LINUX = auto(),

@@ -1,8 +1,30 @@
-import scoring_tasks as st
+import back_end.scoring_tasks as st
+import back_end.config_tasks as ct
 
 
 def update_config(data):
     service = data['service']
+    ip = data['ip']
+    if service.lower() == 'dns':
+        machine = data['machine']
+        if machine.lower() == 'linux':
+            ct.config_dns_linux(ip, data['domains'])
+        elif machine.lower() == 'windows':
+            ct.config_dns_windows(ip, data['domains'])
+        else:
+            return False
+    elif service.lower() == 'splunk':
+        ct.config_splunk(ip, data['port'])
+    elif service.lower() == 'ecomm':
+        ct.config_ecomm(ip, data['port'])
+    elif service.lower() == 'smtp':
+        ct.config_smtp(ip, data['user 1'], data['user 2'], data['domain'])
+    elif service.lower() == 'ldap':
+        ct.config_ldap(ip, data['users'])
+    elif service.lower() == 'pop3':
+        ct.config_pop3(ip, data['username'], data['password'])
+    else:
+        return False
     return True
 
 
