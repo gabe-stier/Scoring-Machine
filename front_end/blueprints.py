@@ -52,10 +52,6 @@ def score_page():
 
 
 class Score_LDAP(MethodView):
-    def get(self):
-        url_for('static', filename='base.css')
-        url_for('static', filename='scoring.css')
-        return render_template('score-page.html.j2', service='LDAP')
 
     def post(self):
         forward = {
@@ -68,15 +64,11 @@ class Score_LDAP(MethodView):
         if status[0] == 500:
             return render_template('internal_error.html.j2'), 500
         elif not (status[0] == 20 or status[0] == 22):
-            return redirect(url_for('score.ldap', status=status[0], info=status[1]))
+            return redirect(url_for('score_page', status=status[0], info=status[1]))
         return redirect(request.referrer)
 
 
 class Score_Ecomm(MethodView):
-    def get(self):
-        url_for('static', filename='base.css')
-        url_for('static', filename='scoring.css')
-        return render_template('score-page.html.j2', service='Ecommerce')
 
     def post(self):
         forward = {
@@ -89,15 +81,11 @@ class Score_Ecomm(MethodView):
         if status[0] == 500:
             return render_template('internal_error.html.j2'), 500
         elif not (status[0] == 20 or status[0] == 22):
-            return redirect(url_for('score.ecomm', status=status[0], info=status[1]))
+            return redirect(url_for('score_page', status=status[0], info=status[1]))
         return redirect(request.referrer)
 
 
 class Score_DNS_Windows(MethodView):
-    def get(self):
-        url_for('static', filename='base.css')
-        url_for('static', filename='scoring.css')
-        return render_template('score-page.html.j2', service='DNS - Windows')
 
     def post(self):
         forward = {
@@ -111,15 +99,11 @@ class Score_DNS_Windows(MethodView):
         if status[0] == 500:
             return render_template('internal_error.html.j2'), 500
         elif not (status[0] == 20 or status[0] == 22):
-            return redirect(url_for('score.dns_windows', status=status[0], info=status[1]))
+            return redirect(url_for('score_page', status=status[0], info=status[1]))
         return redirect(request.referrer)
 
 
 class Score_DNS_Linux(MethodView):
-    def get(self):
-        url_for('static', filename='base.css')
-        url_for('static', filename='scoring.css')
-        return render_template('score-page.html.j2', service='DNS - Linux')
 
     def post(self):
         forward = {
@@ -133,15 +117,11 @@ class Score_DNS_Linux(MethodView):
         if status[0] == 500:
             return render_template('internal_error.html.j2'), 500
         elif not (status[0] == 20 or status[0] == 22):
-            return redirect(url_for('score.dns_linux', status=status[0], info=status[1]))
+            return redirect(url_for('score_page', status=status[0], info=status[1]))
         return redirect(request.referrer)
 
 
 class Score_POP3(MethodView):
-    def get(self):
-        url_for('static', filename='base.css')
-        url_for('static', filename='scoring.css')
-        return render_template('score-page.html.j2', service='POP3')
 
     def post(self):
         forward = {
@@ -154,15 +134,11 @@ class Score_POP3(MethodView):
         if status[0] == 500:
             return render_template('internal_error.html.j2'), 500
         elif not (status[0] == 20 or status[0] == 22):
-            return redirect(url_for('score.pop3', status=status[0], info=status[1]))
+            return redirect(url_for('score_page', status=status[0], info=status[1]))
         return redirect(request.referrer)
 
 
 class Score_SMTP(MethodView):
-    def get(self):
-        url_for('static', filename='base.css')
-        url_for('static', filename='scoring.css')
-        return render_template('score-page.html.j2', service='SMTP')
 
     def post(self):
         forward = {
@@ -175,16 +151,11 @@ class Score_SMTP(MethodView):
         if status[0] == 500:
             return render_template('internal_error.html.j2'), 500
         elif not (status[0] == 20 or status[0] == 22):
-            return redirect(url_for('score.smtp', status=status[0], info=status[1]))
+            return redirect(url_for('score_page', status=status[0], info=status[1]))
         return redirect(request.referrer)
 
 
 class Score_Splunk(MethodView):
-    def get(self):
-        url_for('static', filename='base.css')
-        url_for('static', filename='scoring.css')
-        return render_template('score-page.html.j2', service='Splunk')
-
     def post(self):
         forward = {
             'action': 'score',
@@ -196,7 +167,7 @@ class Score_Splunk(MethodView):
         if status[0] == 500:
             return render_template('internal_error.html.j2'), 500
         elif not (status[0] == 20 or status[0] == 22):
-            return redirect(url_for('score.splunk', status=status[0], info=status[1]))
+            return redirect(url_for('score_page', status=status[0], info=status[1]))
         return redirect(request.referrer)
 
 
