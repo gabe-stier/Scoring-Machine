@@ -1,11 +1,10 @@
+import http
 import os
 from configparser import ConfigParser
-import http
-from nslookup import Nslookup
 from hashlib import sha3_512
 
-
 import mysql.connector as conn
+from nslookup import Nslookup
 
 from utilities import Loggers as log
 
