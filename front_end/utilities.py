@@ -5,12 +5,10 @@ Created on Nov 26, 2020
 '''
 
 import logging
-from hashlib import blake2b
 import os
 from datetime import datetime
-import mysql.connector as conn
 from enum import Enum, auto
-from configparser import ConfigParser
+from hashlib import blake2b
 
 cwd = os.getcwd()
 

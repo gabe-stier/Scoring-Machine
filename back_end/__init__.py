@@ -30,7 +30,6 @@ class Server(BaseHTTPRequestHandler):
         self.log_message()
         self.log_request(status_code=405, response_code=42)
         self.end_headers()
-        return
 
     def do_POST(self):
         self.log_message()
@@ -50,7 +49,7 @@ class Server(BaseHTTPRequestHandler):
 
         length = int(self.headers['content-length'])
         message = json.loads(self.rfile.read(length))
-        if (self.headers['token'] == token) or DEBUG == True:
+        if (self.headers['token'] == token) or DEBUG:
             if message['action'] == 'score':
                 if action.score_service(message['data']):
                     response = {
@@ -68,7 +67,7 @@ class Server(BaseHTTPRequestHandler):
                     self.response_code = 44
             elif message['action'] == 'config':
                 act = action.update_config(message['data'])
-                if act == True:
+                if act:
                     response = {
                         'response': "Accepted",
                         "code": 21,
@@ -125,10 +124,11 @@ class Server(BaseHTTPRequestHandler):
 def start(server_class=HTTPServer, handler_class=Server, port=5001):
     print("Starting Scoring Server", flush=True)
     global DEBUG
-    if os.environ['DEBUG'] == 'True':
-        DEBUG = True
-    else:
-        DEBUG = False
+    # if os.environ['DEBUG'] == 'True':
+    #     DEBUG = True
+    # else:
+    #     DEBUG = False
+    DEBUG = os.environ['DEBUG']
     setup_logging()
     start_scoring()
     server_address = ('', port)

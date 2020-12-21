@@ -1,20 +1,16 @@
-import asyncio
 import http
-import os
 import poplib
 import random
 import smtplib
-import time
 from configparser import ConfigParser
 from datetime import datetime
 from hashlib import sha3_512
 from smtplib import SMTPException
 from socket import timeout
-from threading import Thread
 
 import ldap
-import mysql.connector as conn
 from ldap import AUTH_UNKNOWN
+import mysql.connector as conn
 from nslookup import Nslookup
 
 from utilities import Loggers as log

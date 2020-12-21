@@ -113,14 +113,16 @@ def init_db():
     cur.execute('CREATE DATABASE IF NOT EXISTS scoring_engine')
     with open(f'{os.getcwd()}/sql/basic_db.sql') as f:
         schema = f.read()
-        results = cur.execute(schema, multi=True)
-        for result in results:
-            result
+        # results =
+        cur.execute(schema, multi=True)
+        # for result in results:
+        #     result
     with open(f'{os.getcwd()}/sql/views.sql') as f:
         schema = f.read()
-        results = cur.execute(schema, multi=True)
-        for result in results:
-            result
+        # results =
+        cur.execute(schema, multi=True)
+        # for result in results:
+        #     result
     db.commit()
     db.close()
 
