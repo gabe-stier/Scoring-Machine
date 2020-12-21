@@ -10,6 +10,7 @@ from utilities import Loggers as log
 
 
 def __config_task(config):
+    '''Writes config to file'''
     new_file_name = f'back_end/config/service.conf.new'
     old_file_name = f'back_end/config/service.conf'
     with open(new_file_name, 'w+') as new_file:
@@ -18,25 +19,29 @@ def __config_task(config):
 
 
 def config_splunk(ip: str, port: int):
+    '''Updates the splunk section of the config'''
     old_file_name = f'back_end/config/service.conf'
     config = ConfigParser()
-    print(config.sections(), flush=True)
     config.read(old_file_name)
     config['SPLUNK']['ip'] = ip
     config['SPLUNK']['port'] = port
     __config_task(config)
+    __set_splunk_default()
 
 
 def config_ecomm(ip: str, port: int):
+    '''Updates the ecomm section of the config'''
     old_file_name = f'back_end/config/service.conf'
     config = ConfigParser()
     config.read(old_file_name)
     config['ECOMMERCE']['ip'] = ip
     config['ECOMMERCE']['port'] = port
     __config_task(config)
+    __set_ecomm_default()
 
 
 def config_ldap(ip: str, users: list):
+    '''Updates the ldap section of the config'''
     old_file_name = f'back_end/config/service.conf'
     config = ConfigParser()
     config.read(old_file_name)
@@ -55,6 +60,7 @@ def config_ldap(ip: str, users: list):
 
 
 def config_smtp(ip: str, user_1: str, user_2: str, domain: str):
+    '''Updates the smtp section of the config'''
     old_file_name = f'back_end/config/service.conf'
     config = ConfigParser()
     config.read(old_file_name)
@@ -67,6 +73,7 @@ def config_smtp(ip: str, user_1: str, user_2: str, domain: str):
 
 
 def config_pop3(ip: str, username: str, password: str):
+    '''Updates the pop3 section of the config'''
     old_file_name = f'back_end/config/service.conf'
     config = ConfigParser()
     config.read(old_file_name)
@@ -77,24 +84,29 @@ def config_pop3(ip: str, username: str, password: str):
 
 
 def config_dns_windows(ip: str, domains: list):
+    '''Updates the Windows DNS section of the config'''
     old_file_name = f'back_end/config/service.conf'
     config = ConfigParser()
     config.read(old_file_name)
     config['WINDOWS_DNS']['ip'] = ip
     config['WINDOWS_DNS']['domains'] = ','.join(domains)
     __config_task(config)
+    __set_dns_windows_default()
 
 
 def config_dns_linux(ip: str, domains: list):
+    '''Updates the Linux DNS section of the config'''
     old_file_name = f'back_end/config/service.conf'
     config = ConfigParser()
     config.read(old_file_name)
     config['LINUX_DNS']['ip'] = ip
     config['LINUX_DNS']['domains'] = ','.join(domains)
     __config_task(config)
+    __set_dns_linux_default()
 
 
 def open_database():
+    '''Creates a connection to the database used to store the scores.'''
     db = None
     config = read_config()
     db = conn.connect(
@@ -107,6 +119,7 @@ def open_database():
 
 
 def read_config():
+    '''Reads the application.conf file. '''
     with open("config/application.conf", 'r') as f:
         content = f.read()
         paths = content.split("\n")
@@ -119,6 +132,7 @@ def read_config():
 
 
 def __set_splunk_default():
+    '''Sets the defaults after an update occurs'''
     config = ConfigParser()
     config.read('back_end/config/service.conf')
 
@@ -143,6 +157,7 @@ def __set_splunk_default():
 
 
 def __set_dns_linux_default():
+    '''Sets the defaults after an update occurs'''
     config = ConfigParser()
     config.read('back_end/config/service.conf')
 
@@ -164,6 +179,7 @@ def __set_dns_linux_default():
 
 
 def __set_dns_windows_default():
+    '''Sets the defaults after an update occurs'''
     config = ConfigParser()
     config.read('back_end/config/service.conf')
 
@@ -185,6 +201,7 @@ def __set_dns_windows_default():
 
 
 def __set_ecomm_default():
+    '''Sets the defaults after an update occurs'''
     config = ConfigParser()
     config.read('back_end/config/service.conf')
 

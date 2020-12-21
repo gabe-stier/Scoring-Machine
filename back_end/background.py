@@ -1,3 +1,4 @@
+'''The location of that background threads. These threads run anywhere between 45 seconds to 2 minutes.'''
 import http
 import os
 import random
@@ -16,6 +17,7 @@ from utilities import Loggers as log
 
 
 def splunk_loop():
+    '''Loop that scores Splunk'''
     while True:
         random_sleep = random.randint(45, 120)
         log.Scoring.info(
@@ -25,6 +27,7 @@ def splunk_loop():
 
 
 def ecomm_loop():
+    '''Loop that scores Ecommerce'''
     while True:
         random_sleep = random.randint(45, 120)
         log.Scoring.info(
@@ -34,6 +37,7 @@ def ecomm_loop():
 
 
 def dns_linux_loop():
+    '''Loop that scores Linux DNS'''
     while True:
         random_sleep = random.randint(45, 120)
         log.Scoring.info(
@@ -43,6 +47,7 @@ def dns_linux_loop():
 
 
 def dns_windows_loop():
+    '''Loop that scores Windows DNS'''
     while True:
 
         random_sleep = random.randint(45, 120)
@@ -53,6 +58,7 @@ def dns_windows_loop():
 
 
 def smtp_loop():
+    '''Loop that scores SMTP'''
     while True:
         random_sleep = random.randint(45, 120)
         log.Scoring.info(
@@ -62,6 +68,7 @@ def smtp_loop():
 
 
 def pop3_loop():
+    '''Loop that scores POP3'''
     while True:
         random_sleep = random.randint(45, 120)
         log.Scoring.info(
@@ -71,6 +78,7 @@ def pop3_loop():
 
 
 def ldap_loop():
+    '''Loop that scores LDAP'''
     while True:
         random_sleep = random.randint(45, 120)
         log.Scoring.info(
@@ -80,6 +88,7 @@ def ldap_loop():
 
 
 def read_config():
+    '''Reads the application.conf file. '''
     with open("config/application.conf", 'r') as f:
         content = f.read()
         paths = content.split("\n")
@@ -92,6 +101,7 @@ def read_config():
 
 
 def open_database():
+    '''Creates a connection to the database used to store the scores.'''
     db = None
     config = read_config()
     db = conn.connect(
@@ -104,6 +114,7 @@ def open_database():
 
 
 def init_db():
+    '''Connects to the MySQL database and creates all of the needed tables'''
     config = read_config()
     db = conn.connect(
         host=config['MYSQL_HOST'],
@@ -127,6 +138,7 @@ def init_db():
 
 
 def build_defaults():
+    '''Creates the scoring objectives of DNS, Splunk, and Ecomm'''
     print('Creating Defaults')
     config = ConfigParser()
     config.read('back_end/config/service.conf')
@@ -203,6 +215,7 @@ def build_defaults():
 
 
 def start_scoring():
+    '''Thread Controller'''
     init_db()
     build_defaults()
 
@@ -222,4 +235,4 @@ def start_scoring():
         dnsl_thread.start()
         pop3_thread.start()
         smtp_thread.start()
-    # start_threads()
+    start_threads()

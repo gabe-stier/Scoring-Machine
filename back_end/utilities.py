@@ -6,6 +6,7 @@ from hashlib import blake2b
 
 
 def read_config():
+    '''Reads the application.conf file.'''
     with open("config/application.conf", 'r') as f:
         content = f.read()
         paths = content.split("\n")
@@ -21,6 +22,7 @@ config = read_config()
 
 
 def generate_token():
+    '''Generates a token that is used between Flask and the Request Server'''
     if os.path.exists('/tmp/scoring_token'):
         with open('/tmp/scoring_token', 'r') as f:
             return f.read()
@@ -35,9 +37,7 @@ def generate_token():
 
 
 class Loggers:
-    '''
-        Log handlers used for this scoring machine
-    '''
+    '''Log handlers used for this scoring machine'''
     Main = logging.getLogger("main")
     Scoring = logging.getLogger("scoring")
     Web = logging.getLogger("web")
@@ -45,6 +45,7 @@ class Loggers:
 
 
 class Services(Enum):
+    '''List of the Services used.'''
     SPLUNK = auto(),
     ECOMM = auto(),
     DNS_LINUX = auto(),

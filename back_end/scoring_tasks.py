@@ -14,27 +14,10 @@ import mysql.connector as conn
 from nslookup import Nslookup
 
 from utilities import Loggers as log
-from utilities import Services
-
-
-def run_task(service: Services):
-    if service == Services.DNS_WINDOWS:
-        score_dns_windows()
-    if service == Services.DNS_LINUX:
-        score_dns_linux()
-    if service == Services.SPLUNK:
-        score_splunk()
-    if service == Services.ECOMM:
-        score_ecomm()
-    if service == Services.LDAP:
-        score_ldap()
-    if service == Services.POP3:
-        score_pop3()
-    if service == Services.SMTP:
-        score_smtp()
 
 
 def score_splunk():
+    '''Scores Splunk'''
     config = ConfigParser()
     config.read('back_end/config/service.conf')
 
@@ -65,6 +48,7 @@ def score_splunk():
 
 
 def get_ldap_info(db):
+    '''Gets user information to test ldap connection'''
     cur = db.cursor(buffered=True)
     result = cur.execute('SELECT username, password FROM ldap_info')
     if result is not None:
@@ -75,6 +59,7 @@ def get_ldap_info(db):
 
 
 def score_ldap():
+    '''Scores LDAP'''
     status = 0
     config = ConfigParser()
     config.read('back_end/config/service.conf')
@@ -104,6 +89,7 @@ def score_ldap():
 
 
 def score_ecomm():
+    '''Scores Ecomm'''
     config = ConfigParser()
     config.read('back_end/config/service.conf')
 
@@ -134,6 +120,7 @@ def score_ecomm():
 
 
 def score_pop3():
+    '''Scores POP3'''
     db = open_database()
     config = ConfigParser()
     config.read('back_end/config/service.conf')
@@ -165,6 +152,7 @@ def score_pop3():
 
 
 def score_smtp():
+    '''Scores SMTP'''
     try:
         db = open_database()
         config = ConfigParser()
@@ -197,6 +185,7 @@ def score_smtp():
 
 
 def score_dns_linux():
+    '''Scores Linux DNS'''
     config = ConfigParser()
     config.read('back_end/config/service.conf')
 
@@ -223,6 +212,7 @@ def score_dns_linux():
 
 
 def score_dns_windows():
+    '''Scores Windows DNS'''
     config = ConfigParser()
     config.read('back_end/config/service.conf')
 
@@ -249,6 +239,8 @@ def score_dns_windows():
 
 
 def set_score(db, table, status):
+    '''Connection to the database.
+    Sets the score in the database.'''
     bool_status = 'Error'
     cursor = db.cursor(buffered=True)
     if status == 1:
@@ -266,6 +258,7 @@ def set_score(db, table, status):
 
 
 def open_database():
+    '''Creates a connection to the database used to store the scores.'''
     db = None
     config = read_config()
     db = conn.connect(
@@ -278,6 +271,7 @@ def open_database():
 
 
 def read_config():
+    '''Reads the application.conf file. '''
     with open("config/application.conf", 'r') as f:
         content = f.read()
         paths = content.split("\n")
