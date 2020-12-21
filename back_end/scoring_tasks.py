@@ -2,10 +2,10 @@ import http
 import poplib
 import random
 import smtplib
+from smtplib import SMTPException
 from configparser import ConfigParser
 from datetime import datetime
 from hashlib import sha3_512
-from smtplib import SMTPException
 from socket import timeout
 
 import ldap

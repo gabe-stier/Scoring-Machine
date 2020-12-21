@@ -1,13 +1,11 @@
 from http.server import BaseHTTPRequestHandler, HTTPServer
-import socketserver
 import json
 import cgi
 import os
-import logging
 from logging.config import dictConfig
 
 import actions as action
-from utilities import generate_token,config
+from utilities import generate_token
 from utilities import Loggers as log
 from background import start_scoring
 

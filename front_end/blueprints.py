@@ -215,7 +215,7 @@ class Config_Login(MethodView):
         redirect_loc = False
         if 'redirect_loc' in request.args:
             redirect_loc = request.args.get('redirect_loc')
-        if redirect_loc == False:
+        if not redirect_loc:
             return render_template('internal_error.html.j2')
         if pwd == current_app.config['CONFIG_PASSWORD']:
             log.Main.info(
