@@ -7,17 +7,17 @@ from logging.config import dictConfig
 from flask import Flask
 from flask import render_template, request, url_for
 
-import front_end.blueprints as bp
-from front_end.database import get_last_score
-from front_end.utilities import Loggers as log
-from front_end.utilities import cwd
+import scoring_engine.front_end.blueprints as bp
+from scoring_engine.front_end.database import get_last_score
+from scoring_engine.front_end.utilities import Loggers as log
+from scoring_engine.front_end.utilities import cwd
 
 
 def app():
     '''Main function of the Flask website'''
     flask_app = Flask(__name__)
     flask_app.config.from_pyfile(os.path.join(
-        cwd, 'config/application.conf'))
+        cwd, 'scoring_engine/config/application.conf'))
     flask_app.secret_key = b'tr&6aH+tripRa!rUm9Ju'
 
     @flask_app.route('/')

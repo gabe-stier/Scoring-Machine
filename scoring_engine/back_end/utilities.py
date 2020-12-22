@@ -7,7 +7,7 @@ from hashlib import blake2b
 
 def read_config():
     '''Reads the application.conf file.'''
-    with open("config/application.conf", 'r') as f:
+    with open("scoring_engine/config/application.conf", 'r') as f:
         content = f.read()
         paths = content.split("\n")
         config_dict = {}

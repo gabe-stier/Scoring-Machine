@@ -1,6 +1,6 @@
 '''File that handles all the request actions that come to the server.'''
-import scoring_tasks as st
-import config_tasks as ct
+import scoring_engine.back_end.scoring_tasks as st
+import scoring_engine.back_end.config_tasks as ct
 
 
 def update_config(data):

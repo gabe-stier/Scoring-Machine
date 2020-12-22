@@ -1,0 +1,8 @@
+include requirements.txt
+recursive-include scoring_engine/sql *.sql
+recursive-include scoring_engine/config *.*
+recursive-include scoring_engine/front_end/sql *.*
+recursive-include scoring_engine/front_end/static *.*
+recursive-include scoring_engine/front_end/templates *.*
+recursive-include scoring_engine/back_end/config *.*
+recursive-include scoring_engine/back_end/etc *.*

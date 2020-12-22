@@ -10,9 +10,9 @@ from flask import (Blueprint, current_app, make_response, redirect,
                    render_template, request, session, url_for)
 from flask.views import MethodView
 
-from front_end.database import get_last_score
-from front_end.utilities import Loggers as log
-from front_end.utilities import Token
+from scoring_engine.front_end.database import get_last_score
+from scoring_engine.front_end.utilities import Loggers as log
+from scoring_engine.front_end.utilities import Token
 
 token = Token()
 

@@ -1,2 +1,5 @@
 .vscode
 .dccache
+scoring_engine.egg-info
+dist
+build

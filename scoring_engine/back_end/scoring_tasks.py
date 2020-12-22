@@ -13,13 +13,13 @@ from ldap import AUTH_UNKNOWN
 import mysql.connector as conn
 from nslookup import Nslookup
 
-from utilities import Loggers as log
+from scoring_engine.back_end.utilities import Loggers as log
 
 
 def score_splunk():
     '''Scores Splunk'''
     config = ConfigParser()
-    config.read('back_end/config/service.conf')
+    config.read('scoring_engine/back_end/config/service.conf')
 
     ip = config['SPLUNK']['ip']
     table_name = config['SPLUNK']['sqltable']
@@ -34,7 +34,7 @@ def score_splunk():
         site_string = f'{site_response.getheaders()[0]}\n\nStatus: {site_response.status}\n\n{site_response.read()}'
         site_hash = sha3_512()
         site_hash.update(site_string.encode())
-        with open(f'back_end/{hash_file}', 'r') as f:
+        with open(f'scoring_engine/back_end/{hash_file}', 'r') as f:
             good_hash = f.read()
             if good_hash == site_hash.hexdigest():
                 set_score(db, table_name, 1)
@@ -62,7 +62,7 @@ def score_ldap():
     '''Scores LDAP'''
     status = 0
     config = ConfigParser()
-    config.read('back_end/config/service.conf')
+    config.read('scoring_engine/back_end/config/service.conf')
 
     ip = config['LDAP']['ip']
     table = config['LDAP']['SQLTable']
@@ -91,7 +91,7 @@ def score_ldap():
 def score_ecomm():
     '''Scores Ecomm'''
     config = ConfigParser()
-    config.read('back_end/config/service.conf')
+    config.read('scoring_engine/back_end/config/service.conf')
 
     ip = config['ECOMMERCE']['ip']
     table_name = config['ECOMMERCE']['sqltable']
@@ -106,7 +106,7 @@ def score_ecomm():
         site_string = f'{site_response.getheaders()[0]}\n\nStatus: {site_response.status}\n\n{site_response.read()}'
         site_hash = sha3_512()
         site_hash.update(site_string.encode())
-        with open(f'back_end/{hash_file}', 'r') as f:
+        with open(f'scoring_engine/back_end/{hash_file}', 'r') as f:
             good_hash = f.read()
             if good_hash == site_hash.hexdigest():
                 set_score(db, table_name, 1)
@@ -123,7 +123,7 @@ def score_pop3():
     '''Scores POP3'''
     db = open_database()
     config = ConfigParser()
-    config.read('back_end/config/service.conf')
+    config.read('scoring_engine/back_end/config/service.conf')
     ip = config['POP3']['ip']
     port = config['POP3']['port']
     table_name = config['POP3']['SQLTable']
@@ -156,7 +156,7 @@ def score_smtp():
     try:
         db = open_database()
         config = ConfigParser()
-        config.read('back_end/config/service.conf')
+        config.read('scoring_engine/back_end/config/service.conf')
 
         sender = f"{config['SMTP']['from_user']}@{config['SMTP']['domain']}"
         ip = config['SMTP']['ip']
@@ -187,7 +187,7 @@ def score_smtp():
 def score_dns_linux():
     '''Scores Linux DNS'''
     config = ConfigParser()
-    config.read('back_end/config/service.conf')
+    config.read('scoring_engine/back_end/config/service.conf')
 
     ip = config['LINUX_DNS']['ip']
     table = config['LINUX_DNS']['sqltable']
@@ -201,7 +201,7 @@ def score_dns_linux():
         answer = dns_query.dns_lookup(domain)
     except Exception as e:
         log.Error.error(e)
-    file_name = f'back_end/etc/scoring/{domain}.dns'
+    file_name = f'scoring_engine/back_end/etc/scoring/{domain}.dns'
     with open(file_name, 'r') as f:
         good_ans = f.read()
         str_ans = f'{answer.answer}\n'
@@ -214,7 +214,7 @@ def score_dns_linux():
 def score_dns_windows():
     '''Scores Windows DNS'''
     config = ConfigParser()
-    config.read('back_end/config/service.conf')
+    config.read('scoring_engine/back_end/config/service.conf')
 
     ip = config['WINDOWS_DNS']['ip']
     table = config['WINDOWS_DNS']['sqltable']
@@ -228,7 +228,7 @@ def score_dns_windows():
         answer = dns_query.dns_lookup(domain)
     except Exception as e:
         log.Error.error(e)
-    file_name = f'back_end/etc/scoring/{domain}.dns'
+    file_name = f'scoring_engine/back_end/etc/scoring/{domain}.dns'
     with open(file_name, 'r') as f:
         good_ans = f.read()
         str_ans = f'{answer.answer}\n'
@@ -272,7 +272,7 @@ def open_database():
 
 def read_config():
     '''Reads the application.conf file. '''
-    with open("config/application.conf", 'r') as f:
+    with open("scoring_engine/config/application.conf", 'r') as f:
         content = f.read()
         paths = content.split("\n")
         config_dict = {}

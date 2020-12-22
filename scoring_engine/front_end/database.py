@@ -1,7 +1,7 @@
 import mysql.connector as conn
 
-from front_end.utilities import Loggers as log
-from front_end.utilities import Scores as Service
+from scoring_engine.front_end.utilities import Loggers as log
+from scoring_engine.front_end.utilities import Scores as Service
 
 
 def open_database():
@@ -22,7 +22,7 @@ def open_database():
 
 def read_config():
     '''Reads the configuration of the application'''
-    with open("config/application.conf", 'r') as f:
+    with open("scoring_engine/config/application.conf", 'r') as f:
         content = f.read()
         paths = content.split("\n")
         config_dict = {}

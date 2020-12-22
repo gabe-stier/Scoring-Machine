@@ -5,13 +5,13 @@ import os
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from logging.config import dictConfig
 
-import actions as action
-from background import start_scoring
-from utilities import Loggers as log
-from utilities import generate_token
+import scoring_engine.back_end.actions as action
+from scoring_engine.back_end.utilities import generate_token
+from scoring_engine.back_end.background import start_scoring
+from scoring_engine.back_end.utilities import Loggers as log
 
 token = generate_token()
-
+httpd = None
 DEBUG = False
 
 
@@ -135,7 +135,7 @@ class Server(BaseHTTPRequestHandler):
 def start(server_class=HTTPServer, handler_class=Server, port=5001):
     '''Main function that starts the request server'''
     print("Starting Scoring Server", flush=True)
-    global DEBUG
+    global DEBUG, httpd
     DEBUG = os.environ['DEBUG']
     setup_logging()
     start_scoring()
@@ -144,6 +144,11 @@ def start(server_class=HTTPServer, handler_class=Server, port=5001):
 
     print(f'Starting httpd on port {server_address}...', flush=True)
     httpd.serve_forever()
+
+
+def stop():
+    global httpd
+    httpd.shutdown()
 
 
 def setup_logging():
