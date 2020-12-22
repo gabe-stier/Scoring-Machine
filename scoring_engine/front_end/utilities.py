@@ -36,7 +36,6 @@ class Token:
                 m.update(str(datetime.now()).encode())
                 token = m.hexdigest()
                 f.write(token)
-                print(token, flush=True)
                 self.token = token
 
 

@@ -7,7 +7,7 @@ from logging.config import dictConfig
 from flask import Flask
 from flask import render_template, request, url_for
 
-import scoring_engine.front_end.blueprints as bp
+from scoring_engine.front_end import blueprints as bp
 from scoring_engine.front_end.database import get_last_score
 from scoring_engine.front_end.utilities import Loggers as log
 from scoring_engine.front_end.utilities import cwd
@@ -16,8 +16,7 @@ from scoring_engine.front_end.utilities import cwd
 def app():
     '''Main function of the Flask website'''
     flask_app = Flask(__name__)
-    flask_app.config.from_pyfile(os.path.join(
-        cwd, 'scoring_engine/config/application.conf'))
+    flask_app.config.from_pyfile('/usr/local/scoring_engine/application.conf')
     flask_app.secret_key = b'tr&6aH+tripRa!rUm9Ju'
 
     @flask_app.route('/')
@@ -46,7 +45,6 @@ def app():
 
     def internal_error(e):
         '''Internal Error page'''
-        print(e)
         log.Error.error(e.get_response())
         return render_template('internal_error.html.j2'), 500
 
@@ -67,14 +65,14 @@ def setup_logging():
     except FileExistsError as e:
         pass
     except Exception as e:
-        print(e)
+        print('Front End Error \\/', e, sep='\n')
     try:
         os.mkdir('/var/log/scoring-machine/web-page', mode=0o666)
 
     except FileExistsError as e:
         pass
     except Exception as e:
-        print(e)
+        print('Front End Error \\/', e, sep='\n')
 
     dictConfig({
         'version': 1,
@@ -161,7 +159,6 @@ def score_page():
         status = get_last_score()
     except Exception as e:
         log.Error.error(e)
-        print(e, flush=True)
     status = status[0]
     dnsl_srv = return_bool(status[0])
     dnsw_srv = return_bool(status[1])

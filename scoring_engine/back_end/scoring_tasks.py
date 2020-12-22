@@ -19,8 +19,8 @@ from scoring_engine.back_end.utilities import Loggers as log
 def score_splunk():
     '''Scores Splunk'''
     config = ConfigParser()
-    config.read('scoring_engine/back_end/config/service.conf')
-
+    config.read('/usr/local/scoring_engine/service.conf')
+    log.Scoring.info('Attempting to score Splunk.')
     ip = config['SPLUNK']['ip']
     table_name = config['SPLUNK']['sqltable']
     hash_file = config['SPLUNK']['hashfile']
@@ -38,12 +38,15 @@ def score_splunk():
             good_hash = f.read()
             if good_hash == site_hash.hexdigest():
                 set_score(db, table_name, 1)
+                log.Scoring.info('Score of Splunk returned with a "Success"')
             else:
                 set_score(db, table_name, 0)
+                log.Scoring.info('Score of Splunk returned with a "Fail"')
     except timeout:
         set_score(db, table_name, 0)
     except Exception as e:
         set_score(db, table_name, 2)
+        log.Scoring.info('Score of Splunk returned with an "Error"')
         log.Error.error(e)
 
 
@@ -55,6 +58,7 @@ def get_ldap_info(db):
         user = random.choice(result.fetchall())
     else:
         user = None
+    log.Scoring.info(f'Scoring LDAP with the user account of {user} ')
     return user
 
 
@@ -62,7 +66,8 @@ def score_ldap():
     '''Scores LDAP'''
     status = 0
     config = ConfigParser()
-    config.read('scoring_engine/back_end/config/service.conf')
+    config.read('/usr/local/scoring_engine/service.conf')
+    log.Scoring.info('Attempting to score LDAP')
 
     ip = config['LDAP']['ip']
     table = config['LDAP']['SQLTable']
@@ -78,12 +83,14 @@ def score_ldap():
                 "Configuration has not been set yet for LDAP to be scored correctly")
         connection.simple_bind_s(user[0], user[1])
         status = 1
+        log.Scoring.info('Score of LDAP returned with a "Success"')
     except AUTH_UNKNOWN:
         status = 0
+        log.Scoring.info('Score of LDAP returned with a "Fail"')
     except Exception as e:
         log.Error.error(e)
         status = 2
-        print(e)
+        log.Scoring.info('Score of LDAP returned with an "Error"')
     finally:
         set_score(db, table, status)
 
@@ -91,7 +98,8 @@ def score_ldap():
 def score_ecomm():
     '''Scores Ecomm'''
     config = ConfigParser()
-    config.read('scoring_engine/back_end/config/service.conf')
+    config.read('/usr/local/scoring_engine/service.conf')
+    log.Scoring.info('Attempting to score Ecommerce')
 
     ip = config['ECOMMERCE']['ip']
     table_name = config['ECOMMERCE']['sqltable']
@@ -110,12 +118,17 @@ def score_ecomm():
             good_hash = f.read()
             if good_hash == site_hash.hexdigest():
                 set_score(db, table_name, 1)
+                log.Scoring.info(
+                    'Score of Ecommerce returned with a "Success"')
             else:
                 set_score(db, table_name, 0)
+                log.Scoring.info('Score of Ecommerce returned with a "Fail"')
     except timeout:
         set_score(db, table_name, 0)
+        log.Scoring.info('Score of Ecommerce returned with a "Fail"')
     except Exception as e:
         set_score(db, table_name, 2)
+        log.Scoring.info('Score of Ecommerce returned with an "Error"')
         log.Error.error(e)
 
 
@@ -123,7 +136,9 @@ def score_pop3():
     '''Scores POP3'''
     db = open_database()
     config = ConfigParser()
-    config.read('scoring_engine/back_end/config/service.conf')
+    config.read('/usr/local/scoring_engine/service.conf')
+    log.Scoring.info('Attempting to score POP3')
+
     ip = config['POP3']['ip']
     port = config['POP3']['port']
     table_name = config['POP3']['SQLTable']
@@ -141,11 +156,14 @@ def score_pop3():
         sender = f"{config['SMTP']['from_user']}@{config['SMTP']['domain']}"
         if f'From: {sender}' in body:
             status = 1
+            log.Scoring.info('Score of POP3 returned with a "Success"')
         else:
             status = 0
+            log.Scoring.info('Score of POP3 returned with a "Fail"')
         pop.quit()
     except Exception as e:
         status = 2
+        log.Scoring.info('Score of POP3 returned with an "Error"')
         log.Error.error(e)
     finally:
         set_score(db, table_name, status)
@@ -156,7 +174,8 @@ def score_smtp():
     try:
         db = open_database()
         config = ConfigParser()
-        config.read('scoring_engine/back_end/config/service.conf')
+        config.read('/usr/local/scoring_engine/service.conf')
+        log.Scoring.info('Attempting to score SMTP')
 
         sender = f"{config['SMTP']['from_user']}@{config['SMTP']['domain']}"
         ip = config['SMTP']['ip']
@@ -175,11 +194,14 @@ def score_smtp():
         smtpobj.sendmail(sender, receiver, message)
         smtpobj.quit()
         status = 1
+        log.Scoring.info('Score of SMTP returned with a "Success"')
     except SMTPException:
         status = 0
+        log.Scoring.info('Score of SMTP returned with a "Fail"')
     except Exception as e:
         log.Error.error(e)
         status = 2
+        log.Scoring.info('Score of SMTP returned with an "Error"')
     finally:
         set_score(db, table, status)
 
@@ -187,7 +209,8 @@ def score_smtp():
 def score_dns_linux():
     '''Scores Linux DNS'''
     config = ConfigParser()
-    config.read('scoring_engine/back_end/config/service.conf')
+    config.read('/usr/local/scoring_engine/service.conf')
+    log.Scoring.info('Attempting to score Linux DNS')
 
     ip = config['LINUX_DNS']['ip']
     table = config['LINUX_DNS']['sqltable']
@@ -199,22 +222,28 @@ def score_dns_linux():
     try:
         domain = random.choice(domains)
         answer = dns_query.dns_lookup(domain)
+        file_name = f'scoring_engine/back_end/etc/scoring/{domain}.dns'
+        with open(file_name, 'r') as f:
+            good_ans = f.read()
+            str_ans = f'{answer.answer}\n'
+            if good_ans == str_ans:
+                set_score(db, table, 1)
+                log.Scoring.info(
+                    'Score of Linux DNS returned with a "Success"')
+            else:
+                set_score(db, table, 0)
+                log.Scoring.info('Score of Linux DNS returned with a "Fail"')
     except Exception as e:
         log.Error.error(e)
-    file_name = f'scoring_engine/back_end/etc/scoring/{domain}.dns'
-    with open(file_name, 'r') as f:
-        good_ans = f.read()
-        str_ans = f'{answer.answer}\n'
-        if good_ans == str_ans:
-            set_score(db, table, 1)
-        else:
-            set_score(db, table, 0)
+        set_score(db, table, 2)
+        log.Scoring.info('Score of Linux DNS returned with an "Error"')
 
 
 def score_dns_windows():
     '''Scores Windows DNS'''
     config = ConfigParser()
-    config.read('scoring_engine/back_end/config/service.conf')
+    config.read('/usr/local/scoring_engine/service.conf')
+    log.Scoring.info('Attempting to score Windows DNS')
 
     ip = config['WINDOWS_DNS']['ip']
     table = config['WINDOWS_DNS']['sqltable']
@@ -226,16 +255,21 @@ def score_dns_windows():
     try:
         domain = random.choice(domains)
         answer = dns_query.dns_lookup(domain)
+        file_name = f'scoring_engine/back_end/etc/scoring/{domain}.dns'
+        with open(file_name, 'r') as f:
+            good_ans = f.read()
+            str_ans = f'{answer.answer}\n'
+            if good_ans == str_ans:
+                set_score(db, table, 1)
+                log.Scoring.info(
+                    'Score of Windows DNS returned with a "Success"')
+            else:
+                set_score(db, table, 0)
+                log.Scoring.info('Score of Windows DNS returned with a "Fail"')
     except Exception as e:
         log.Error.error(e)
-    file_name = f'scoring_engine/back_end/etc/scoring/{domain}.dns'
-    with open(file_name, 'r') as f:
-        good_ans = f.read()
-        str_ans = f'{answer.answer}\n'
-        if good_ans == str_ans:
-            set_score(db, table, 1)
-        else:
-            set_score(db, table, 0)
+        set_score(db, table, 2)
+        log.Scoring.info('Score of Windows DNS returned with an "Error"')
 
 
 def set_score(db, table, status):
@@ -259,20 +293,26 @@ def set_score(db, table, status):
 
 def open_database():
     '''Creates a connection to the database used to store the scores.'''
+    log.Main.debug('Attempting to open connection to database to update scores.')
     db = None
-    config = read_config()
-    db = conn.connect(
-        host=config['MYSQL_HOST'],
-        username=config['MYSQL_USER'],
-        password=config['MYSQL_PASSWORD'],
-        database='scoring_engine'
-    )
-    return db
+    try:
+        config = read_config()
+        db = conn.connect(
+            host=config['MYSQL_HOST'],
+            username=config['MYSQL_USER'],
+            password=config['MYSQL_PASSWORD'],
+            database='scoring_engine'
+        )
+    except Exception as e:
+        log.Error.error(e)
+        log.Main.debug('Failed to connecto to database.')
+    finally:
+        return db
 
 
 def read_config():
     '''Reads the application.conf file. '''
-    with open("scoring_engine/config/application.conf", 'r') as f:
+    with open("/usr/local/scoring_engine/application.conf", 'r') as f:
         content = f.read()
         paths = content.split("\n")
         config_dict = {}

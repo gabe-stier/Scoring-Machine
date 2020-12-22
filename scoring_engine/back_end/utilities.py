@@ -1,20 +1,22 @@
+'''Module that contains all the items that are used within each sub-module'''
+
 import logging
 import os
 from datetime import datetime
 from enum import Enum, auto
 from hashlib import blake2b
+from shutil import copyfile
 
 
 def read_config():
     '''Reads the application.conf file.'''
-    with open("scoring_engine/config/application.conf", 'r') as f:
+    with open("/usr/local/scoring_engine/application.conf", 'r') as f:
         content = f.read()
         paths = content.split("\n")
         config_dict = {}
         for path in paths:
             setting = path.split(" = ")
             config_dict[setting[0]] = setting[1].replace('\'', '')
-
     return config_dict
 
 
@@ -32,7 +34,6 @@ def generate_token():
             m.update(str(datetime.now()).encode())
             token = m.hexdigest()
             f.write(token)
-            print(token, flush=True)
             return token
 
 

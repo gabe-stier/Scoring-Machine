@@ -11,8 +11,8 @@ import mysql.connector as conn
 from nslookup import Nslookup
 
 from scoring_engine.back_end.scoring_tasks import (score_dns_linux, score_dns_windows,
-                           score_ecomm, score_ldap, score_pop3,
-                           score_smtp, score_splunk)
+                                                   score_ecomm, score_ldap, score_pop3,
+                                                   score_smtp, score_splunk)
 from scoring_engine.back_end.utilities import Loggers as log
 
 
@@ -89,7 +89,7 @@ def ldap_loop():
 
 def read_config():
     '''Reads the application.conf file. '''
-    with open("scoring_engine/config/application.conf", 'r') as f:
+    with open("/usr/local/scoring_engine/application.conf", 'r') as f:
         content = f.read()
         paths = content.split("\n")
         config_dict = {}
@@ -139,13 +139,13 @@ def init_db():
 
 def build_defaults():
     '''Creates the scoring objectives of DNS, Splunk, and Ecomm'''
-    print('Creating Defaults')
+    log.Main.info('Creating Defaults')
     config = ConfigParser()
-    config.read('scoring_engine/back_end/config/service.conf')
+    config.read('/usr/local/scoring_engine/config/service.conf')
 
     dns_ip = config['WINDOWS_DNS']['ip']
     domains = config['WINDOWS_DNS']['domains'].split(',')
-    print('Creating Default of DNS')
+    log.Main.info('Creating Default of DNS')
     try:
         dns_query = Nslookup(dns_servers=[dns_ip])
         log.Main.info('Setting the base!')
@@ -157,11 +157,10 @@ def build_defaults():
                     f.write(f'{answer.answer}\n')
     except Exception as e:
         log.Error.error(e)
-        print(e)
 
     dns_ip = config['LINUX_DNS']['ip']
     domains = config['LINUX_DNS']['domains'].split(',')
-    print('Creating Default of DNS')
+    log.Main.info('Creating Default of DNS')
     try:
         dns_query = Nslookup(dns_servers=[dns_ip])
         log.Main.info('Setting the base!')
@@ -173,12 +172,11 @@ def build_defaults():
                     f.write(f'{answer.answer}\n')
     except Exception as e:
         log.Error.error(e)
-        print(e)
 
     splunk_ip = config['SPLUNK']['ip']
     splunk_port = config['SPLUNK']['port']
     splunk_hash_file = config['SPLUNK']['hashfile']
-    print('Creating Default of Splunk')
+    log.Main.info('Creating Default of Splunk')
 
     try:
         site = http.client.HTTPConnection(splunk_ip, splunk_port, timeout=5)
@@ -197,7 +195,7 @@ def build_defaults():
     ecomm_ip = config['ECOMMERCE']['ip']
     ecomm_port = config['ECOMMERCE']['port']
     ecomm_hash_file = config['ECOMMERCE']['hashfile']
-    print('Creating Default of Ecommerce')
+    log.Main.info('Creating Default of Ecommerce')
 
     try:
         site = http.client.HTTPConnection(ecomm_ip, ecomm_port, timeout=5)

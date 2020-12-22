@@ -18,11 +18,11 @@ def open_database():
         return db
     except Exception as e:
         log.Error.error(e)
-        print(e, flush=True)
+
 
 def read_config():
     '''Reads the configuration of the application'''
-    with open("scoring_engine/config/application.conf", 'r') as f:
+    with open("/usr/local/scoring_engine/application.conf", 'r') as f:
         content = f.read()
         paths = content.split("\n")
         config_dict = {}
@@ -44,4 +44,3 @@ def get_last_score():
         return result
     except Exception as e:
         log.Error.error(e)
-        print(e, flush=True)

@@ -39,7 +39,6 @@ def score_page():
         status = get_last_score()
     except Exception as e:
         log.Error.error(e)
-        print(e, flush=True)
     status = status[0]
     dnsl_srv = return_bool(status[0])
     dnsw_srv = return_bool(status[1])
@@ -625,7 +624,6 @@ def send_post(data):
     try:
         url = current_app.config["BACK_END_LOCATION"]
         headers = {'token': token.token}
-        print(data, flush=True)
         rsp = requests.post(
             url=f'http://{url}', json=data, headers=headers)
         data = json.loads(rsp.content)
