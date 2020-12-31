@@ -1,0 +1,13 @@
+[Unit]
+Description=Scoring Engine Backend
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/engine-back
+TimeoutStartSec=0
+Restart=on-failure
+RestartSec=20s
+
+[Install]
+WantedBy=runlevel[234].target

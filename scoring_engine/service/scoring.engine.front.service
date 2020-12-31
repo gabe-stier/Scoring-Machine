@@ -1,0 +1,13 @@
+[Unit]
+Description=Scoring Engine Frontend
+After=scoring.engine.back.service
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/engine-front
+TimeoutStartSec=0
+Restart=on-failure
+RestartSec=20s
+
+[Install]
+WantedBy=runlevel[234].target

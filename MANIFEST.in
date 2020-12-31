@@ -6,3 +6,4 @@ recursive-include scoring_engine/front_end/static *.*
 recursive-include scoring_engine/front_end/templates *.*
 recursive-include scoring_engine/back_end/config *.*
 recursive-include scoring_engine/back_end/etc *.*
+recursive-include scoring_engine/service *.*
