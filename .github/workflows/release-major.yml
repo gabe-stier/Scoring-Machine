@@ -15,8 +15,7 @@ jobs:
     steps:
       - name: Generate files
         run: |
-          python -m pip install setuptools pep517
-          cd
+          pwd
       - name: Create a Release
         uses: "marvinpinto/action-automatic-releases@latest"
         with:
