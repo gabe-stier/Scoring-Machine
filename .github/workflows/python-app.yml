@@ -4,13 +4,16 @@
 name: Python application
 
 on:
-  pull_request:
-    branches: [ main ]
+  push:
+    paths:
+      - 'setup.cfg'
 
 jobs:
   release:
     name: Create Release
     runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Create a Release
         uses: actions/create-release@v1
