@@ -16,6 +16,10 @@ jobs:
       - name: Generate files
         run: |
           pwd
+          ls
+          cd ..
+          pwd
+          ls
       - name: Create a Release
         uses: "marvinpinto/action-automatic-releases@latest"
         with:
