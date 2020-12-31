@@ -159,7 +159,7 @@ def score_page():
         status = get_last_score()
     except Exception as e:
         log.Error.error(e)
-    status = status[0]
+    # status = status[0]
     dnsl_srv = return_bool(status[0])
     dnsw_srv = return_bool(status[1])
     ecomm_srv = return_bool(status[2])

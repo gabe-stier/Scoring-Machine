@@ -16,8 +16,8 @@ RUN pip install --upgrade pip
 
 RUN pip install -r requirements.txt
 COPY . .
-RUN pip install dist/scoring_engine-0.1-py3-none-any.whl
-CMD ["engine"]
+RUN pip install dist/scoring-engine-0.1.tar.gz
+# CMD ["engine"]
 
 # CMD ["sh", "test.sh"]
-# CMD [ "sh", "start.sh" ]
+CMD [ "sh", "start.sh" ]

@@ -7,6 +7,7 @@ import mysql.connector as conn
 from nslookup import Nslookup
 
 from scoring_engine.back_end.utilities import Loggers as log
+from scoring_engine.back_end.utilities import read_config
 
 
 def __config_task(config):
@@ -122,20 +123,6 @@ def open_database():
         database='scoring_engine'
     )
     return db
-
-
-def read_config():
-    '''Reads the application.conf file. '''
-    with open("/usr/local/scoring_engine/application.conf", 'r') as f:
-        content = f.read()
-        paths = content.split("\n")
-        config_dict = {}
-        for path in paths:
-            setting = path.split(" = ")
-            config_dict[setting[0]] = setting[1].replace('\'', '')
-
-    return config_dict
-
 
 def __set_splunk_default():
     '''Sets the defaults after an update occurs'''

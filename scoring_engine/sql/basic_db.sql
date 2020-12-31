@@ -44,3 +44,11 @@ CREATE TABLE IF NOT EXISTS ldap_info (
     username TEXT NOT NULL,
     password TEXT NOT NULL
 );
+
+INSERT INTO dns_windows (test_date, success) VALUES (1,'Error');
+INSERT INTO dns_linux (test_date, success) VALUES (1,'Error');
+INSERT INTO ldap (test_date, success) VALUES (1,'Error');
+INSERT INTO splunk (test_date, success) VALUES (1,'Error');
+INSERT INTO ecomm (test_date, success) VALUES (1,'Error');
+INSERT INTO pop3 (test_date, success) VALUES (1,'Error');
+INSERT INTO smtp (test_date, success) VALUES (1,'Error');

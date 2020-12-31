@@ -14,6 +14,7 @@ from scoring_engine.back_end.scoring_tasks import (score_dns_linux, score_dns_wi
                                                    score_ecomm, score_ldap, score_pop3,
                                                    score_smtp, score_splunk)
 from scoring_engine.back_end.utilities import Loggers as log
+from scoring_engine.back_end.utilities import read_config
 
 
 def splunk_loop():
@@ -87,19 +88,6 @@ def ldap_loop():
         time.sleep(random_sleep)
 
 
-def read_config():
-    '''Reads the application.conf file. '''
-    with open("/usr/local/scoring_engine/application.conf", 'r') as f:
-        content = f.read()
-        paths = content.split("\n")
-        config_dict = {}
-        for path in paths:
-            setting = path.split(" = ")
-            config_dict[setting[0]] = setting[1].replace('\'', '')
-
-    return config_dict
-
-
 def open_database():
     '''Creates a connection to the database used to store the scores.'''
     db = None
@@ -123,12 +111,12 @@ def init_db():
     )
     cur = db.cursor()
     cur.execute('CREATE DATABASE IF NOT EXISTS scoring_engine')
-    with open(f'{os.getcwd()}/scoring_engine/sql/basic_db.sql') as f:
+    with open(f'{os.getcwd()}/../sql/basic_db.sql') as f:
         schema = f.read()
         results = cur.execute(schema, multi=True)
         for result in results:
             result
-    with open(f'{os.getcwd()}/scoring_engine/sql/views.sql') as f:
+    with open(f'{os.getcwd()}/../sql/views.sql') as f:
         schema = f.read()
         results = cur.execute(schema, multi=True)
         for result in results:
@@ -141,7 +129,7 @@ def build_defaults():
     '''Creates the scoring objectives of DNS, Splunk, and Ecomm'''
     log.Main.info('Creating Defaults')
     config = ConfigParser()
-    config.read('/usr/local/scoring_engine/config/service.conf')
+    config.read('/usr/local/scoring_engine/service.conf')
 
     dns_ip = config['WINDOWS_DNS']['ip']
     domains = config['WINDOWS_DNS']['domains'].split(',')

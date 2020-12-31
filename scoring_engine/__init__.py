@@ -9,17 +9,19 @@ from scoring_engine import front_end as front
 from gunicorn.app.base import BaseApplication
 
 
-def start_server():
+def start_front_server():
     options = {
         'bind': '0.0.0.0:80',
         'workers': 4
     }
 
     print('Starting Gunicorn')
+    Thread(target=Gunicorn_Application(
+        app=front.app(), options=options).run()).start()
+
+def start_back_server():
     print('Starting Back_end Server')
     Thread(target=back.start()).start()
-    Thread(target=Gunicorn_Application(app=front.app(), options=options).run()).start()
-
 
 class Gunicorn_Application(BaseApplication):
 

@@ -134,8 +134,9 @@ class Server(BaseHTTPRequestHandler):
 def start(server_class=HTTPServer, handler_class=Server, port=5001):
     '''Main function that starts the request server'''
     print("Starting Scoring Server", flush=True)
-    global DEBUG
-    DEBUG = os.environ['DEBUG']
+    if 'DEBUG' in os.environ:
+        global DEBUG
+        DEBUG = os.environ['DEBUG']
     setup_logging()
     start_scoring()
     server_address = ('', port)

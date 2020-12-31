@@ -14,6 +14,7 @@ import mysql.connector as conn
 from nslookup import Nslookup
 
 from scoring_engine.back_end.utilities import Loggers as log
+from scoring_engine.back_end.utilities import read_config
 
 
 def score_splunk():
@@ -308,16 +309,3 @@ def open_database():
         log.Main.debug('Failed to connecto to database.')
     finally:
         return db
-
-
-def read_config():
-    '''Reads the application.conf file. '''
-    with open("/usr/local/scoring_engine/application.conf", 'r') as f:
-        content = f.read()
-        paths = content.split("\n")
-        config_dict = {}
-        for path in paths:
-            setting = path.split(" = ")
-            config_dict[setting[0]] = setting[1].replace('\'', '')
-
-    return config_dict

@@ -16,6 +16,8 @@ def read_config():
         config_dict = {}
         for path in paths:
             setting = path.split(" = ")
+            if '' in setting:
+                break
             config_dict[setting[0]] = setting[1].replace('\'', '')
     return config_dict
 
