@@ -4,3 +4,5 @@ scoring_engine.egg-info
 dist
 build
 __pycache__
+Dockerfile
+*.sh
