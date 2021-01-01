@@ -32,5 +32,4 @@ jobs:
           automatic_release_tag: "latest"
           prerelease: false
           files: |
-            *.whl
-            *.tar.gz
+            dist/*
