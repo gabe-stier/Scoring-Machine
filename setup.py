@@ -13,13 +13,13 @@ class PreDevelopCommand(develop):
             pkg_manager_yum = call('which yum'.split())
             pkg_manager_apt = call('which apt'.split())
             if pkg_manager_apt == 0 and pkg_manager_yum == 1:
-                call('apt update'.split())
-                call('apt install -y build-essential python3-dev python2.7-dev \
+                call('sudo apt update'.split())
+                call('sudo apt install -y build-essential python3-dev python2.7-dev \
                         libldap2-dev libsasl2-dev slapd ldap-utils tox lcov valgrind'.split())
             elif pkg_manager_apt == 1 and pkg_manager_yum == 0:
-                call('yum update'.split())
-                call('yum groupinstall "Development tools"'.split())
-                call('yum install openldap-devel python-devel'.split())
+                call('sudo yum update'.split())
+                call('sudo yum groupinstall "Development tools"'.split())
+                call('sudo yum install openldap-devel python-devel'.split())
             else:
                 print('Unknown package manager. Continuing with package install.')
             try:
@@ -40,13 +40,13 @@ class PreInstallCommand(install):
             pkg_manager_yum = call('which yum'.split())
             pkg_manager_apt = call('which apt'.split())
             if pkg_manager_apt == 0 and pkg_manager_yum == 1:
-                call('apt update'.split())
-                call('apt install -y build-essential python3-dev python2.7-dev \
+                call('sudo apt update'.split())
+                call('sudo apt install -y build-essential python3-dev python2.7-dev \
                         libldap2-dev libsasl2-dev slapd ldap-utils tox lcov valgrind'.split())
             elif pkg_manager_apt == 1 and pkg_manager_yum == 0:
-                call('yum update'.split())
-                call('yum groupinstall "Development tools"'.split())
-                call('yum install openldap-devel python-devel'.split())
+                call('sudo yum update'.split())
+                call('sudo yum groupinstall "Development tools"'.split())
+                call('sudo yum install openldap-devel python-devel'.split())
             else:
                 print('Unknown package manager. Continuing with package install.')
             try:
