@@ -1,7 +1,7 @@
 name: Release
 
 on:
-  pull_request:
+  push:
     tags:
       - 'v*'
     branches: [ main ]
@@ -27,4 +27,4 @@ jobs:
           automatic_release_tag: "latest"
           prerelease: false
           files: |
-            dist/*.tar.gz
+            dist/*
