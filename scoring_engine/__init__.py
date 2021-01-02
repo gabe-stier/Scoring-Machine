@@ -12,7 +12,8 @@ from gunicorn.app.base import BaseApplication
 def start_front_server():
     options = {
         'bind': '0.0.0.0:80',
-        'workers': 4
+        'workers': 4,
+        'timeout': 120
     }
 
     print('Starting Gunicorn')
