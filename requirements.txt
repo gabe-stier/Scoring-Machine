@@ -6,4 +6,3 @@ requests
 mysql-connector-python
 python-ldap
 nslookup
-pystemd
