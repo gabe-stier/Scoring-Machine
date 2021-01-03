@@ -1,7 +1,0 @@
-{
-    "action": "score",
-    "data": {
-        "service": "dns",
-        "machine": "linux"
-    }
-}
