@@ -10,7 +10,7 @@ from shutil import copyfile
 
 def read_config():
     '''Reads the application.conf file.'''
-    with open("/usr/local/scoring_engine/application.conf", 'r') as f:
+    with open("/opt/scoring-engine/application.conf", 'r') as f:
         content = f.read()
         paths = content.split("\n")
         config_dict = {}

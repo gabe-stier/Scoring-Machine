@@ -22,7 +22,7 @@ def open_database():
 
 def read_config():
     '''Reads the configuration of the application'''
-    with open("/usr/local/scoring_engine/application.conf", 'r') as f:
+    with open("/opt/scoring-engine/application.conf", 'r') as f:
         content = f.read()
         paths = content.split("\n")
         config_dict = {}

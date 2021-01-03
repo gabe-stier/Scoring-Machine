@@ -130,7 +130,7 @@ def build_defaults():
     '''Creates the scoring objectives of DNS, Splunk, and Ecomm'''
     log.Main.info('Creating Defaults')
     config=ConfigParser()
-    config.read('/usr/local/scoring_engine/service.conf')
+    config.read('/opt/scoring-engine/service.conf')
 
     dns_ip=config['WINDOWS_DNS']['ip']
     domains=config['WINDOWS_DNS']['domains'].split(',')

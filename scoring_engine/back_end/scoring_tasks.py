@@ -20,7 +20,7 @@ from scoring_engine.back_end.utilities import read_config
 def score_splunk():
     '''Scores Splunk'''
     config = ConfigParser()
-    config.read('/usr/local/scoring_engine/service.conf')
+    config.read('/opt/scoring-engine/service.conf')
     log.Scoring.info('Attempting to score Splunk.')
     ip = config['SPLUNK']['ip']
     table_name = config['SPLUNK']['sqltable']
@@ -67,7 +67,7 @@ def score_ldap():
     '''Scores LDAP'''
     status = 0
     config = ConfigParser()
-    config.read('/usr/local/scoring_engine/service.conf')
+    config.read('/opt/scoring-engine/service.conf')
     log.Scoring.info('Attempting to score LDAP')
 
     ip = config['LDAP']['ip']
@@ -99,7 +99,7 @@ def score_ldap():
 def score_ecomm():
     '''Scores Ecomm'''
     config = ConfigParser()
-    config.read('/usr/local/scoring_engine/service.conf')
+    config.read('/opt/scoring-engine/service.conf')
     log.Scoring.info('Attempting to score Ecommerce')
 
     ip = config['ECOMMERCE']['ip']
@@ -137,7 +137,7 @@ def score_pop3():
     '''Scores POP3'''
     db = open_database()
     config = ConfigParser()
-    config.read('/usr/local/scoring_engine/service.conf')
+    config.read('/opt/scoring-engine/service.conf')
     log.Scoring.info('Attempting to score POP3')
 
     ip = config['POP3']['ip']
@@ -175,7 +175,7 @@ def score_smtp():
     try:
         db = open_database()
         config = ConfigParser()
-        config.read('/usr/local/scoring_engine/service.conf')
+        config.read('/opt/scoring-engine/service.conf')
         log.Scoring.info('Attempting to score SMTP')
 
         sender = f"{config['SMTP']['from_user']}@{config['SMTP']['domain']}"
@@ -210,7 +210,7 @@ def score_smtp():
 def score_dns_linux():
     '''Scores Linux DNS'''
     config = ConfigParser()
-    config.read('/usr/local/scoring_engine/service.conf')
+    config.read('/opt/scoring-engine/service.conf')
     log.Scoring.info('Attempting to score Linux DNS')
 
     ip = config['LINUX_DNS']['ip']
@@ -243,7 +243,7 @@ def score_dns_linux():
 def score_dns_windows():
     '''Scores Windows DNS'''
     config = ConfigParser()
-    config.read('/usr/local/scoring_engine/service.conf')
+    config.read('/opt/scoring-engine/service.conf')
     log.Scoring.info('Attempting to score Windows DNS')
 
     ip = config['WINDOWS_DNS']['ip']
