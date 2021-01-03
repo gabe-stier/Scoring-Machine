@@ -6,6 +6,7 @@ import time
 from configparser import ConfigParser
 from hashlib import sha3_512
 from threading import Thread
+import pkg_resources
 
 import mysql.connector as conn
 from nslookup import Nslookup
@@ -111,16 +112,16 @@ def init_db():
     )
     cur = db.cursor()
     cur.execute('CREATE DATABASE IF NOT EXISTS scoring_engine')
-    with open(f'{os.getcwd()}/../sql/basic_db.sql') as f:
-        schema = f.read()
-        results = cur.execute(schema, multi=True)
-        for result in results:
-            result
-    with open(f'{os.getcwd()}/../sql/views.sql') as f:
-        schema = f.read()
-        results = cur.execute(schema, multi=True)
-        for result in results:
-            result
+    # with open() as f:
+        # schema = f.read()
+    results = cur.execute(pkg_resources.resource_string(__name__, '../sql/basic_db.sql'), multi=True)
+    for result in results:
+        result
+    # with open() as f:
+    #     schema=f.read()
+    results=cur.execute(pkg_resources.resource_string(__name__, '../sql/views.sql'), multi=True)
+    for result in results:
+        result
     db.commit()
     db.close()
 
@@ -128,72 +129,72 @@ def init_db():
 def build_defaults():
     '''Creates the scoring objectives of DNS, Splunk, and Ecomm'''
     log.Main.info('Creating Defaults')
-    config = ConfigParser()
+    config=ConfigParser()
     config.read('/usr/local/scoring_engine/service.conf')
 
-    dns_ip = config['WINDOWS_DNS']['ip']
-    domains = config['WINDOWS_DNS']['domains'].split(',')
+    dns_ip=config['WINDOWS_DNS']['ip']
+    domains=config['WINDOWS_DNS']['domains'].split(',')
     log.Main.info('Creating Default of DNS')
     try:
-        dns_query = Nslookup(dns_servers=[dns_ip])
+        dns_query=Nslookup(dns_servers=[dns_ip])
         log.Main.info('Setting the base!')
         for domain in domains:
-            file_name = f'scoring_engine/back_end/etc/scoring/{domain}.dns'
+            file_name=f'scoring_engine/back_end/etc/scoring/{domain}.dns'
             if not (os.path.exists(file_name) and os.stat(file_name).st_size != 0):
-                answer = dns_query.dns_lookup(domain)
+                answer=dns_query.dns_lookup(domain)
                 with open(file_name, 'w+') as f:
                     f.write(f'{answer.answer}\n')
     except Exception as e:
         log.Error.error(e)
 
-    dns_ip = config['LINUX_DNS']['ip']
-    domains = config['LINUX_DNS']['domains'].split(',')
+    dns_ip=config['LINUX_DNS']['ip']
+    domains=config['LINUX_DNS']['domains'].split(',')
     log.Main.info('Creating Default of DNS')
     try:
-        dns_query = Nslookup(dns_servers=[dns_ip])
+        dns_query=Nslookup(dns_servers=[dns_ip])
         log.Main.info('Setting the base!')
         for domain in domains:
-            file_name = f'scoring_engine/back_end/etc/scoring/{domain}.dns'
+            file_name=f'scoring_engine/back_end/etc/scoring/{domain}.dns'
             if not (os.path.exists(file_name) and os.stat(file_name).st_size != 0):
-                answer = dns_query.dns_lookup(domain)
+                answer=dns_query.dns_lookup(domain)
                 with open(file_name, 'w+') as f:
                     f.write(f'{answer.answer}\n')
     except Exception as e:
         log.Error.error(e)
 
-    splunk_ip = config['SPLUNK']['ip']
-    splunk_port = config['SPLUNK']['port']
-    splunk_hash_file = config['SPLUNK']['hashfile']
+    splunk_ip=config['SPLUNK']['ip']
+    splunk_port=config['SPLUNK']['port']
+    splunk_hash_file=config['SPLUNK']['hashfile']
     log.Main.info('Creating Default of Splunk')
 
     try:
-        site = http.client.HTTPConnection(splunk_ip, splunk_port, timeout=5)
+        site=http.client.HTTPConnection(splunk_ip, splunk_port, timeout=5)
         site.request('GET', '/')
-        site_response = site.getresponse()
+        site_response=site.getresponse()
         site.close()
-        site_string = f'{site_response.getheaders()[0]}\n\nStatus: {site_response.status}\n\n{site_response.read()}'
-        site_hash = sha3_512()
+        site_string=f'{site_response.getheaders()[0]}\n\nStatus: {site_response.status}\n\n{site_response.read()}'
+        site_hash=sha3_512()
         site_hash.update(site_string.encode())
-        f = open(f'{os.getcwd()}/back_end/{splunk_hash_file}', 'w+')
+        f=open(f'{os.getcwd()}/back_end/{splunk_hash_file}', 'w+')
         f.write(site_hash.hexdigest())
         f.close()
     except Exception as e:
         log.Error.error(e)
 
-    ecomm_ip = config['ECOMMERCE']['ip']
-    ecomm_port = config['ECOMMERCE']['port']
-    ecomm_hash_file = config['ECOMMERCE']['hashfile']
+    ecomm_ip=config['ECOMMERCE']['ip']
+    ecomm_port=config['ECOMMERCE']['port']
+    ecomm_hash_file=config['ECOMMERCE']['hashfile']
     log.Main.info('Creating Default of Ecommerce')
 
     try:
-        site = http.client.HTTPConnection(ecomm_ip, ecomm_port, timeout=5)
+        site=http.client.HTTPConnection(ecomm_ip, ecomm_port, timeout=5)
         site.request('GET', '/')
-        site_response = site.getresponse()
+        site_response=site.getresponse()
         site.close()
-        site_string = f'{site_response.getheaders()[0]}\n\nStatus: {site_response.status}\n\n{site_response.read()}'
-        site_hash = sha3_512()
+        site_string=f'{site_response.getheaders()[0]}\n\nStatus: {site_response.status}\n\n{site_response.read()}'
+        site_hash=sha3_512()
         site_hash.update(site_string.encode())
-        f = open(f'{os.getcwd()}/back_end/{ecomm_hash_file}', 'w+')
+        f=open(f'{os.getcwd()}/back_end/{ecomm_hash_file}', 'w+')
         f.write(site_hash.hexdigest())
         f.close()
     except Exception as e:
@@ -206,13 +207,13 @@ def start_scoring():
     build_defaults()
 
     def start_threads():
-        splunk_thread = Thread(target=splunk_loop)
-        ecomm_thread = Thread(target=ecomm_loop)
-        ldap_thread = Thread(target=ldap_loop)
-        dnsw_thread = Thread(target=dns_windows_loop)
-        dnsl_thread = Thread(target=dns_linux_loop)
-        pop3_thread = Thread(target=pop3_loop)
-        smtp_thread = Thread(target=smtp_loop)
+        splunk_thread=Thread(target=splunk_loop)
+        ecomm_thread=Thread(target=ecomm_loop)
+        ldap_thread=Thread(target=ldap_loop)
+        dnsw_thread=Thread(target=dns_windows_loop)
+        dnsl_thread=Thread(target=dns_linux_loop)
+        pop3_thread=Thread(target=pop3_loop)
+        smtp_thread=Thread(target=smtp_loop)
 
         splunk_thread.start()
         ecomm_thread.start()

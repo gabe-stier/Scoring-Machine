@@ -1,20 +1,19 @@
 import os
-import sys
 import signal
-from subprocess import Popen
-from subprocess import call
-
+import sys
 from shutil import copyfile
+from subprocess import Popen, call
 from threading import Thread
 from time import sleep
+
+from gunicorn.app.base import BaseApplication
+from pystemd.systemd import Unit
 
 from scoring_engine import back_end as back
 from scoring_engine import front_end as front
 
-from gunicorn.app.base import BaseApplication
-
-back_pid = 'pid/back'
-front_pid = 'pid/front'
+back_pid = '/usr/local/scoring_engine/pid/back.pid'
+front_pid = '/usr/local/scoring_engine/pid/front.pid'
 
 
 def system_command():
@@ -96,6 +95,8 @@ def system_command():
                 print('Boot disable successful')
             else:
                 print('Boot disable failed.')
+        else:
+            print('Need --enable or --disable')
 
     elif "--restart" in args or '-rt' in args:
         result = False
@@ -134,12 +135,14 @@ def get_front_pid_int():
 
 def set_back_pid_int(pid):
     with open(back_pid, 'w') as f:
-        f.write(pid)
+        print("Backend:", pid)
+        print(pid, file=f)
 
 
 def set_front_pid_int(pid):
     with open(front_pid, 'w') as f:
-        f.write(pid)
+        print("Frontend:", pid)
+        print(pid, file=f)
 
 
 def start_front_server():
@@ -163,18 +166,28 @@ def create_configuration_files(override=False):
     pass
 
 
+def create_service_files():
+    exit_code = call('ln -s /usr/local/scoring_machine/services/scoring.engine.back.service /etc/systemd/system'.split())
+    exit_code += call('ln -s /usr/local/scoring_machine/services/scoring.engine.front.service /etc/systemd/system'.split())
+    exit_code += call('systemctl daemon-reload'.split())
+    if exit_code != 0:
+        return False
+    return True
+
+
 def boot_start_enable(part):
     if part == 'all':
         return (boot_start_enable('front') and boot_start_enable('back'))
     elif part == 'back':
-        exit_code = call(
-            'ln /usr/local/scoring_machine/services/scoring.engine.back.service /etc/systemd/system'.split())
+        unit = Unit(b'scoring.engine.back.service')
+        unit.load()
+        unit.
+        exit_code = call('systemctl enable scoring.engine.back'.split())
         if exit_code != 0:
             return False
         return True
     elif part == 'front':
-        exit_code = call(
-            'ln /usr/local/scoring_machine/services/scoring.engine.front.service /etc/systemd/system'.split())
+        exit_code = call('systemctl enable scoring.engine.front'.split())
         if exit_code != 0:
             return False
         return True
@@ -184,34 +197,43 @@ def boot_start_disable(part):
     if part == 'all':
         return (boot_start_disable('front') and boot_start_disable('back'))
     elif part == 'back':
-        exit_code = call(
-            'rm -f /etc/systemd/system/scoring.engine.back.service'.split())
+        exit_code = call('systemctl enable scoring.engine.back'.split())
         if exit_code != 0:
             return False
         return True
     elif part == 'front':
-        exit_code = call(
-            'rf /etc/systemd/system/scoring.engine.front.service'.split())
+        exit_code = call('systemctl enable scoring.engine.front'.split())
         if exit_code != 0:
             return False
         return True
 
 
 def start_server(part):
+    try:
+        os.mkdir('/usr/local/scoring_engine/pid', mode=0o666)
+    except FileExistsError as e:
+        pass
     if part == 'all':
         return (start_server('front') and start_server('back'))
     elif part == 'back':
         try:
-            back_process = Popen('engine-back'.split())
-            set_back_pid_int(back_process.pid)
+            back_process = Popen(
+                'engine-back'.split(), stdin=open(os.devnull, 'w'), stdout=open(os.devnull, 'w'), stderr=open(os.devnull, 'w'))
         except Exception as e:
             print('Something failed...')
+            print(e)
+            return False
+        return True
     elif part == 'front':
         try:
-            front_process = Popen('engine-front'.split())
+            front_process = Popen(
+                'engine-front'.split(), stdin=open(os.devnull, 'w'), stdout=open(os.devnull, 'w'), stderr=open(os.devnull, 'w'))
             set_front_pid_int(front_process.pid)
         except Exception as e:
             print('Something failed...')
+            print(e)
+            return False
+        return True
 
 
 def stop_server(part):
