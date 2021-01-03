@@ -7,13 +7,9 @@ from threading import Thread
 from time import sleep
 
 from gunicorn.app.base import BaseApplication
-from pystemd.systemd import Unit
 
 from scoring_engine import back_end as back
 from scoring_engine import front_end as front
-
-back_pid = '/usr/local/scoring_engine/pid/back.pid'
-front_pid = '/usr/local/scoring_engine/pid/front.pid'
 
 
 def system_command():
@@ -119,32 +115,6 @@ def system_command():
         print("Scoring Engine:", "Unknown argument, scoring-engine --help")
 
 
-def get_back_pid_int():
-    with open(back_pid, 'r') as f:
-        pid = f.read()
-        os.remove(back_pid)
-        return pid
-
-
-def get_front_pid_int():
-    with open(front_pid, 'r') as f:
-        pid = f.read()
-        os.remove(front_pid)
-        return pid
-
-
-def set_back_pid_int(pid):
-    with open(back_pid, 'w') as f:
-        print("Backend:", pid)
-        print(pid, file=f)
-
-
-def set_front_pid_int(pid):
-    with open(front_pid, 'w') as f:
-        print("Frontend:", pid)
-        print(pid, file=f)
-
-
 def start_front_server():
     options = {
         'bind': '0.0.0.0:80',
@@ -167,7 +137,8 @@ def create_configuration_files(override=False):
 
 
 def create_service_files():
-    exit_code = call('ln -s /usr/local/scoring_machine/services/scoring.engine.back.service /etc/systemd/system'.split())
+    exit_code = call(
+        'ln -s /usr/local/scoring_machine/services/scoring.engine.back.service /etc/systemd/system'.split())
     exit_code += call('ln -s /usr/local/scoring_machine/services/scoring.engine.front.service /etc/systemd/system'.split())
     exit_code += call('systemctl daemon-reload'.split())
     if exit_code != 0:
@@ -179,9 +150,6 @@ def boot_start_enable(part):
     if part == 'all':
         return (boot_start_enable('front') and boot_start_enable('back'))
     elif part == 'back':
-        unit = Unit(b'scoring.engine.back.service')
-        unit.load()
-        unit.
         exit_code = call('systemctl enable scoring.engine.back'.split())
         if exit_code != 0:
             return False
@@ -217,8 +185,7 @@ def start_server(part):
         return (start_server('front') and start_server('back'))
     elif part == 'back':
         try:
-            back_process = Popen(
-                'engine-back'.split(), stdin=open(os.devnull, 'w'), stdout=open(os.devnull, 'w'), stderr=open(os.devnull, 'w'))
+            call('systemctl start scoring.engine.back.service'.split())
         except Exception as e:
             print('Something failed...')
             print(e)
@@ -226,9 +193,7 @@ def start_server(part):
         return True
     elif part == 'front':
         try:
-            front_process = Popen(
-                'engine-front'.split(), stdin=open(os.devnull, 'w'), stdout=open(os.devnull, 'w'), stderr=open(os.devnull, 'w'))
-            set_front_pid_int(front_process.pid)
+            call('systemctl start scoring.engine.front.service'.split())
         except Exception as e:
             print('Something failed...')
             print(e)
@@ -240,12 +205,13 @@ def stop_server(part):
     if part == 'all':
         return (stop_server('back') and stop_server('front'))
     elif part == 'back':
-        exit_code = call(f'kill -9 {get_back_pid_int()}'.split())
+        exit_code = call(f'systemctl stop scoring.engine.back.service'.split())
         if exit_code != 0:
             return False
         return True
     elif part == 'front':
-        exit_code = call(f'kill -9 {get_front_pid_int()}'.split())
+        exit_code = call(
+            f'systemctl stop scoring.engine.front.service'.split())
         if exit_code != 0:
             return False
         return True
