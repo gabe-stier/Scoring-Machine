@@ -1,6 +1,5 @@
 [Unit]
 Description=Scoring Engine Backend
-After=network.target
 
 [Service]
 Type=simple
@@ -10,4 +9,4 @@ Restart=on-failure
 RestartSec=20s
 
 [Install]
-WantedBy=runlevel[234].target
+WantedBy=multi-user.target

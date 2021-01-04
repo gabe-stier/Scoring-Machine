@@ -1,10 +1,7 @@
-import os
 import sys
-from shutil import copyfile
 from subprocess import call
 from threading import Thread
 
-import pkg_resources
 from gunicorn.app.base import BaseApplication
 
 from scoring_engine import back_end as back, front_end as front
@@ -94,6 +91,7 @@ def system_command():
 			print('Need --enable or --disable')
 
 	elif "--restart" in args or '-rt' in args:
+
 		result = False
 		if "--all" in args or '-a' in args:
 			result = restart_server('all')
@@ -109,9 +107,9 @@ def system_command():
 			print('Restart failed.')
 
 	elif "--config" in args or '-c' in args:
-		create_configuration_files(True)
+		create_configuration_files()
 	else:
-		print("Scoring Engine:", "Unknown argument, scoring-engine --help")
+		call('scoring-engine --help')
 
 
 def start_front_server():
@@ -135,56 +133,16 @@ def create_configuration_files():
 	pass
 
 
-def generate_files():
-	if not os.path.exists('/etc/systemd/system/scoring.engine.back.service'):
-		try:
-			os.symlink('/usr/local/scoring_machine/services/scoring.engine.back.service', '/etc/systemd/system',
-			           target_is_directory=True)
-			call('systemclt daemon-reload'.split())
-		except OSError as ioe:
-			sys.exit("Please run this command as root.")
-			return False
-
-	if not os.path.exists('/etc/systemd/system/scoring.engine.front.service'):
-		try:
-			os.symlink('/usr/local/scoring_machine/services/scoring.engine.front.service', '/etc/systemd/system',
-			           target_is_directory=True)
-			call('systemclt daemon-reload'.split())
-		except OSError as ioe:
-			sys.exit("Please run this command as root.")
-			return False
-
-	if not os.path.exists('/opt/scoring-engine/scoring-engine'):
-		try:
-			os.mkdir('/opt/scoring-engine/scoring-engine')
-		except OSError as ioe:
-			sys.exit("Please run this command as root.")
-
-	if not os.path.exists('/opt/scoring-engine/application.conf'):
-		try:
-			copyfile(pkg_resources.resource_filename(__name__, "scoring_engine/service/application.conf"),
-			         '/opt/scoring-engine/application.conf')
-		except PermissionError as ioe:
-			sys.exit("Please run this command as root.")
-
-	if not os.path.exists('/opt/scoring-engine/service.conf'):
-		try:
-			copyfile(pkg_resources.resource_filename(__name__, "scoring_engine/service/service.conf"),
-			         '/opt/scoring-engine/service.conf')
-		except PermissionError as ioe:
-			sys.exit("Please run this command as root.")
-
-
 def boot_start_enable(part):
 	if part == 'all':
 		return boot_start_enable('front') and boot_start_enable('back')
 	elif part == 'back':
-		exit_code = call('systemctl enable scoring.engine.back'.split())
+		exit_code = call('systemctl enable scoring.engine.back.service'.split())
 		if exit_code != 0:
 			return False
 		return True
 	elif part == 'front':
-		exit_code = call('systemctl enable scoring.engine.front'.split())
+		exit_code = call('systemctl enable scoring.engine.front.service'.split())
 		if exit_code != 0:
 			return False
 		return True

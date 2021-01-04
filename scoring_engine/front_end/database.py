@@ -1,11 +1,10 @@
 import mysql.connector as conn
 
 from scoring_engine.front_end.utilities import Loggers as log
-from scoring_engine.front_end.utilities import Scores as Service
 
 
 def open_database():
-    '''Opens connection to the database'''
+    """Opens connection to the database"""
     try:
         db = None
         config = read_config()
@@ -21,7 +20,7 @@ def open_database():
 
 
 def read_config():
-    '''Reads the configuration of the application'''
+    """Reads the configuration of the application"""
     with open("/opt/scoring-engine/application.conf", 'r') as f:
         content = f.read()
         paths = content.split("\n")
@@ -36,7 +35,7 @@ def read_config():
 
 
 def get_last_score():
-    '''Gets the last score of all the machines.'''
+    """Gets the last score of all the machines."""
     try:
         db = open_database()
         cursor = db.cursor(buffered=True)

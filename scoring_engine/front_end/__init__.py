@@ -1,7 +1,7 @@
-'''
+"""
 Scoring machine that is used within a CCDC Competition environment  to be able to know if firewalls are effectively
 working
-'''
+"""
 import os
 from logging.config import dictConfig
 
@@ -13,7 +13,7 @@ from scoring_engine.front_end.utilities import Loggers as log, cwd
 
 
 def app():
-	'''Main function of the Flask website'''
+	"""Main function of the Flask website"""
 	flask_app = Flask(__name__)
 	flask_app.config.from_pyfile('/opt/scoring-engine/application.conf')
 	flask_app.secret_key = b'tr&6aH+tripRa!rUm9Ju'
@@ -21,29 +21,29 @@ def app():
 	@flask_app.route('/')
 	@flask_app.route('/scoring')
 	def index():
-		'''Returns the basic page'''
+		"""Returns the basic page"""
 		return score_page()
 
 	@flask_app.route('/status-codes')
 	def codes():
-		'''Returns the status codes page to provide the user with information'''
+		"""Returns the status codes page to provide the user with information"""
 		url_for('static', filename='base.css')
 		url_for('static', filename='info.css')
 		return render_template('info.tmpl.j2')
 
 	@flask_app.before_request
 	def log_request():
-		'''Logs all the requests that the Flask website receives'''
+		"""Logs all the requests that the Flask website receives"""
 		log.Web.info(
 				f'{request.remote_addr} [{request.method}] requested {request.path}')
 		url_for('static', filename='favicon.ico')
 
 	def not_found(e):
-		'''Returns a not found page if the request is not found'''
+		"""Returns a not found page if the request is not found"""
 		return render_template('not_found.html.j2'), 404
 
 	def internal_error(e):
-		'''Internal Error page'''
+		"""Internal Error page"""
 		log.Error.error(e.get_response())
 		return render_template('internal_error.html.j2'), 500
 
@@ -58,7 +58,7 @@ def app():
 
 
 def setup_logging():
-	'''Sets up the logging for the Flask Website'''
+	"""Sets up the logging for the Flask Website"""
 	try:
 		os.mkdir('/var/log/scoring-machine', mode=0o666)
 	except FileExistsError as e:
@@ -144,7 +144,7 @@ def setup_logging():
 
 
 def score_page():
-	'''Used to show the current score of the services'''
+	"""Used to show the current score of the services"""
 	url_for('static', filename='base.css')
 	url_for('static', filename='index.css')
 
@@ -157,10 +157,9 @@ def score_page():
 			return None
 
 	try:
-		status = get_last_score()
+		status = get_last_score()[0]
 	except Exception as e:
 		log.Error.error(e)
-	status = status[0]
 	dnsl_srv = return_bool(status[0])
 	dnsw_srv = return_bool(status[1])
 	ecomm_srv = return_bool(status[2])
