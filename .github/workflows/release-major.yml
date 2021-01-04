@@ -27,5 +27,5 @@ jobs:
           automatic_release_tag: "latest"
           prerelease: false
           files: |
-          dist/*
+            dist/*
         if: ${{ steps.fetch_latest_release.outputs.tag_name }} <  v${{ env.VERSION }}
