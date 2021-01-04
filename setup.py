@@ -7,7 +7,7 @@ from setuptools import setup
 from setuptools.command.develop import develop
 from setuptools.command.install import install
 
-service_config = '''[LDAP]
+service_config = """[LDAP]
 IP = 0.0.0.0
 PORT = 389
 InformationTable = ldap_info
@@ -51,16 +51,16 @@ IP = 1.1.1.1
 PORT = 53
 SQLTable = dns_linux
 DOMAINS = google.com,yahoo.com,bing.com
-'''
-application_config = '''BACK_END_LOCATION = 'localhost:5001'
+"""
+application_config = """BACK_END_LOCATION = 'localhost:5001'
 MYSQL_USER = 'scoring_engine'
 MYSQL_PASSWORD = 'Changeme1!'
 MYSQL_HOST = '127.0.0.1'
 CONFIG_PASSWORD = 'ThisIsAGoodPassword1'
 REQUIRE_CONFIG_PASSWORD = 'no'
-'''
+"""
 
-back_service = '''[Unit]
+back_service = """[Unit]
 Description=Scoring Engine Backend
 After=network.target
 
@@ -73,8 +73,8 @@ RestartSec=20s
 
 [Install]
 WantedBy=multi-user.target
-'''
-front_service = '''[Unit]
+"""
+front_service = """[Unit]
 Description=Scoring Engine Frontend
 After=scoring.engine.back.service
 
@@ -87,7 +87,7 @@ RestartSec=20s
 
 [Install]
 WantedBy=multi-user.target
-'''
+"""
 
 
 class PreDevelopCommand(develop):

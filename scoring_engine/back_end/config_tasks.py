@@ -11,7 +11,7 @@ from scoring_engine.back_end.utilities import read_config
 
 
 def __config_task(config):
-    '''Writes config to file'''
+    """Writes config to file"""
     new_file_name = f'/opt/scoring-engine/service.conf.new'
     old_file_name = f'/opt/scoring-engine/service.conf'
     with open(new_file_name, 'w+') as new_file:
@@ -20,7 +20,7 @@ def __config_task(config):
 
 
 def config_splunk(ip: str, port: int):
-    '''Updates the splunk section of the config'''
+    """Updates the splunk section of the config"""
     log.Main.info('Updating Configuration of Splunk')
     old_file_name = f'/opt/scoring-engine/service.conf'
     config = ConfigParser()
@@ -32,7 +32,7 @@ def config_splunk(ip: str, port: int):
 
 
 def config_ecomm(ip: str, port: int):
-    '''Updates the ecomm section of the config'''
+    """Updates the ecomm section of the config"""
     log.Main.info('Updating Configuration of Ecommerce')
     old_file_name = f'/opt/scoring-engine/service.conf'
     config = ConfigParser()
@@ -44,7 +44,7 @@ def config_ecomm(ip: str, port: int):
 
 
 def config_ldap(ip: str, users: list):
-    '''Updates the ldap section of the config'''
+    """Updates the ldap section of the config"""
     log.Main.info('Updating Configuration of LDAP')
     old_file_name = f'/opt/scoring-engine/service.conf'
     config = ConfigParser()
@@ -64,7 +64,7 @@ def config_ldap(ip: str, users: list):
 
 
 def config_smtp(ip: str, user_1: str, user_2: str, domain: str):
-    '''Updates the smtp section of the config'''
+    """Updates the smtp section of the config"""
     log.Main.info('Updating Configuration of SMTP')
     old_file_name = f'/opt/scoring-engine/service.conf'
     config = ConfigParser()
@@ -77,7 +77,7 @@ def config_smtp(ip: str, user_1: str, user_2: str, domain: str):
 
 
 def config_pop3(ip: str, username: str, password: str):
-    '''Updates the pop3 section of the config'''
+    """Updates the pop3 section of the config"""
     log.Main.info('Updating Configuration of POP3')
     old_file_name = f'/opt/scoring-engine/service.conf'
     config = ConfigParser()
@@ -89,7 +89,7 @@ def config_pop3(ip: str, username: str, password: str):
 
 
 def config_dns_windows(ip: str, domains: list):
-    '''Updates the Windows DNS section of the config'''
+    """Updates the Windows DNS section of the config"""
     log.Main.info('Updating Configuration of Windows DNS')
     old_file_name = f'/opt/scoring-engine/service.conf'
     config = ConfigParser()
@@ -101,7 +101,7 @@ def config_dns_windows(ip: str, domains: list):
 
 
 def config_dns_linux(ip: str, domains: list):
-    '''Updates the Linux DNS section of the config'''
+    """Updates the Linux DNS section of the config"""
     log.Main.info('Updating Configuration of Linux DNS')
     old_file_name = f'/opt/scoring-engine/service.conf'
     config = ConfigParser()
@@ -113,7 +113,7 @@ def config_dns_linux(ip: str, domains: list):
 
 
 def open_database():
-    '''Creates a connection to the database used to store the scores.'''
+    """Creates a connection to the database used to store the scores."""
     db = None
     config = read_config()
     db = conn.connect(
@@ -125,7 +125,7 @@ def open_database():
     return db
 
 def __set_splunk_default():
-    '''Sets the defaults after an update occurs'''
+    """Sets the defaults after an update occurs"""
     config = ConfigParser()
     config.read('/opt/scoring-engine/service.conf')
 
@@ -150,7 +150,7 @@ def __set_splunk_default():
 
 
 def __set_dns_linux_default():
-    '''Sets the defaults after an update occurs'''
+    """Sets the defaults after an update occurs"""
     config = ConfigParser()
     config.read('/opt/scoring-engine/service.conf')
 
@@ -171,7 +171,7 @@ def __set_dns_linux_default():
 
 
 def __set_dns_windows_default():
-    '''Sets the defaults after an update occurs'''
+    """Sets the defaults after an update occurs"""
     config = ConfigParser()
     config.read('/opt/scoring-engine/service.conf')
 
@@ -192,7 +192,7 @@ def __set_dns_windows_default():
 
 
 def __set_ecomm_default():
-    '''Sets the defaults after an update occurs'''
+    """Sets the defaults after an update occurs"""
     config = ConfigParser()
     config.read('/opt/scoring-engine/service.conf')
 

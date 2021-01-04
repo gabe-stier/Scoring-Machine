@@ -6,7 +6,6 @@ from scoring_engine.front_end.utilities import Loggers as log
 def open_database():
     """Opens connection to the database"""
     try:
-        db = None
         config = read_config()
         db = conn.connect(
             host=config['MYSQL_HOST'],

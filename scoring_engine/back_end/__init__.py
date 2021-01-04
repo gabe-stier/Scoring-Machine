@@ -1,4 +1,4 @@
-'''Main file of the scoring engine'''
+"""Main file of the scoring engine"""
 import cgi
 import json
 import os
@@ -6,37 +6,35 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 from logging.config import dictConfig
 
 from scoring_engine.back_end import actions as action
-from scoring_engine.back_end.utilities import generate_token
 from scoring_engine.back_end.background import start_scoring
-from scoring_engine.back_end.utilities import Loggers as log
+from scoring_engine.back_end.utilities import generate_token, Loggers as log
 
 token = generate_token()
 DEBUG = False
 
 
 class Server(BaseHTTPRequestHandler):
-    '''Class used as the request server to process information from Flask and score the services that are in the competition network.
-    '''
+    """Class used as the request server to process information from Flask and score the services that are in the competition network."""
 
     def _set_headers(self, code=200):
-        '''Sets headers for response'''
+        """Sets headers for response"""
         self.send_response(code)
         self.send_header('Content-type', 'application/json')
         self.end_headers()
 
     def do_HEAD(self):
-        '''Sets headers for a HEAD request'''
+        """Sets headers for a HEAD request"""
         self._set_headers()
 
     def do_GET(self):
-        '''Reponds to a GET request'''
+        """Reponds to a GET request"""
         self.send_response(405)
         self.log_message()
         self.log_request(status_code=405, response_code=42)
         self.end_headers()
 
     def do_POST(self):
-        '''Responds to a POST request'''
+        """Responds to a POST request"""
         self.log_message()
         ctype, pdict = cgi.parse_header(self.headers['content-type'])
 
@@ -122,17 +120,17 @@ class Server(BaseHTTPRequestHandler):
         self.wfile.write(json.dumps(response).encode())
 
     def log_message(self):
-        '''Logs all requests that the server handles'''
+        """Logs all requests that the server handles"""
         log.Web.info(f'Request from {self.client_address[0]}')
 
     def log_request(self, status_code='-', response_code='-'):
-        '''Logs all responses made by the server'''
+        """Logs all responses made by the server"""
         log.Web.info(
             f'Request from {self.client_address[0]} with a status code of {status_code} and response code of {self.response_code}')
 
 
 def start(server_class=HTTPServer, handler_class=Server, port=5001):
-    '''Main function that starts the request server'''
+    """Main function that starts the request server"""
     print("Starting Scoring Server", flush=True)
     if 'DEBUG' in os.environ:
         global DEBUG
@@ -147,7 +145,7 @@ def start(server_class=HTTPServer, handler_class=Server, port=5001):
     httpd.serve_forever()
 
 def setup_logging():
-    '''Sets up the loggers used within the request server'''
+    """Sets up the loggers used within the request server"""
     try:
         os.mkdir('/var/log/scoring-machine', mode=0o666)
     except FileExistsError as e:

@@ -1,10 +1,9 @@
-'''File that handles all the request actions that come to the server.'''
-from scoring_engine.back_end import scoring_tasks as st
-from scoring_engine.back_end import config_tasks as ct
+"""File that handles all the request actions that come to the server."""
+from scoring_engine.back_end import scoring_tasks as st, config_tasks as ct
 
 
 def update_config(data):
-    '''Function that is used when an update request comes in to the server.'''
+    """Function that is used when an update request comes in to the server."""
     service = data['service']
     ip = data['ip']
     if service.lower() == 'dns':
@@ -31,7 +30,7 @@ def update_config(data):
 
 
 def score_service(data):
-    '''Function that is used when a score request comes in to the server.'''
+    """Function that is used when a score request comes in to the server."""
     service = data['service']
     if service.lower() == 'dns':
         machine = data['machine']

@@ -6,16 +6,16 @@ import time
 from configparser import ConfigParser
 from hashlib import sha3_512
 from threading import Thread
-import pkg_resources
 
 import mysql.connector as conn
+import pkg_resources
 from nslookup import Nslookup
 
-from scoring_engine.back_end.scoring_tasks import (score_dns_linux, score_dns_windows,
-                                                   score_ecomm, score_ldap, score_pop3,
-                                                   score_smtp, score_splunk)
-from scoring_engine.back_end.utilities import Loggers as log
-from scoring_engine.back_end.utilities import read_config
+from scoring_engine.back_end.scoring_tasks import (
+    score_dns_linux, score_dns_windows,
+    score_ecomm, score_ldap, score_pop3,
+    score_smtp, score_splunk)
+from scoring_engine.back_end.utilities import Loggers as log, read_config
 
 
 def splunk_loop():
