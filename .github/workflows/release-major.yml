@@ -2,8 +2,8 @@ name: Release
 
 on:
   push:
-    tags:
-      - 'v*'
+    branches:
+      - main
 
 jobs:
   release:
@@ -28,4 +28,4 @@ jobs:
           prerelease: false
           files: |
             dist/scoring-engine-$VERSION.tar.gz
-        if: ${{ steps.fetch_latest_release.outputs.tag_name }} <  'v${{ env.VERSION }}'
+        if: "${{ steps.fetch_latest_release.outputs.tag_name }}" <  "v${{ env.VERSION }}"
