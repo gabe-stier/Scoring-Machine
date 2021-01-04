@@ -17,7 +17,7 @@ jobs:
           python-version: '3.x'
       - name: Get Version
         run: |
-          export VERSION=$(cat setup.cfg | grep version | awk '{split($0,a," "); print a[3]}')
+          export VERSION=$(cat setup.cfg | grep version | awk '{split($0,a," "); print "v"a[3]}')
       - name: Fetch Latest Release
         uses: thebritican/fetch-latest-release@v2.0.0
       - name: Create a Release
@@ -28,4 +28,4 @@ jobs:
           prerelease: false
           files: |
             dist/*
-        if: "${{ steps.fetch_latest_release.outputs.tag_name }}" <  "v${{ env.VERSION }}"
+        if: ${{ steps.fetch_latest_release.outputs.tag_name < env.VERSION }}
