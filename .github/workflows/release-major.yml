@@ -26,5 +26,6 @@ jobs:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
           automatic_release_tag: "latest"
           prerelease: false
-          files: "dist/scoring-engine-${{ env.VERSION }}.tar.gz"
+          files: |
+          dist/*
         if: "${{ steps.fetch_latest_release.outputs.tag_name }}" <  "v${{ env.VERSION }}"
