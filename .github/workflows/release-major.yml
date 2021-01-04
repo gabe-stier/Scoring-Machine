@@ -27,5 +27,5 @@ jobs:
           automatic_release_tag: "latest"
           prerelease: false
           files: |
-            dist/scoring-engine-$VERSION.tar.gz
+            dist/scoring-engine-${{ env.VERSION}}.tar.gz
         if: "${{ steps.fetch_latest_release.outputs.tag_name }}" <  "v${{ env.VERSION }}"
