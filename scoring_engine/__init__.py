@@ -109,7 +109,7 @@ def system_command():
 	elif "--config" in args or '-c' in args:
 		create_configuration_files()
 	else:
-		call('scoring-engine --help')
+		print("Unknown command. scoring-engine --help")
 
 
 def start_front_server():

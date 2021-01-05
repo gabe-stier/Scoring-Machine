@@ -4,7 +4,6 @@ from platform import system
 from subprocess import call
 
 from setuptools import setup
-from setuptools.command.develop import develop
 from setuptools.command.install import install
 
 service_config = """[LDAP]
@@ -16,13 +15,13 @@ SQLTable = ldap
 [SPLUNK]
 IP = bing.com
 PORT = 80
-HashFile = etc/scoring/splunk.sh3
+HashFile = splunk.sh3
 SQLTable = splunk
 
 [ECOMMERCE]
 IP = google.com
 PORT = 80
-HashFile = etc/scoring/ecomm.sh3
+HashFile = ecomm.sh3
 SQLTable = ecomm
 
 [POP3]
@@ -90,57 +89,6 @@ WantedBy=multi-user.target
 """
 
 
-class PreDevelopCommand(develop):
-	def run(self):
-		if system() == 'Linux':
-			self.generate_files()
-			develop.run(self)
-		else:
-			print("Stopping install. Only Linux distro's are supported.")
-			sys.exit(1)
-
-	@staticmethod
-	def generate_files(self):
-		if not os.path.exists('/etc/systemd/system/scoring.engine.back.service'):
-			try:
-				with open('/etc/systemd/system/scoring.engine.back.service', 'w') as f:
-					print(back_service, file=f)
-				call('systemclt daemon-reload'.split())
-			except OSError as ioe:
-				sys.exit("Please run this command as root.")
-				return False
-
-		if not os.path.exists('/etc/systemd/system/scoring.engine.front.service'):
-			try:
-				with open('/etc/systemd/system/scoring.engine.front.service', 'w') as f:
-					print(front_service, file=f)
-				call('systemclt daemon-reload'.split())
-			except OSError:
-				sys.exit("Please run this command as root.")
-				return False
-
-		if not os.path.exists('/opt/scoring-engine'):
-			try:
-				os.mkdir('/opt/scoring-engine')
-			except OSError:
-				sys.exit("Please run this command as root.")
-
-		if not os.path.exists('/opt/scoring-engine/application.conf'):
-			try:
-				with open('/opt/scoring-engine/application.conf', 'w') as f:
-					print(application_config, file=f)
-
-			except PermissionError:
-				sys.exit("Please run this command as root.")
-
-		if not os.path.exists('/opt/scoring-engine/service.conf'):
-			try:
-				with open('/opt/scoring-engine/service.conf', 'w') as f:
-					print(service_config, file=f)
-			except PermissionError:
-				sys.exit("Please run this command as root.")
-
-
 class PreInstallCommand(install):
 	def run(self):
 		if system() == 'Linux':
@@ -153,16 +101,19 @@ class PreInstallCommand(install):
 	@staticmethod
 	def generate_files():
 		if not os.path.exists('/etc/systemd/system/scoring.engine.back.service'):
+			print('Generating backend service file.')
 			with open('/etc/systemd/system/scoring.engine.back.service', 'w') as f:
 				print(back_service, file=f)
 			call('systemctl daemon-reload'.split())
 
 		if not os.path.exists('/etc/systemd/system/scoring.engine.front.service'):
+			print('Generating frontend service file.')
 			with open('/etc/systemd/system/scoring.engine.front.service', 'w') as f:
 				print(front_service, file=f)
 			call('systemctl daemon-reload'.split())
 
 		if not os.path.exists('/opt/scoring-engine'):
+			print('Generating configuration files.')
 			os.mkdir('/opt/scoring-engine')
 
 		if not os.path.exists('/opt/scoring-engine/application.conf'):
@@ -172,6 +123,9 @@ class PreInstallCommand(install):
 		if not os.path.exists('/opt/scoring-engine/service.conf'):
 			with open('/opt/scoring-engine/service.conf', 'w') as f:
 				print(service_config, file=f)
+
+		if not os.path.exists('/opt/scoring-engine/scoring-baseline'):
+			os.mkdir('/opt/scoring-engine/scoring-baseline')
 
 
 setup(cmdclass={'install': PreInstallCommand})

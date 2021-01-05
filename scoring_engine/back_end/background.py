@@ -135,10 +135,10 @@ def build_defaults():
         dns_query=Nslookup(dns_servers=[dns_ip])
         log.Main.info('Setting the base!')
         for domain in domains:
-            file_name=f'scoring_engine/back_end/etc/scoring/{domain}.dns'
+            file_name=f'scoring_engine/back_end/{domain}.dns'
             if not (os.path.exists(file_name) and os.stat(file_name).st_size != 0):
                 answer=dns_query.dns_lookup(domain)
-                with open(file_name, 'w+') as f:
+                with open(file_name, 'w') as f:
                     f.write(f'{answer.answer}\n')
     except Exception as e:
         log.Error.error(e)
@@ -150,10 +150,10 @@ def build_defaults():
         dns_query=Nslookup(dns_servers=[dns_ip])
         log.Main.info('Setting the base!')
         for domain in domains:
-            file_name=f'scoring_engine/back_end/etc/scoring/{domain}.dns'
+            file_name=f'scoring_engine/back_end/{domain}.dns'
             if not (os.path.exists(file_name) and os.stat(file_name).st_size != 0):
                 answer=dns_query.dns_lookup(domain)
-                with open(file_name, 'w+') as f:
+                with open(file_name, 'w') as f:
                     f.write(f'{answer.answer}\n')
     except Exception as e:
         log.Error.error(e)
@@ -171,7 +171,7 @@ def build_defaults():
         site_string=f'{site_response.getheaders()[0]}\n\nStatus: {site_response.status}\n\n{site_response.read()}'
         site_hash=sha3_512()
         site_hash.update(site_string.encode())
-        f=open(f'{os.getcwd()}/back_end/{splunk_hash_file}', 'w+')
+        f=open(f'{os.getcwd()}/back_end/{splunk_hash_file}', 'w')
         f.write(site_hash.hexdigest())
         f.close()
     except Exception as e:
@@ -190,7 +190,7 @@ def build_defaults():
         site_string=f'{site_response.getheaders()[0]}\n\nStatus: {site_response.status}\n\n{site_response.read()}'
         site_hash=sha3_512()
         site_hash.update(site_string.encode())
-        f=open(f'{os.getcwd()}/back_end/{ecomm_hash_file}', 'w+')
+        f=open(f'{os.getcwd()}/back_end/{ecomm_hash_file}', 'w')
         f.write(site_hash.hexdigest())
         f.close()
     except Exception as e:
