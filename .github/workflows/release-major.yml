@@ -20,6 +20,12 @@ jobs:
           export VERSION=$(cat setup.cfg | grep version | awk '{split($0,a," "); print "v"a[3]}')
       - name: Fetch Latest Release
         uses: thebritican/fetch-latest-release@v2.0.0
+      - name: Commit tagger
+        uses: tvdias/github-tagger@v0.0.2
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          tag: ${{ env.VERSION }}
+        if: ${{ steps.fetch_latest_release.outputs.tag_name < env.VERSION }}
       - name: Create a Release
         uses: "marvinpinto/action-automatic-releases@latest"
         with:
