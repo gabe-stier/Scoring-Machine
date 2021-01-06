@@ -17,8 +17,8 @@ jobs:
           python-version: '3.x'
       - name: get-version
         run: |
-          cat setup.cfg | grep version | awk '{split($0,a," "); print "v"a[3]}'
-          echo "::set-output name=version::$(cat setup.cfg | grep version | awk '{split($0,a," "); print "v"a[3]}')\n"
+          export V=$(cat setup.cfg | grep version | awk '{split($0,a," "); print "v"a[3]}')
+          echo "::set-output name=version::$(V)\n"
         id: current-version
       - name: fetch-latest-release
         uses: thebritican/fetch-latest-release@v2.0.0
@@ -28,8 +28,8 @@ jobs:
           echo "Version: $VERSION"
           echo "Tag: $TAG"
         env:
-          TAG: ${{ join(steps.last-release.outputs.*,'\t') }}
-          VERSION: ${{ join(steps.current-verison.outputs.*, '\t') }}
+          TAG: ${{ steps.last-release.outputs.tag_name }}
+          VERSION: ${{ steps.current-verison.outputs.version }}
       - name: Tag Commit
         uses: tvdias/github-tagger@v0.0.2
         with:
