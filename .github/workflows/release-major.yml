@@ -22,6 +22,7 @@ jobs:
         id: current-version
       - name: Get Last Tag
         run: |
+          pip install requests
           echo "::set-output name=last_tag::$(python get-release.py ${{ secrets.GITHUB_TOKEN }})\n"
         id: last-tag
       - name: List versions
