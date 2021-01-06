@@ -19,15 +19,17 @@ jobs:
         run: |
           cat setup.cfg | grep version | awk '{split($0,a," "); print "v"a[3]}'
           echo "::set-output name=version::$(cat setup.cfg | grep version | awk '{split($0,a," "); print "v"a[3]}')\n"
+        id: current-version
       - name: fetch-latest-release
         uses: thebritican/fetch-latest-release@v2.0.0
+        id: last-release
       - name: List versions
         run: |
           echo "Version: $VERSION"
           echo "Tag: $TAG"
         env:
-          TAG: ${{ join(steps.fetch-latest-release.outputs.*,'\t') }}
-          VERSION: ${{ join(steps.get-verison.outputs.*, '\t') }}
+          TAG: ${{ join(steps.last-release.outputs.*,'\t') }}
+          VERSION: ${{ join(steps.current-verison.outputs.*, '\t') }}
       - name: Tag Commit
         uses: tvdias/github-tagger@v0.0.2
         with:
