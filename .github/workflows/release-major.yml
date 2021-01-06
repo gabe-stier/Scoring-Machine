@@ -23,9 +23,10 @@ jobs:
       - name: List versions
         run: |
           echo 'Version'
-          echo ${{ env.VERSION }}
+          echo "Version ${{ env.VERSION }}"
+          echo "$VERSION"
           echo 'Tag'
-          echo ${{ steps.fetch_latest_release.outputs.tag_name }}
+          echo "Tag ${{ steps.fetch_latest_release.outputs.tag_name }}"
       - name: Tag Commit
         uses: tvdias/github-tagger@v0.0.2
         with:
