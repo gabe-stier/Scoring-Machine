@@ -18,12 +18,13 @@ jobs:
       - name: get-version
         run: |
           export V=$(cat setup.cfg | grep version | awk '{split($0,a," "); print "v"a[3]}')
-          echo "::set-output name=version::$(V)\n"
+          echo "::set-output name=version::echo '$V'\n"
         id: current-version
       - name: Get Last Tag
         run: |
           pip install requests
-          echo "::set-output name=last_tag::$(python get-release.py ${{ secrets.GITHUB_TOKEN }})\n"
+          export V=$(python get-release.py ${{ secrets.GITHUB_TOKEN }})
+          echo "::set-output name=last_tag::echo $V\n"
         id: last-tag
       - name: List versions
         run: |
