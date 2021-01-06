@@ -21,7 +21,7 @@ jobs:
       - name: Get color
         run: echo "The selected color is ${{ steps.random-color-generator.outputs.SELECTED_COLOR }}"
       - name: Get Version
-        run: echo '::set-output name=SELECTED_COLOR::$(cat setup.cfg | grep version | awk '{split($0,a," "); print "v"a[3]}')'
+        run: echo '::set-output name=SELECTED_COLOR::$(cat setup.cfg | grep version | awk \'{split($0,a," "); print "v"a[3]}\')'
         id: current-version
       - name: Get Last Tag
         run: |
