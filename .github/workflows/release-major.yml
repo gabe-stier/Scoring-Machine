@@ -15,31 +15,29 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: '3.x'
-      - name: Set selected color
-        run: echo '::set-output name=SELECTED_COLOR::green'
-        id: random-color-generator
-      - name: Get color
-        run: echo "The selected color is ${{ steps.random-color-generator.outputs.SELECTED_COLOR }}"
-      - name: Get Version
-        run: echo '::set-output name=SELECTED_COLOR::$(cat setup.cfg | grep version | awk \'{split($0,a," "); print "v"a[3]}\')'
+      - name: get-version
+        run: |
+          export V=$(cat setup.cfg | grep version | awk '{split($0,a," "); print "v"a[3]}')
+          echo '::set-output name=version::$V'
         id: current-version
       - name: Get Last Tag
         run: |
-          echo "${{ steps.current-verison.outputs.SELECTED_COLOR }}"
+          echo ${{ steps.last-release.outputs.last_tag }}
           pip install requests
           python get-release.py ${{ secrets.GITHUB_TOKEN }}
         id: last-tag
       - name: List versions
         run: |
-          echo "Version: ${{ steps.current-verison.outputs.SELECTED_COLOR }}
+          echo "Version: $VERSION"
           echo "Tag: $TAG"
         env:
-          TAG: ${{ steps.last-release.outputs.last_tag }}
+          TAG: ${{ steps.last-tag.outputs.last_tag }}
+          VERSION: ${{ steps.current-version.outputs.version }}
       - name: Tag Commit
         uses: tvdias/github-tagger@v0.0.2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          tag: ${{ steps.current-verison.outputs.version }}
+          tag: ${{ steps.current-version.outputs.version }}
         if: ${{ steps.fetch_latest_release.outputs.tag_name < steps.current-verison.outputs.version }}
       - name: Create a Release
         uses: marvinpinto/action-automatic-releases@latest
