@@ -15,18 +15,17 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: '3.x'
-      - name: Get Version
+      - name: get-version
         run: |
-          export VERSION=$(cat setup.cfg | grep version | awk '{split($0,a," "); print "v"a[3]}')
-      - name: Fetch Latest Release
+          echo "::set-output name=version::$(cat setup.cfg | grep version | awk '{split($0,a,\" \"); print \"v\"a[3]}')\n"
+      - name: fetch-latest-release
         uses: thebritican/fetch-latest-release@v2.0.0
       - name: List versions
         run: |
           echo 'Version'
-          echo "Version ${{ env.VERSION }}"
-          echo "$VERSION"
+          echo "Version ${{ steps.get-verison.output.version }}"
           echo 'Tag'
-          echo "Tag ${{ steps.fetch_latest_release.outputs.tag_name }}"
+          echo "Tag ${{ steps.fetch-latest-release.outputs.tag_name }}"
       - name: Tag Commit
         uses: tvdias/github-tagger@v0.0.2
         with:
