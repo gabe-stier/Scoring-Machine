@@ -1,6 +1,5 @@
 import http
 import os
-import pathlib
 from configparser import ConfigParser
 from hashlib import sha3_512
 
@@ -63,7 +62,7 @@ def config_ldap(ip: str, users: list):
 	__config_task(config)
 
 
-def config_smtp(ip: str, user_1: str, user_2: str, domain: str):
+def config_smtp(ip: str, user_1: str, user_1_pwd: str, user_2: str, domain: str):
 	"""Updates the smtp section of the config"""
 	log.Main.info('Updating Configuration of SMTP')
 	old_file_name = f'/opt/scoring-engine/service.conf'
@@ -71,6 +70,7 @@ def config_smtp(ip: str, user_1: str, user_2: str, domain: str):
 	config.read(old_file_name)
 	config['SMTP']['ip'] = ip
 	config['SMTP']['from_user'] = user_1
+	config['SMTP']['from_user_password'] = user_1_pwd
 	config['SMTP']['to_user'] = user_2
 	config['SMTP']['domain'] = domain
 	__config_task(config)

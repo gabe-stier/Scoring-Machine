@@ -149,11 +149,7 @@ def score_pop3():
 	table_name = config['POP3']['SQLTable']
 	status = 0
 	try:
-		pop = poplib.POP3(ip, port)
-		user = db.get_pop3_info()
-		if user is None:
-			raise Exception(
-					"Configuration has not been set yet for POP3 to be scored correctly")
+		pop = poplib.POP3_SSL(ip, port)
 		pop.user(config['POP3']['user'])
 		pop.pass_(config['POP3']['password'])
 		email_number = random.randint(0, pop.stat())
@@ -195,11 +191,14 @@ def score_smtp():
         This message is used to score.
         """
 		smtpobj = smtplib.SMTP(ip, port)
+		smtpobj.starttls()
+		smtpobj.login(config['SMTP']['from_user'], config['SMTP']['from_user_password'])
 		smtpobj.sendmail(sender, receiver, message)
 		smtpobj.quit()
 		status = 1
 		log.Scoring.info('Score of SMTP returned with a "Success"')
-	except SMTPException:
+	except SMTPException as e:
+		log.Error.error(e)
 		status = 0
 		log.Scoring.info('Score of SMTP returned with a "Fail"')
 	except Exception as e:

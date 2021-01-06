@@ -298,7 +298,6 @@ class Config_LDAP(MethodView):
 				}
 			}
 		status = send_post(forward)
-		session.pop('data')
 		if status[0] == 500:
 			return render_template('internal_error.html.j2'), 500
 		elif not (status[0] == 20 or status[0] == 21):
@@ -345,7 +344,6 @@ class Config_Ecomm(MethodView):
 				}
 			}
 		status = send_post(forward)
-		session.pop('data')
 		if status[0] == 500:
 			return render_template('internal_error.html.j2'), 500
 		elif not (status[0] == 20 or status[0] == 21):
@@ -521,6 +519,7 @@ class Config_SMTP(MethodView):
 					'service': 'smtp',
 					'ip':      session['data']['smtp_ip'],
 					'user 1':  session['data']['smtp_usr1'],
+					'user 1 pwd': session['data']['smtp_usr1_pwd'],
 					'user 2':  session['data']['smtp_usr2'],
 					'domain':  session['data']['smtp_domain']
 					}
@@ -540,15 +539,15 @@ class Config_SMTP(MethodView):
 		forward = {
 			'action': 'config',
 			'data':   {
-				'service': 'smtp',
-				'ip':      request.form['smtp_ip'],
-				'user 1':  request.form['smtp_usr1'],
-				'user 2':  request.form['smtp_usr2'],
-				'domain':  request.form['smtp_domain']
+				'service':    'smtp',
+				'ip':         request.form['smtp_ip'],
+				'user 1':     request.form['smtp_usr1'],
+				'user 1 pwd': request.form['smtp_usr1_pwd'],
+				'user 2':     request.form['smtp_usr2'],
+				'domain':     request.form['smtp_domain']
 				}
 			}
 		status = send_post(forward)
-		session.pop('data')
 		if status[0] == 500:
 			return render_template('internal_error.html.j2'), 500
 		elif not (status[0] == 20 or status[0] == 21):
@@ -595,7 +594,6 @@ class Config_Splunk(MethodView):
 				}
 			}
 		status = send_post(forward)
-		session.pop('data')
 		if status[0] == 500:
 			return render_template('internal_error.html.j2'), 500
 		elif not (status[0] == 20 or status[0] == 21):
