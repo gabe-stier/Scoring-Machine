@@ -18,7 +18,7 @@ jobs:
       - name: get-version
         run: |
           export V=$(cat setup.cfg | grep version | awk '{split($0,a," "); print "v"a[3]}')
-          echo '::set-output name=version::$V'
+          echo '::set-output name=version::$(V)'
         id: current-version
       - name: Get Last Tag
         run: |
