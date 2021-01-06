@@ -25,7 +25,7 @@ jobs:
           echo "Version: $VERSION"
           echo "Tag: $TAG"
         env:
-          TAG: ${{ steps.fetch-latest-release.outputs.* }}
+          TAG: ${{ steps.fetch-latest-release.outputs.tag_name }}
           VERSION: ${{ steps.get-verison.output.version }}
       - name: Tag Commit
         uses: tvdias/github-tagger@v0.0.2
