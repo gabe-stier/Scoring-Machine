@@ -123,13 +123,9 @@ def init_db():
 def build_defaults():
 	"""Creates the scoring objectives of DNS, Splunk, and Ecomm"""
 	log.Main.info('Creating Defaults')
-	log.Main.info('Creating Linux Default of DNS')
 	__set_dns_linux_default()
-	log.Main.info('Creating Windows Default of DNS')
 	__set_dns_windows_default()
-	log.Main.info('Creating Default of Splunk')
 	__set_splunk_default()
-	log.Main.info('Creating Default of Ecommerce')
 	__set_ecomm_default()
 
 

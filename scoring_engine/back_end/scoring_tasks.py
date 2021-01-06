@@ -4,6 +4,7 @@ import random
 import smtplib
 from configparser import ConfigParser
 from datetime import datetime
+from email.message import EmailMessage
 from hashlib import sha3_512
 from smtplib import SMTPException
 from socket import timeout
@@ -149,11 +150,12 @@ def score_pop3():
 	table_name = config['POP3']['SQLTable']
 	status = 0
 	try:
-		pop = poplib.POP3_SSL(ip, port)
+		pop = poplib.POP3(ip, port)
 		pop.user(config['POP3']['user'])
 		pop.pass_(config['POP3']['password'])
-		email_number = random.randint(0, pop.stat())
-		(msg, body, octets) = pop.retr(email_number)
+		email_count, box_size = pop.stat()
+		email_number = random.randint(0, email_count)
+		msg, body, octets = pop.retr(email_number)
 		sender = f"{config['SMTP']['from_user']}@{config['SMTP']['domain']}"
 		if f'From: {sender}' in body:
 			status = 1
@@ -183,18 +185,15 @@ def score_smtp():
 		port = config['SMTP']['port']
 		table = config['SMTP']['SQLTable']
 		receiver = f"{config['SMTP']['to_user']}@{config['SMTP']['domain']}"
-		log.Main.info(f'SMTP\t->\tFrom: {sender}')
-		log.Main.info(f'SMTP\t->\tTo: {receiver}')
-		message = f"""From: <{sender}>
-        To: <{receiver}>
-        Subject: Scoring Message
-        
-        This message is used to score.
-        """
+		msg = EmailMessage()
+		msg.set_content("This is used to score.")
+		msg['Subject'] = 'Scoring Message'
+		msg['From'] = sender
+		msg['To'] = receiver
 		smtp_obj = smtplib.SMTP(ip, port)
 		smtp_obj.starttls()
 		smtp_obj.login(sender, config['SMTP']['from_user_password'])
-		smtp_obj.sendmail(sender, receiver, message)
+		smtp_obj.send_message(msg)
 		smtp_obj.quit()
 		status = 1
 		log.Scoring.info('Score of SMTP returned with a "Success"')
