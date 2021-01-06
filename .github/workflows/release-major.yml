@@ -20,24 +20,21 @@ jobs:
         id: random-color-generator
       - name: Get color
         run: echo "The selected color is ${{ steps.random-color-generator.outputs.SELECTED_COLOR }}"
-      - name: get-version
-        run: |
-          export V=$(cat setup.cfg | grep version | awk '{split($0,a," "); print "v"a[3]}')
-          echo '::set-output name=SELECTED_COLOR::green'
+      - name: Get Version
+        run: echo '::set-output name=SELECTED_COLOR::$(cat setup.cfg | grep version | awk '{split($0,a," "); print "v"a[3]}')'
         id: current-version
       - name: Get Last Tag
         run: |
-          echo ${{ steps.last-release.outputs.last_tag }}
+          echo "${{ steps.current-verison.outputs.SELECTED_COLOR }}"
           pip install requests
           python get-release.py ${{ secrets.GITHUB_TOKEN }}
         id: last-tag
       - name: List versions
         run: |
-          echo "Version: $VERSION"
+          echo "Version: ${{ steps.current-verison.outputs.SELECTED_COLOR }}
           echo "Tag: $TAG"
         env:
           TAG: ${{ steps.last-release.outputs.last_tag }}
-          VERSION: ${{ steps.current-verison.outputs.SELECTED_COLOR }}
       - name: Tag Commit
         uses: tvdias/github-tagger@v0.0.2
         with:
