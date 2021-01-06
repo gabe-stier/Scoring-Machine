@@ -17,7 +17,7 @@ jobs:
           python-version: '3.x'
       - name: get-version
         run: |
-          export V=$(cat setup.cfg | grep version | awk '{split($0,a," "); print "::set-output name=version::v"a[3]}')
+          cat setup.cfg | grep version | awk '{split($0,a," "); print "::set-output name=version::v"a[3]}'
 #          echo '::set-output name=version::$(V)'
         id: current-version
       - name: Get Last Tag
