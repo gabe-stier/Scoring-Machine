@@ -142,7 +142,7 @@ def __set_splunk_default():
 		site_string = f'{site_response.getheaders()[0]}\n\nStatus: {site_response.status}\n\n{site_response.read()}'
 		site_hash = sha3_512()
 		site_hash.update(site_string.encode())
-		f = open(f'/opt/scoring-engine/score-baseline/{splunk_hash_file}', 'w')
+		f = open(f'/opt/scoring-engine/scoring-baseline/{splunk_hash_file}', 'w')
 		f.write(site_hash.hexdigest())
 		f.close()
 	except Exception as e:
@@ -168,7 +168,7 @@ def __set_dns_linux_default():
 		dns_query = Nslookup(dns_servers=[dns_ip])
 		log.Main.info('Setting the base!')
 		for domain in domains:
-			file_name = f'/opt/scoring-engine/score-baseline/{domain}.dns'
+			file_name = f'/opt/scoring-engine/scoring-baseline/{domain}.dns'
 			if not (os.path.exists(file_name) and os.stat(file_name).st_size != 0):
 				answer = dns_query.dns_lookup(domain)
 				with open(file_name, 'w') as f:
@@ -189,7 +189,7 @@ def __set_dns_windows_default():
 		dns_query = Nslookup(dns_servers=[dns_ip])
 		log.Main.info('Setting the base!')
 		for domain in domains:
-			file_name = f'/opt/scoring-engine/score-baseline/{domain}.dns'
+			file_name = f'/opt/scoring-engine/scoring-baseline/{domain}.dns'
 			if not (os.path.exists(file_name) and os.stat(file_name).st_size != 0):
 				answer = dns_query.dns_lookup(domain)
 				with open(file_name, 'w') as f:
@@ -216,7 +216,7 @@ def __set_ecomm_default():
 		site_string = f'{site_response.getheaders()[0]}\n\nStatus: {site_response.status}\n\n{site_response.read()}'
 		site_hash = sha3_512()
 		site_hash.update(site_string.encode())
-		f = open(f'/opt/scoring-engine/score-baseline/{ecomm_hash_file}', 'w')
+		f = open(f'/opt/scoring-engine/scoring-baseline/{ecomm_hash_file}', 'w')
 		f.write(site_hash.hexdigest())
 		f.close()
 	except Exception as e:

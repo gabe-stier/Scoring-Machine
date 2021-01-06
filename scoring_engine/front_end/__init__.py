@@ -60,13 +60,13 @@ def app():
 def setup_logging():
 	"""Sets up the logging for the Flask Website"""
 	try:
-		os.mkdir('/var/log/scoring-machine', mode=0o666)
+		os.mkdir('/var/log/scoring-engine', mode=0o666)
 	except FileExistsError as e:
 		pass
 	except Exception as e:
 		print('Front End Error \\/', e, sep='\n')
 	try:
-		os.mkdir('/var/log/scoring-machine/web-page', mode=0o666)
+		os.mkdir('/var/log/scoring-engine/web-page', mode=0o666)
 
 	except FileExistsError as e:
 		pass
@@ -90,31 +90,31 @@ def setup_logging():
 			'default': {
 				'class':     'logging.handlers.TimedRotatingFileHandler',
 				'formatter': 'default',
-				'filename':  os.path.join('/var/log/scoring-machine/web-page', 'full.log'),
+				'filename':  os.path.join('/var/log/scoring-engine/web-page', 'full.log'),
 				'when':      'midnight'
 				},
 			'main':    {
 				'class':     'logging.handlers.TimedRotatingFileHandler',
 				'formatter': 'default',
-				'filename':  os.path.join('/var/log/scoring-machine/web-page', 'main.log'),
+				'filename':  os.path.join('/var/log/scoring-engine/web-page', 'main.log'),
 				'when':      'midnight'
 				},
 			'scoring': {
 				'class':     'logging.handlers.TimedRotatingFileHandler',
 				'formatter': 'default',
-				'filename':  os.path.join('/var/log/scoring-machine/web-page', 'scoring.log'),
+				'filename':  os.path.join('/var/log/scoring-engine/web-page', 'scoring.log'),
 				'when':      'midnight'
 				},
 			'web':     {
 				'class':     'logging.handlers.TimedRotatingFileHandler',
 				'formatter': 'default',
-				'filename':  os.path.join('/var/log/scoring-machine/web-page', 'web.log'),
+				'filename':  os.path.join('/var/log/scoring-engine/web-page', 'web.log'),
 				'when':      'midnight'
 				},
 			'error':   {
 				'class':     'logging.handlers.TimedRotatingFileHandler',
 				'formatter': 'request',
-				'filename':  os.path.join('/var/log/scoring-machine/web-page', 'error.log'),
+				'filename':  os.path.join('/var/log/scoring-engine/web-page', 'error.log'),
 				'when':      'midnight'
 				}
 			},

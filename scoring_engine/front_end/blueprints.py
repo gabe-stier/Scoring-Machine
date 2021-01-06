@@ -533,6 +533,7 @@ class Config_SMTP(MethodView):
 
 		return render_template('config.html.j2', service='SMTP')
 
+
 	def post(self):
 		log.Main.info(
 				"Updating of Windows DNS Config. Password is not required.")

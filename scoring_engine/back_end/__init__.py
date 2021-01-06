@@ -149,13 +149,13 @@ def start(server_class=HTTPServer, handler_class=Server, port=5001):
 def setup_logging():
 	"""Sets up the loggers used within the request server"""
 	try:
-		os.mkdir('/var/log/scoring-machine', mode=0o666)
+		os.mkdir('/var/log/scoring-engine', mode=0o666)
 	except FileExistsError as e:
 		pass
 	except Exception as e:
 		print('Back End Error \\/', e, sep='\n')
 	try:
-		os.mkdir('/var/log/scoring-machine/scorer', mode=0o666)
+		os.mkdir('/var/log/scoring-engine/scorer', mode=0o666)
 	except FileExistsError as e:
 		pass
 	except Exception as e:
@@ -178,31 +178,31 @@ def setup_logging():
 			'default': {
 				'class':     'logging.handlers.TimedRotatingFileHandler',
 				'formatter': 'default',
-				'filename':  os.path.join('/var/log/scoring-machine/scorer', 'full.log'),
+				'filename':  os.path.join('/var/log/scoring-engine/scorer', 'full.log'),
 				'when':      'midnight'
 				},
 			'main':    {
 				'class':     'logging.handlers.TimedRotatingFileHandler',
 				'formatter': 'default',
-				'filename':  os.path.join('/var/log/scoring-machine/scorer', 'main.log'),
+				'filename':  os.path.join('/var/log/scoring-engine/scorer', 'main.log'),
 				'when':      'midnight'
 				},
 			'scoring': {
 				'class':     'logging.handlers.TimedRotatingFileHandler',
 				'formatter': 'default',
-				'filename':  os.path.join('/var/log/scoring-machine/scorer', 'scoring.log'),
+				'filename':  os.path.join('/var/log/scoring-engine/scorer', 'scoring.log'),
 				'when':      'midnight'
 				},
 			'web':     {
 				'class':     'logging.handlers.TimedRotatingFileHandler',
 				'formatter': 'default',
-				'filename':  os.path.join('/var/log/scoring-machine/scorer', 'web.log'),
+				'filename':  os.path.join('/var/log/scoring-engine/scorer', 'web.log'),
 				'when':      'midnight'
 				},
 			'error':   {
 				'class':     'logging.handlers.TimedRotatingFileHandler',
 				'formatter': 'request',
-				'filename':  os.path.join('/var/log/scoring-machine/scorer', 'error.log'),
+				'filename':  os.path.join('/var/log/scoring-engine/scorer', 'error.log'),
 				'when':      'midnight'
 				}
 			},

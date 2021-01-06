@@ -34,7 +34,7 @@ def score_splunk():
 		site_string = f'{site_response.getheaders()[0]}\n\nStatus: {site_response.status}\n\n{site_response.read()}'
 		site_hash = sha3_512()
 		site_hash.update(site_string.encode())
-		with open(f'/opt/scoring-engine/score-baseline/{hash_file}', 'r') as f:
+		with open(f'/opt/scoring-engine/scoring-baseline/{hash_file}', 'r') as f:
 			good_hash = f.read()
 			if good_hash == site_hash.hexdigest():
 				set_score(db, table_name, 1)
@@ -75,11 +75,11 @@ def score_ldap():
 	ip = config['LDAP']['ip']
 	table = config['LDAP']['SQLTable']
 
+	db = open_database()
 	try:
 		connection = ldap.initialize(f'ldap://{ip}')
 		connection.set_option(ldap.OPT_REFERRALS, 0)
 		user = get_ldap_info()
-		db = open_database()
 		if user is None:
 			raise Exception(
 					"Configuration has not been set yet for LDAP to be scored correctly")
@@ -119,7 +119,7 @@ def score_ecomm():
 		site_string = f'{site_response.getheaders()[0]}\n\nStatus: {site_response.status}\n\n{site_response.read()}'
 		site_hash = sha3_512()
 		site_hash.update(site_string.encode())
-		with open(f'/opt/scoring-engine/score-baseline/{hash_file}', 'r') as f:
+		with open(f'/opt/scoring-engine/scoring-baseline/{hash_file}', 'r') as f:
 			good_hash = f.read()
 			if good_hash == site_hash.hexdigest():
 				set_score(db, table_name, 1)
@@ -183,18 +183,19 @@ def score_smtp():
 		port = config['SMTP']['port']
 		table = config['SMTP']['SQLTable']
 		receiver = f"{config['SMTP']['to_user']}@{config['SMTP']['domain']}"
-
+		log.Main.info(f'SMTP\t->\tFrom: {sender}')
+		log.Main.info(f'SMTP\t->\tTo: {receiver}')
 		message = f"""From: <{sender}>
         To: <{receiver}>
         Subject: Scoring Message
         
         This message is used to score.
         """
-		smtpobj = smtplib.SMTP(ip, port)
-		smtpobj.starttls()
-		smtpobj.login(config['SMTP']['from_user'], config['SMTP']['from_user_password'])
-		smtpobj.sendmail(sender, receiver, message)
-		smtpobj.quit()
+		smtp_obj = smtplib.SMTP(ip, port)
+		smtp_obj.starttls()
+		smtp_obj.login(sender, config['SMTP']['from_user_password'])
+		smtp_obj.sendmail(sender, receiver, message)
+		smtp_obj.quit()
 		status = 1
 		log.Scoring.info('Score of SMTP returned with a "Success"')
 	except SMTPException as e:
@@ -225,7 +226,7 @@ def score_dns_linux():
 	try:
 		domain = random.choice(domains)
 		answer = dns_query.dns_lookup(domain)
-		file_name = f'/opt/scoring-engine/score-baseline/{domain}.dns'
+		file_name = f'/opt/scoring-engine/scoring-baseline/{domain}.dns'
 		with open(file_name, 'r') as f:
 			good_ans = f.read()
 			str_ans = f'{answer.answer}\n'
@@ -258,7 +259,7 @@ def score_dns_windows():
 	try:
 		domain = random.choice(domains)
 		answer = dns_query.dns_lookup(domain)
-		file_name = f'/opt/scoring-engine/score-baseline/{domain}.dns'
+		file_name = f'/opt/scoring-engine/scoring-baseline/{domain}.dns'
 		with open(file_name, 'r') as f:
 			good_ans = f.read()
 			str_ans = f'{answer.answer}\n'

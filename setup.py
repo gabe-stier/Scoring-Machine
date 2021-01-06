@@ -36,6 +36,7 @@ IP = 0.0.0.0
 PORT = 25
 SQLTable = smtp
 FROM_USER = admin
+FROM_USER_PASSWORD = Changeme1!
 TO_USER = user
 DOMAIN = team.local
 
@@ -92,8 +93,8 @@ WantedBy=multi-user.target
 class PreInstallCommand(install):
 	def run(self):
 		if system() == 'Linux':
-			self.generate_files()
 			install.run(self)
+			self.generate_files()
 		else:
 			print("Stopping install. Only Linux distro's are supported.")
 			sys.exit(1)
@@ -126,6 +127,12 @@ class PreInstallCommand(install):
 
 		if not os.path.exists('/opt/scoring-engine/scoring-baseline'):
 			os.mkdir('/opt/scoring-engine/scoring-baseline')
+		if not os.path.exists('/opt/scoring-engine/scoring-baseline/ecomm.sh3'):
+			with open('/opt/scoring-engine/scoring-baseline/ecomm.sh3', 'w') as f:
+				print("", file=f)
+		if not os.path.exists('/opt/scoring-engine/scoring-baseline/splunk.sh3'):
+			with open('/opt/scoring-engine/scoring-baseline/splunk.sh3', 'w') as f:
+				print("", file=f)
 
 
 setup(cmdclass={'install': PreInstallCommand})
