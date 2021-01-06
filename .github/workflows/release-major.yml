@@ -22,9 +22,7 @@ jobs:
         uses: thebritican/fetch-latest-release@v2.0.0
       - name: List versions
         run: |
-          echo 'Version'
           echo "Version ${{ steps.get-verison.output.version }}"
-          echo 'Tag'
           echo "Tag ${{ steps.fetch-latest-release.outputs.tag_name }}"
       - name: Tag Commit
         uses: tvdias/github-tagger@v0.0.2
