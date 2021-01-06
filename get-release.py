@@ -19,4 +19,4 @@ for ref in val:
 	if not 'latest' in tag:
 		tags.append(tag.split('/')[2])
 top_tag = max(tags)
-print(f'::set-output name=last_tag::$(echo \'{top_tag}\')\n')
+print(f'::set-output name=last_tag::$(echo \'{top_tag}\')\\n')
