@@ -23,7 +23,7 @@ jobs:
       - name: get-version
         run: |
           export V=$(cat setup.cfg | grep version | awk '{split($0,a," "); print "v"a[3]}')
-          echo '::set-output name=version::test'
+          echo '::set-output name=SELECTED_COLOR::green'
         id: current-version
       - name: Get Last Tag
         run: |
@@ -37,7 +37,7 @@ jobs:
           echo "Tag: $TAG"
         env:
           TAG: ${{ steps.last-release.outputs.last_tag }}
-          VERSION: ${{ steps.current-verison.outputs.version }}
+          VERSION: ${{ steps.current-verison.outputs.SELECTED_COLOR }}
       - name: Tag Commit
         uses: tvdias/github-tagger@v0.0.2
         with:
