@@ -20,22 +20,23 @@ jobs:
           export V=$(cat setup.cfg | grep version | awk '{split($0,a," "); print "v"a[3]}')
           echo "::set-output name=version::$(V)\n"
         id: current-version
-      - name: fetch-latest-release
-        uses: thebritican/fetch-latest-release@v2.0.0
-        id: last-release
+      - name: Get Last Tag
+        run: |
+          echo "::set-output name=last_tag::$(python get-release.py ${{ secrets.GITHUB_TOKEN }})\n"
+        id: last-tag
       - name: List versions
         run: |
           echo "Version: $VERSION"
           echo "Tag: $TAG"
         env:
-          TAG: ${{ steps.last-release.outputs.tag_name }}
+          TAG: ${{ steps.last-release.outputs.last_tag }}
           VERSION: ${{ steps.current-verison.outputs.version }}
       - name: Tag Commit
         uses: tvdias/github-tagger@v0.0.2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          tag: ${{ env.VERSION }}
-        if: ${{ steps.fetch_latest_release.outputs.tag_name < env.VERSION }}
+          tag: ${{ steps.current-verison.outputs.version }}
+        if: ${{ steps.fetch_latest_release.outputs.tag_name < steps.current-verison.outputs.version }}
       - name: Create a Release
         uses: marvinpinto/action-automatic-releases@latest
         with:
@@ -44,4 +45,4 @@ jobs:
           prerelease: false
           files: |
             dist/*
-        if: ${{ steps.fetch_latest_release.outputs.tag_name < env.VERSION }}
+        if: ${{ steps.fetch_latest_release.outputs.tag_name < steps.current-verison.outputs.version }}
