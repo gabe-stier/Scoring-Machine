@@ -18,6 +18,7 @@ jobs:
       - name: get-version
         run: |
           cat setup.cfg | grep version | awk '{split($0,a," "); print "::set-output name=version::v"a[3]}'
+          cat setup.cfg | grep version | awk '{split($0,a," "); print "::set-output name=version-clean::"a[3]}'
         id: current-version
       - name: Get Last Tag
         run: |
@@ -44,5 +45,5 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           automatic_release_tag: "latest"
           prerelease: false
-          files: dist/scoring-engine-${{ steps.current-version.outputs.version }}.tar.gz
+          files: dist/scoring-engine-${{ steps.current-version.outputs.version-clean }}.tar.gz
         if: ${{ steps.last-tag.outputs.last_tag < steps.current-version.outputs.version }}
