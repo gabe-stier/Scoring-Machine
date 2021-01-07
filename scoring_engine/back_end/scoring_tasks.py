@@ -5,6 +5,9 @@ import smtplib
 from configparser import ConfigParser
 from datetime import datetime
 from email.message import EmailMessage
+from email.parser import Parser
+from email.header import decode_header
+from email.utils import parseaddr
 from hashlib import sha3_512
 from smtplib import SMTPException
 from socket import timeout
@@ -154,10 +157,14 @@ def score_pop3():
 		pop.user(config['POP3']['user'])
 		pop.pass_(config['POP3']['password'])
 		email_count, box_size = pop.stat()
-		email_number = random.randint(0, email_count)
-		msg, body, octets = pop.retr(email_number)
+		email_number = random.randint(1, email_count)
+		resp, lines, octets = pop.retr(email_number)
 		sender = f"{config['SMTP']['from_user']}@{config['SMTP']['domain']}"
-		if f'From: {sender}' in body:
+		msg = Parser().parsestr(b'\r\n'.join(lines).decode('utf-8'))
+		msg_from = msg.get('From')
+		msg_to = msg.get('To')
+		msg_subject = msg.get('Subject')
+		if sender == msg_from or msg_subject == 'Scoring Message':
 			status = 1
 			log.Scoring.info('Score of POP3 returned with a "Success"')
 		else:
