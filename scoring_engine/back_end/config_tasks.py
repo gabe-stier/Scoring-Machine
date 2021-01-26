@@ -1,9 +1,9 @@
-import http
 import os
 from configparser import ConfigParser
 from hashlib import sha3_512
 
 import mysql.connector as conn
+import requests
 from nslookup import Nslookup
 
 from scoring_engine.back_end.utilities import Loggers as log, read_config
@@ -135,11 +135,8 @@ def __set_splunk_default():
 	log.Main.info('Creating Default of Splunk')
 
 	try:
-		site = http.client.HTTPConnection(splunk_ip, splunk_port, timeout=5)
-		site.request('GET', '/')
-		site_response = site.getresponse()
-		site.close()
-		site_string = f'{site_response.getheaders()[0]}\n\nStatus: {site_response.status}\n\n{site_response.read()}'
+		site = requests.get(f'http://{splunk_ip}:{splunk_port}')
+		site_string = site.text
 		site_hash = sha3_512()
 		site_hash.update(site_string.encode())
 		f = open(f'/opt/scoring-engine/scoring-baseline/{splunk_hash_file}', 'w')
@@ -209,11 +206,8 @@ def __set_ecomm_default():
 	log.Main.info('Creating Default of Ecommerce')
 
 	try:
-		site = http.client.HTTPConnection(ecomm_ip, ecomm_port, timeout=5)
-		site.request('GET', '/')
-		site_response = site.getresponse()
-		site.close()
-		site_string = f'{site_response.getheaders()[0]}\n\nStatus: {site_response.status}\n\n{site_response.read()}'
+		site = requests.get(f'http://{ecomm_ip}:{ecomm_port}')
+		site_string = site.text
 		site_hash = sha3_512()
 		site_hash.update(site_string.encode())
 		f = open(f'/opt/scoring-engine/scoring-baseline/{ecomm_hash_file}', 'w')

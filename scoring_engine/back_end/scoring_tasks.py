@@ -1,4 +1,4 @@
-import http
+import requests
 import poplib
 import random
 import smtplib
@@ -6,8 +6,6 @@ from configparser import ConfigParser
 from datetime import datetime
 from email.message import EmailMessage
 from email.parser import Parser
-from email.header import decode_header
-from email.utils import parseaddr
 from hashlib import sha3_512
 from smtplib import SMTPException
 from socket import timeout
@@ -31,11 +29,8 @@ def score_splunk():
 	port = config['SPLUNK']['port']
 	db = open_database()
 	try:
-		site = http.client.HTTPConnection(ip, port, timeout=5)
-		site.request('GET', '/')
-		site_response = site.getresponse()
-		site.close()
-		site_string = f'{site_response.getheaders()[0]}\n\nStatus: {site_response.status}\n\n{site_response.read()}'
+		site = requests.get(f'http://{ip}:{port}')
+		site_string = site.text
 		site_hash = sha3_512()
 		site_hash.update(site_string.encode())
 		with open(f'/opt/scoring-engine/scoring-baseline/{hash_file}', 'r') as f:
@@ -116,11 +111,8 @@ def score_ecomm():
 	port = config['ECOMMERCE']['port']
 	db = open_database()
 	try:
-		site = http.client.HTTPConnection(ip, port, timeout=5)
-		site.request('GET', '/')
-		site_response = site.getresponse()
-		site.close()
-		site_string = f'{site_response.getheaders()[0]}\n\nStatus: {site_response.status}\n\n{site_response.read()}'
+		site = requests.get(f'http://{ip}:{port}')
+		site_string = site.text
 		site_hash = sha3_512()
 		site_hash.update(site_string.encode())
 		with open(f'/opt/scoring-engine/scoring-baseline/{hash_file}', 'r') as f:
