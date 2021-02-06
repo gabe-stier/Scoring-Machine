@@ -94,8 +94,7 @@ def score_pop3():
 	status = 0
 	try:
 		pop = poplib.POP3(ip, port)
-		if config['POP3']['tls']:
-			pop.stls()
+		pop.stls()
 		pop.user(config['POP3']['user'])
 		pop.pass_(config['POP3']['password'])
 		email_count, box_size = pop.stat()
