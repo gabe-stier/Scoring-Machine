@@ -67,7 +67,7 @@ class Score_Ecomm(MethodView):
 		if status[0] == 500:
 			return render_template('internal_error.html.j2'), 500
 		elif not (status[0] == 20 or status[0] == 22):
-			return redirect(url_for('score_page', status=status[0], info=status[1]))
+			return redirect(url_for('score', status=status[0], info=status[1]))
 		return redirect(request.referrer)
 
 
@@ -86,7 +86,7 @@ class Score_DNS_Windows(MethodView):
 		if status[0] == 500:
 			return render_template('internal_error.html.j2'), 500
 		elif not (status[0] == 20 or status[0] == 22):
-			return redirect(url_for('score_page', status=status[0], info=status[1]))
+			return redirect(url_for('score', status=status[0], info=status[1]))
 		return redirect(request.referrer)
 
 
@@ -105,7 +105,7 @@ class Score_DNS_Linux(MethodView):
 		if status[0] == 500:
 			return render_template('internal_error.html.j2'), 500
 		elif not (status[0] == 20 or status[0] == 22):
-			return redirect(url_for('score_page', status=status[0], info=status[1]))
+			return redirect(url_for('score', status=status[0], info=status[1]))
 		return redirect(request.referrer)
 
 
@@ -123,7 +123,7 @@ class Score_POP3(MethodView):
 		if status[0] == 500:
 			return render_template('internal_error.html.j2'), 500
 		elif not (status[0] == 20 or status[0] == 22):
-			return redirect(url_for('score_page', status=status[0], info=status[1]))
+			return redirect(url_for('score', status=status[0], info=status[1]))
 		return redirect(request.referrer)
 
 
@@ -141,7 +141,7 @@ class Score_SMTP(MethodView):
 		if status[0] == 500:
 			return render_template('internal_error.html.j2'), 500
 		elif not (status[0] == 20 or status[0] == 22):
-			return redirect(url_for('score_page', status=status[0], info=status[1]))
+			return redirect(url_for('score', status=status[0], info=status[1]))
 		return redirect(request.referrer)
 
 
@@ -159,12 +159,11 @@ class Score_Splunk(MethodView):
 		if status[0] == 500:
 			return render_template('internal_error.html.j2'), 500
 		elif not (status[0] == 20 or status[0] == 22):
-			return redirect(url_for('score_page', status=status[0], info=status[1]))
+			return redirect(url_for('score', status=status[0], info=status[1]))
 		return redirect(request.referrer)
 
 sr.add_url_rule('/ecomm', view_func=Score_Ecomm.as_view('ecomm'))
-sr.add_url_rule(
-		'/dns-windows', view_func=Score_DNS_Windows.as_view('dns_windows'))
+sr.add_url_rule('/dns-windows', view_func=Score_DNS_Windows.as_view('dns_windows'))
 sr.add_url_rule('/dns-linux', view_func=Score_DNS_Linux.as_view('dns_linux'))
 sr.add_url_rule('/pop3', view_func=Score_POP3.as_view('pop3'))
 sr.add_url_rule('/smtp', view_func=Score_SMTP.as_view('smtp'))
