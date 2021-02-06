@@ -16,11 +16,6 @@ CREATE TABLE IF NOT EXISTS ecomm (
     success ENUM('False', 'True', 'Error')
 );
 
-CREATE TABLE IF NOT EXISTS ldap (
-    test_id INTEGER PRIMARY KEY AUTO_INCREMENT,
-    test_date TEXT,
-    success ENUM('False', 'True', 'Error')
-);
 CREATE TABLE IF NOT EXISTS smtp (
     test_id INTEGER PRIMARY KEY AUTO_INCREMENT,
     test_date TEXT,
@@ -39,15 +34,8 @@ CREATE TABLE IF NOT EXISTS dns_linux (
     success ENUM('False', 'True', 'Error')
 );
 
-CREATE TABLE IF NOT EXISTS ldap_info (
-    user_id INTEGER PRIMARY KEY AUTO_INCREMENT,
-    username TEXT NOT NULL,
-    password TEXT NOT NULL
-);
-
 INSERT INTO dns_windows (test_date, success) VALUES (1,'Error');
 INSERT INTO dns_linux (test_date, success) VALUES (1,'Error');
-INSERT INTO ldap (test_date, success) VALUES (1,'Error');
 INSERT INTO splunk (test_date, success) VALUES (1,'Error');
 INSERT INTO ecomm (test_date, success) VALUES (1,'Error');
 INSERT INTO pop3 (test_date, success) VALUES (1,'Error');

@@ -19,19 +19,6 @@
 {
     "action": "config",
     "data": {
-        "service": "ldap",
-        "ip": "1.1.1.1",
-        "users": [
-            {
-                "username": "",
-                "password": ""
-            }
-        ]
-    }
-}
-{
-    "action": "config",
-    "data": {
         "service": "ecomm",
         "ip": "1.1.1.1",
         "port": 80

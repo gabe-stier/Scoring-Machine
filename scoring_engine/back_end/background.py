@@ -11,7 +11,7 @@ from scoring_engine.back_end.config_tasks import (
 	__set_dns_linux_default)
 from scoring_engine.back_end.scoring_tasks import (
 	score_dns_linux, score_dns_windows,
-	score_ecomm, score_ldap, score_pop3,
+	score_ecomm, score_pop3,
 	score_smtp, score_splunk)
 from scoring_engine.back_end.utilities import Loggers as log, read_config
 
@@ -77,15 +77,6 @@ def pop3_loop():
 		time.sleep(random_sleep)
 
 
-def ldap_loop():
-	"""Loop that scores LDAP"""
-	while True:
-		random_sleep = random.randint(45, 120)
-		log.Scoring.info(
-				f'Automated scoring of LDAP. \n\tThere will be a break of {random_sleep} seconds before the next scoring.')
-		score_ldap()
-		time.sleep(random_sleep)
-
 
 def open_database():
 	"""Creates a connection to the database used to store the scores."""
@@ -137,7 +128,6 @@ def start_scoring():
 	def start_threads():
 		splunk_thread = Thread(target=splunk_loop)
 		ecomm_thread = Thread(target=ecomm_loop)
-		ldap_thread = Thread(target=ldap_loop)
 		dnsw_thread = Thread(target=dns_windows_loop)
 		dnsl_thread = Thread(target=dns_linux_loop)
 		pop3_thread = Thread(target=pop3_loop)
@@ -145,7 +135,6 @@ def start_scoring():
 
 		splunk_thread.start()
 		ecomm_thread.start()
-		ldap_thread.start()
 		dnsw_thread.start()
 		dnsl_thread.start()
 		pop3_thread.start()

@@ -1,4 +1,3 @@
-import requests
 import poplib
 import random
 import smtplib
@@ -10,9 +9,8 @@ from hashlib import sha3_512
 from smtplib import SMTPException
 from socket import timeout
 
-import ldap
 import mysql.connector as conn
-from ldap import AUTH_UNKNOWN, CONNECT_ERROR
+import requests
 from nslookup import Nslookup
 
 from scoring_engine.back_end.utilities import Loggers as log, read_config
@@ -47,56 +45,6 @@ def score_splunk():
 		set_score(db, table_name, 2)
 		log.Scoring.info('Score of Splunk returned with an "Error"')
 		log.Error.error(e)
-
-
-def get_ldap_info():
-	"""Gets user information to test ldap connection"""
-	db = open_database()
-	cur = db.cursor(buffered=True)
-	cur.execute('SELECT username, password FROM ldap_info')
-	users = cur.fetchall()
-	if users is not None:
-		user = random.choice(users)
-	else:
-		user = None
-	log.Scoring.info(f'Scoring LDAP with the user account of {user}')
-	db.close()
-	return user
-
-
-def score_ldap():
-	"""Scores LDAP"""
-	status = 0
-	config = ConfigParser()
-	config.read('/opt/scoring-engine/service.conf')
-	log.Scoring.info('Attempting to score LDAP')
-
-	ip = config['LDAP']['ip']
-	table = config['LDAP']['SQLTable']
-
-	db = open_database()
-	try:
-		connection = ldap.initialize(f'ldap://{ip}')
-		connection.set_option(ldap.OPT_REFERRALS, 0)
-		user = get_ldap_info()
-		if user is None:
-			raise Exception(
-					"Configuration has not been set yet for LDAP to be scored correctly")
-		connection.simple_bind_s(user[0], user[1])
-		status = 1
-		log.Scoring.info('Score of LDAP returned with a "Success"')
-	except AUTH_UNKNOWN:
-		status = 0
-		log.Scoring.info('Score of LDAP returned with a "Fail"')
-	except CONNECT_ERROR:
-		status = 0
-		log.Scoring.info('Score of LDAP returned with a "Fail"')
-	except Exception as e:
-		log.Error.error(e)
-		status = 2
-		log.Scoring.info('Score of LDAP returned with an "Error"')
-	finally:
-		set_score(db, table, status)
 
 
 def score_ecomm():
@@ -146,6 +94,8 @@ def score_pop3():
 	status = 0
 	try:
 		pop = poplib.POP3(ip, port)
+		if config['POP3']['tls']:
+			pop.stls()
 		pop.user(config['POP3']['user'])
 		pop.pass_(config['POP3']['password'])
 		email_count, box_size = pop.stat()
@@ -190,7 +140,6 @@ def score_smtp():
 		msg['From'] = sender
 		msg['To'] = receiver
 		smtp_obj = smtplib.SMTP(ip, port)
-		smtp_obj.starttls()
 		smtp_obj.login(sender, config['SMTP']['from_user_password'])
 		smtp_obj.send_message(msg)
 		smtp_obj.quit()

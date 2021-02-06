@@ -46,5 +46,4 @@ class Scores(Enum):
     DNS_LINUX = auto(),
     DNS_WINDOWS = auto(),
     POP3 = auto(),
-    LDAP = auto(),
     SMTP = auto()

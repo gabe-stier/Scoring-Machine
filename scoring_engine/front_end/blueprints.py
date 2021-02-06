@@ -43,33 +43,14 @@ def score_page():
 	dnsl_srv = return_bool(status[0])
 	dnsw_srv = return_bool(status[1])
 	ecomm_srv = return_bool(status[2])
-	ldap_srv = return_bool(status[3])
-	splunk_srv = return_bool(status[4])
-	pop3_srv = return_bool(status[5])
-	smtp_srv = return_bool(status[6])
+	splunk_srv = return_bool(status[3])
+	pop3_srv = return_bool(status[4])
+	smtp_srv = return_bool(status[5])
 
 	return make_response(
-			render_template('scoring.html.j2', ldap=ldap_srv, dnsl=dnsl_srv, dnsw=dnsw_srv, ecomm=ecomm_srv,
+			render_template('scoring.html.j2',dnsl=dnsl_srv, dnsw=dnsw_srv, ecomm=ecomm_srv,
 			                pop3=pop3_srv,
 			                smtp=smtp_srv, splunk=splunk_srv))
-
-
-class Score_LDAP(MethodView):
-	"""Controls the score request for LDAP"""
-
-	def post(self):
-		forward = {
-			'action': 'score',
-			"data":   {
-				"service": "ldap"
-				}
-			}
-		status = send_post(forward)
-		if status[0] == 500:
-			return render_template('internal_error.html.j2'), 500
-		elif not (status[0] == 20 or status[0] == 22):
-			return redirect(url_for('score_page', status=status[0], info=status[1]))
-		return redirect(request.referrer)
 
 
 class Score_Ecomm(MethodView):
@@ -181,8 +162,6 @@ class Score_Splunk(MethodView):
 			return redirect(url_for('score_page', status=status[0], info=status[1]))
 		return redirect(request.referrer)
 
-
-sr.add_url_rule('/ldap', view_func=Score_LDAP.as_view('ldap'))
 sr.add_url_rule('/ecomm', view_func=Score_Ecomm.as_view('ecomm'))
 sr.add_url_rule(
 		'/dns-windows', view_func=Score_DNS_Windows.as_view('dns_windows'))
@@ -240,70 +219,6 @@ class Config_Login(MethodView):
 
 		else:
 			return redirect(url_for('config.config_login', error=True, redirect_loc=redirect_loc))
-
-
-class Config_LDAP(MethodView):
-	"""Controls the config request for LDAP"""
-
-	def get(self):
-		url_for('static', filename='base.css')
-		url_for('static', filename='config.css')
-		if 'data' in session:
-			log.Main.info(
-					"Updating of LDAP Config. Password has been entered.")
-			count = 1
-			users = []
-			while f'username_{count}' in session['data']:
-				user = {
-					'username': session['data'][f'username_{count}'],
-					'password': session['data'][f'userpwd_{count}']
-					}
-				users.append(user)
-				count += 1
-			forward = {
-				'action': 'config',
-				'token':  token.token,
-				'data':   {
-					'service': 'ldap',
-					'ip':      session['data']['ldap_ip'],
-					'users':   users
-					}
-				}
-			status = send_post(forward)
-			session.pop('data')
-			if status[0] == 500:
-				return render_template('internal_error.html.j2'), 500
-			elif not (status[0] == 20 or status[0] == 21):
-				return render_template('config.html.j2', service='LDAP', status=status[0], info=status[1])
-
-		return render_template('config.html.j2', service='LDAP')
-
-	def post(self):
-		log.Main.info("Updating of LDAP Config. Password is not required.")
-		count = 1
-		users = []
-		while f'username_{count}' in request.form:
-			user = {
-				'username': request.form[f'username_{count}'],
-				'password': request.form[f'userpwd_{count}']
-				}
-			users.append(user)
-			count += 1
-		forward = {
-			'action': 'config',
-			'data':   {
-				'service': 'ldap',
-				'ip':      request.form['ldap_ip'],
-				'users':   users
-				}
-			}
-		status = send_post(forward)
-		if status[0] == 500:
-			return render_template('internal_error.html.j2'), 500
-		elif not (status[0] == 20 or status[0] == 21):
-			return render_template('config.html.j2', service='LDAP', status=status[0], info=status[1])
-
-		return redirect(request.referrer)
 
 
 class Config_Ecomm(MethodView):
@@ -602,7 +517,6 @@ class Config_Splunk(MethodView):
 		return redirect(request.referrer)
 
 
-config_bp.add_url_rule('/ldap', view_func=Config_LDAP.as_view('ldap'))
 config_bp.add_url_rule('/ecomm', view_func=Config_Ecomm.as_view('ecomm'))
 config_bp.add_url_rule(
 		'/dns-windows', view_func=Config_DNS_Windows.as_view('dns_windows'))

@@ -41,27 +41,6 @@ def config_ecomm(ip: str, port: int):
 	__config_task(config)
 	__set_ecomm_default()
 
-
-def config_ldap(ip: str, users: list):
-	"""Updates the ldap section of the config"""
-	log.Main.info('Updating Configuration of LDAP')
-	old_file_name = f'/opt/scoring-engine/service.conf'
-	config = ConfigParser()
-	config.read(old_file_name)
-	config['LDAP']['ip'] = ip
-	user_lists = []
-	for user in users:
-		user_lists.append((user['username'], user['password']))
-	db = open_database()
-	cur = db.cursor(buffered=True)
-	cur.execute("TRUNCATE ldap_info")
-	cur.executemany(
-			"INSERT INTO ldap_info (`username`, `password`) VALUES (%s, %s)", user_lists)
-	db.commit()
-	db.close()
-	__config_task(config)
-
-
 def config_smtp(ip: str, user_1: str, user_1_pwd: str, user_2: str, domain: str):
 	"""Updates the smtp section of the config"""
 	log.Main.info('Updating Configuration of SMTP')

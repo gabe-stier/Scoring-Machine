@@ -6,13 +6,7 @@ from subprocess import call
 from setuptools import setup
 from setuptools.command.install import install
 
-service_config = """[LDAP]
-IP = 0.0.0.0
-PORT = 389
-InformationTable = ldap_info
-SQLTable = ldap
-
-[SPLUNK]
+service_config = """[SPLUNK]
 IP = bing.com
 PORT = 80
 HashFile = splunk.sh3

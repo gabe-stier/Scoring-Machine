@@ -4,18 +4,11 @@ CREATE OR REPLACE VIEW scores AS
         DNSL.success AS DNSL_SUCCESS,
         DNSW.success AS DNSW_SUCCESS,
         ECOMM.success AS ECOMM_SUCCESS,
-        LDAP.success AS LDAP_SUCCESS,
         SPLUNK.success AS SPLUNK_SUCCESS,
         POP3.success AS POP3_SUCCESS,
         SMTP.success AS SMTP_SUCCESS
     FROM
-        (SELECT 
-            test_id, success
-        FROM
-            ldap
-        ORDER BY test_id DESC
-        LIMIT 1) AS LDAP,
-        (SELECT 
+        (SELECT
             test_id, success
         FROM
             dns_linux

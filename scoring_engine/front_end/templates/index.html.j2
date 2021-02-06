@@ -10,22 +10,6 @@
 		<th>Service</th>
 		<th>Up/Down</th>
 	</tr>
-	{% if ldap %}
-	<tr class='ldap' id='service_up'>
-		<td>LDAP</td>
-		<td>Up</td>
-	</tr>
-	{% elif ldap is none %}
-	<tr class='ldap' id='service_err'>
-		<td>LDAP</td>
-		<td>error</td>
-	</tr>
-	{% else %}
-	<tr class='ldap' id='service_down'>
-		<td>LDAP</td>
-		<td>Down</td>
-	</tr>
-	{% endif %}
 	{% if dnsl %}
 	<tr class='dnsl' id='service_up'>
 		<td>DNS - Linux</td>
@@ -126,7 +110,6 @@
 <table>
 	<tr>
 		<th>Service</th>
-		<td id='odd_col'>LDAP</td>
 		<td>DNS - Linux</td>
 		<td id='odd_col'>DNS - Windows</td>
 		<td>Ecommerce</td>
@@ -136,9 +119,6 @@
 	</tr>
 	<tr>
 		<th></th>
-		<td id='odd_col'>
-			<form action='/request-score/ldap' method='post'><input type='submit' name='ldap_score' value='Score'></form>
-		</td>
 		<td>
 			<form action='/request-score/dns-linux' method='post'><input type='submit' name='ldns_score' value='Score'></form>
 		</td>

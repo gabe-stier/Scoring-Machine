@@ -4,5 +4,4 @@ gunicorn[eventlet]
 django
 requests
 mysql-connector-python
-python-ldap
 nslookup

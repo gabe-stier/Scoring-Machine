@@ -7,7 +7,6 @@
 <div class='services'>
     <nav class='services'>
         <ul>
-            <li><a href='ldap' {% if service == 'LDAP': %} id='current' {% endif %}>LDAP</a></li>
             <li><a href='dns-linux' {% if service == 'DNS - Linux': %} id='current' {% endif %}>DNS - Linux</a></li>
             <li><a href='dns-windows' {% if service == 'DNS - Windows': %} id='current' {% endif %}>DNS - Windows</a></li>
             <li><a href='ecomm' {% if service == 'Ecommerce': %} id='current' {% endif %}>Ecommerce</a></li>
@@ -18,11 +17,7 @@
     </nav>
 </div>
 <div class='configuration'>
-    {% if service == 'LDAP': %}
-    <h2>LDAP</h2>
-    {% include 'ldap.tmpl.j2' %}
-
-    {% elif service == 'DNS - Linux': %}
+    {% if service == 'DNS - Linux': %}
     <h2>DNS - Linux</h2>
     {% include 'dnsl.tmpl.j2' %}
 

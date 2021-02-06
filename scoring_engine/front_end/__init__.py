@@ -163,10 +163,9 @@ def score_page():
 	dnsl_srv = return_bool(status[0])
 	dnsw_srv = return_bool(status[1])
 	ecomm_srv = return_bool(status[2])
-	ldap_srv = return_bool(status[3])
-	splunk_srv = return_bool(status[4])
-	pop3_srv = return_bool(status[5])
-	smtp_srv = return_bool(status[6])
+	splunk_srv = return_bool(status[3])
+	pop3_srv = return_bool(status[4])
+	smtp_srv = return_bool(status[5])
 
-	return render_template('index.html.j2', ldap=ldap_srv, dnsl=dnsl_srv, dnsw=dnsw_srv, ecomm=ecomm_srv, pop3=pop3_srv,
+	return render_template('index.html.j2', dnsl=dnsl_srv, dnsw=dnsw_srv, ecomm=ecomm_srv, pop3=pop3_srv,
 	                       smtp=smtp_srv, splunk=splunk_srv)
